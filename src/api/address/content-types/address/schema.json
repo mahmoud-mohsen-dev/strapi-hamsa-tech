@@ -1,0 +1,54 @@
+{
+  "kind": "collectionType",
+  "collectionName": "addresses",
+  "info": {
+    "singularName": "address",
+    "pluralName": "addresses",
+    "displayName": "address"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "city": {
+      "type": "string",
+      "required": true
+    },
+    "address_1": {
+      "type": "text",
+      "required": true
+    },
+    "address_2": {
+      "type": "text",
+      "required": true
+    },
+    "zip_code": {
+      "type": "integer",
+      "required": true
+    },
+    "building_number": {
+      "type": "string",
+      "required": true
+    },
+    "floor": {
+      "type": "integer",
+      "required": true
+    },
+    "apartment_number": {
+      "type": "integer",
+      "required": true
+    },
+    "delivery_duration": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::delivery-duration.delivery-duration"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "addresses"
+    }
+  }
+}

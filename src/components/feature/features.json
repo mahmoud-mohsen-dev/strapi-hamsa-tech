@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_feature_features",
+  "info": {
+    "displayName": "features",
+    "icon": "apps",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "feature": {
+      "type": "text"
+    }
+  }
+}

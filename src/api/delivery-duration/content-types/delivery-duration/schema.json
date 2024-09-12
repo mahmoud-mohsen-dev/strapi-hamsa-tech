@@ -1,0 +1,54 @@
+{
+  "kind": "collectionType",
+  "collectionName": "delivery_durations",
+  "info": {
+    "singularName": "delivery-duration",
+    "pluralName": "delivery-durations",
+    "displayName": "Delivery Duration",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "duration_period": {
+      "type": "enumeration",
+      "enum": [
+        "day",
+        "days",
+        "month",
+        "months",
+        "year",
+        "years",
+        "يوم",
+        "ايام",
+        "شهر",
+        "شهور",
+        "سنه",
+        "سنوات"
+      ],
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "duration_value": {
+      "type": "decimal",
+      "default": 0,
+      "min": 0,
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    }
+  }
+}

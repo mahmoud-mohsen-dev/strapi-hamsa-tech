@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_details_specifications",
+  "info": {
+    "displayName": "specification",
+    "icon": "layer"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "value": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

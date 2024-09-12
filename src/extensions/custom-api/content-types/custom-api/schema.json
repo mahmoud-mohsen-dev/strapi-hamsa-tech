@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "custom_apis",
+  "info": {
+    "singularName": "custom-api",
+    "pluralName": "custom-apis",
+    "displayName": "Custom API",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "selectedContentType": {
+      "type": "json"
+    },
+    "structure": {
+      "type": "json"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    }
+  }
+}
