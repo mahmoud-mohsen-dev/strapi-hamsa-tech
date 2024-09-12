@@ -1,1 +1,5 @@
-export default () => ({});
+export default () => ({
+    "custom-api": {
+        enabled: true,
+    },
+});
