@@ -1,4 +1,7 @@
 export default ({env}) => ({
+    seo: {
+      enabled: true,
+    },
     "custom-api": {
         enabled: true,
     },
@@ -17,15 +20,15 @@ export default ({env}) => ({
         },
       },
     email: {
-    config: {
-      provider: 'sendgrid',
-      providerOptions: {
-        apiKey: env('SENDGRID_API_KEY'),
-      },
-      settings: {
-        defaultFrom: 'mahmoud.mohsen.developer@gmail.com',
-        defaultReplyTo: 'mahmoud.mohsen.developer@gmail.com',
+      config: {
+        provider: 'sendgrid',
+        providerOptions: {
+          apiKey: env('SENDGRID_API_KEY'),
+        },
+        settings: {
+          defaultFrom: 'mahmoud.mohsen.developer@gmail.com',
+          defaultReplyTo: 'mahmoud.mohsen.developer@gmail.com',
+        },
       },
     },
-  },
 });
