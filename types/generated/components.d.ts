@@ -63,6 +63,19 @@ export interface SharedMetaSocial extends Schema.Component {
   };
 }
 
+export interface LinkLink extends Schema.Component {
+  collectionName: 'components_link_links';
+  info: {
+    displayName: 'Link';
+    icon: 'typhoon';
+    description: '';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    slug: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface FeatureFeatures extends Schema.Component {
   collectionName: 'components_feature_features';
   info: {
@@ -93,6 +106,7 @@ declare module '@strapi/types' {
       'youtube.video': YoutubeVideo;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
+      'link.link': LinkLink;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
     }
