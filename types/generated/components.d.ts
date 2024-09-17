@@ -100,6 +100,39 @@ export interface DetailsSpecification extends Schema.Component {
   };
 }
 
+export interface CarouselHeroSection extends Schema.Component {
+  collectionName: 'components_carousel_hero_sections';
+  info: {
+    displayName: 'Hero Section';
+    icon: 'picture';
+    description: '';
+  };
+  attributes: {
+    image: Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Attribute.Required;
+    headingTop: Attribute.String & Attribute.Required;
+    headingBottom: Attribute.String;
+    buttonLink: Attribute.Component<'button-link.button-link'> &
+      Attribute.Required;
+    direction: Attribute.Enumeration<['left', 'right']> &
+      Attribute.Required &
+      Attribute.DefaultTo<'left'>;
+  };
+}
+
+export interface ButtonLinkButtonLink extends Schema.Component {
+  collectionName: 'components_button_link_button_links';
+  info: {
+    displayName: 'buttonLink';
+    icon: 'link';
+    description: '';
+  };
+  attributes: {
+    buttonText: Attribute.String & Attribute.Required;
+    button_slug: Attribute.String & Attribute.Required;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface Components {
@@ -109,6 +142,8 @@ declare module '@strapi/types' {
       'link.link': LinkLink;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
+      'carousel.hero-section': CarouselHeroSection;
+      'button-link.button-link': ButtonLinkButtonLink;
     }
   }
 }

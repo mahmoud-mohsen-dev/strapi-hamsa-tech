@@ -1,0 +1,44 @@
+{
+  "collectionName": "components_carousel_hero_sections",
+  "info": {
+    "displayName": "Hero Section",
+    "icon": "picture",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "headingTop": {
+      "type": "string",
+      "required": true
+    },
+    "headingBottom": {
+      "type": "string"
+    },
+    "buttonLink": {
+      "type": "component",
+      "repeatable": false,
+      "component": "button-link.button-link",
+      "required": true
+    },
+    "direction": {
+      "type": "enumeration",
+      "enum": [
+        "left",
+        "right"
+      ],
+      "default": "left",
+      "required": true
+    }
+  }
+}

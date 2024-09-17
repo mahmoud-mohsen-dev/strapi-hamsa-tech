@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_button_link_button_links",
+  "info": {
+    "displayName": "buttonLink",
+    "icon": "link",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "buttonText": {
+      "type": "string",
+      "required": true
+    },
+    "button_slug": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

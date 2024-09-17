@@ -28,7 +28,7 @@
     "slug": {
       "pluginOptions": {
         "i18n": {
-          "localized": true
+          "localized": false
         }
       },
       "type": "string",
@@ -45,6 +45,17 @@
         "link.link"
       ],
       "required": false
+    },
+    "heroSection": {
+      "displayName": "Hero Section",
+      "type": "component",
+      "repeatable": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "carousel.hero-section"
     }
   }
 }

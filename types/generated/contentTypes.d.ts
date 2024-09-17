@@ -1331,10 +1331,16 @@ export interface ApiPagePage extends Schema.CollectionType {
       Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
-          localized: true;
+          localized: false;
         };
       }>;
     navbar: Attribute.DynamicZone<['link.link']> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    heroSection: Attribute.Component<'carousel.hero-section', true> &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
