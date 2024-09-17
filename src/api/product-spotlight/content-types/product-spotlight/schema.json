@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "product_spotlights",
+  "info": {
+    "singularName": "product-spotlight",
+    "pluralName": "product-spotlights",
+    "displayName": "Product Spotlight",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
+    },
+    "heading_in_black": {
+      "type": "string"
+    },
+    "heading_in_red": {
+      "type": "string"
+    }
+  }
+}

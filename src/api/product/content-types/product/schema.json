@@ -253,6 +253,14 @@
         }
       },
       "component": "shared.seo"
+    },
+    "spotlight_description": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string"
     }
   }
 }

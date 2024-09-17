@@ -1571,6 +1571,12 @@ export interface ApiProductProduct extends Schema.CollectionType {
           localized: true;
         };
       }>;
+    spotlight_description: Attribute.String &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1592,6 +1598,44 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'api::product.product'
     >;
     locale: Attribute.String;
+  };
+}
+
+export interface ApiProductSpotlightProductSpotlight
+  extends Schema.CollectionType {
+  collectionName: 'product_spotlights';
+  info: {
+    singularName: 'product-spotlight';
+    pluralName: 'product-spotlights';
+    displayName: 'Product Spotlight';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    products: Attribute.Relation<
+      'api::product-spotlight.product-spotlight',
+      'oneToMany',
+      'api::product.product'
+    >;
+    heading_in_black: Attribute.String;
+    heading_in_red: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::product-spotlight.product-spotlight',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::product-spotlight.product-spotlight',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
   };
 }
 
@@ -1874,6 +1918,7 @@ declare module '@strapi/types' {
       'api::order.order': ApiOrderOrder;
       'api::page.page': ApiPagePage;
       'api::product.product': ApiProductProduct;
+      'api::product-spotlight.product-spotlight': ApiProductSpotlightProductSpotlight;
       'api::review.review': ApiReviewReview;
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::tag.tag': ApiTagTag;
