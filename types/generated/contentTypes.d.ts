@@ -1613,14 +1613,29 @@ export interface ApiProductSpotlightProductSpotlight
   options: {
     draftAndPublish: true;
   };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
   attributes: {
     products: Attribute.Relation<
       'api::product-spotlight.product-spotlight',
       'oneToMany',
       'api::product.product'
     >;
-    heading_in_black: Attribute.String;
-    heading_in_red: Attribute.String;
+    heading_in_black: Attribute.String &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    heading_in_red: Attribute.String &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1636,6 +1651,12 @@ export interface ApiProductSpotlightProductSpotlight
       'admin::user'
     > &
       Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::product-spotlight.product-spotlight',
+      'oneToMany',
+      'api::product-spotlight.product-spotlight'
+    >;
+    locale: Attribute.String;
   };
 }
 
