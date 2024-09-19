@@ -1,17 +1,5 @@
 import type { Schema, Attribute } from '@strapi/strapi';
 
-export interface YoutubeVideo extends Schema.Component {
-  collectionName: 'components_youtube_videos';
-  info: {
-    displayName: 'video';
-    icon: 'play';
-  };
-  attributes: {
-    link_source: Attribute.String & Attribute.Required;
-    title: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -76,6 +64,18 @@ export interface LinkLink extends Schema.Component {
   };
 }
 
+export interface YoutubeVideo extends Schema.Component {
+  collectionName: 'components_youtube_videos';
+  info: {
+    displayName: 'video';
+    icon: 'play';
+  };
+  attributes: {
+    link_source: Attribute.String & Attribute.Required;
+    title: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface FeatureFeatures extends Schema.Component {
   collectionName: 'components_feature_features';
   info: {
@@ -136,10 +136,10 @@ export interface ButtonLinkButtonLink extends Schema.Component {
 declare module '@strapi/types' {
   export module Shared {
     export interface Components {
-      'youtube.video': YoutubeVideo;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
       'link.link': LinkLink;
+      'youtube.video': YoutubeVideo;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
       'carousel.hero-section': CarouselHeroSection;

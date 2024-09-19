@@ -1637,7 +1637,8 @@ export interface ApiProductSpotlightProductSpotlight
           localized: true;
         };
       }>;
-    uid: Attribute.String &
+    section_name: Attribute.String &
+      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
