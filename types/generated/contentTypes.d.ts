@@ -1380,12 +1380,14 @@ export interface ApiProductProduct extends Schema.CollectionType {
   };
   attributes: {
     name: Attribute.String &
+      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
     price: Attribute.Decimal &
+      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
@@ -1488,7 +1490,7 @@ export interface ApiProductProduct extends Schema.CollectionType {
           localized: true;
         };
       }> &
-      Attribute.DefaultTo<'sku-uuid-01'>;
+      Attribute.DefaultTo<'sku-uuid'>;
     connectivity: Attribute.String &
       Attribute.SetPluginOptions<{
         i18n: {
@@ -1515,20 +1517,19 @@ export interface ApiProductProduct extends Schema.CollectionType {
         };
       }>;
     youtube_video: Attribute.Component<'youtube.video'> &
-      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
-          localized: true;
+          localized: false;
         };
       }>;
     features: Attribute.Component<'feature.features', true> &
-      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
     long_description: Attribute.Blocks &
+      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -1634,6 +1635,12 @@ export interface ApiProductSpotlightProductSpotlight
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
+        };
+      }>;
+    uid: Attribute.String &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
         };
       }>;
     createdAt: Attribute.DateTime;

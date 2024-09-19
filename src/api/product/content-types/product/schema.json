@@ -22,7 +22,8 @@
           "localized": true
         }
       },
-      "type": "string"
+      "type": "string",
+      "required": true
     },
     "price": {
       "pluginOptions": {
@@ -32,7 +33,8 @@
       },
       "type": "decimal",
       "min": 0,
-      "default": 0
+      "default": 0,
+      "required": true
     },
     "sale_price": {
       "pluginOptions": {
@@ -129,7 +131,7 @@
         }
       },
       "type": "uid",
-      "default": "sku-uuid-01",
+      "default": "sku-uuid",
       "required": true
     },
     "connectivity": {
@@ -181,11 +183,11 @@
       "repeatable": false,
       "pluginOptions": {
         "i18n": {
-          "localized": true
+          "localized": false
         }
       },
       "component": "youtube.video",
-      "required": true
+      "required": false
     },
     "features": {
       "type": "component",
@@ -196,7 +198,7 @@
         }
       },
       "component": "feature.features",
-      "required": true
+      "required": false
     },
     "long_description": {
       "pluginOptions": {
@@ -204,7 +206,8 @@
           "localized": true
         }
       },
-      "type": "blocks"
+      "type": "blocks",
+      "required": true
     },
     "sepcification": {
       "displayName": "specification",
