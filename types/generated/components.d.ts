@@ -1,5 +1,17 @@
 import type { Schema, Attribute } from '@strapi/strapi';
 
+export interface YoutubeVideo extends Schema.Component {
+  collectionName: 'components_youtube_videos';
+  info: {
+    displayName: 'video';
+    icon: 'play';
+  };
+  attributes: {
+    link_source: Attribute.String & Attribute.Required;
+    title: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -64,15 +76,21 @@ export interface LinkLink extends Schema.Component {
   };
 }
 
-export interface YoutubeVideo extends Schema.Component {
-  collectionName: 'components_youtube_videos';
+export interface FeaturedProductsFeaturedProducts extends Schema.Component {
+  collectionName: 'components_featured_products_featured_products';
   info: {
-    displayName: 'video';
-    icon: 'play';
+    displayName: 'featured_products';
+    icon: 'command';
   };
   attributes: {
-    link_source: Attribute.String & Attribute.Required;
-    title: Attribute.String & Attribute.Required;
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String;
+    products: Attribute.Relation<
+      'featured-products.featured-products',
+      'oneToMany',
+      'api::product.product'
+    >;
   };
 }
 
@@ -97,6 +115,35 @@ export interface DetailsSpecification extends Schema.Component {
   attributes: {
     name: Attribute.String & Attribute.Required;
     value: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface CategoryCategories extends Schema.Component {
+  collectionName: 'components_category_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'chartCircle';
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    desctiption: Attribute.String & Attribute.Required;
+    image: Attribute.Media<'images'> & Attribute.Required;
+  };
+}
+
+export interface CategoriesSectionCategories extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'grid';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    desctiption: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
   };
 }
 
@@ -133,17 +180,35 @@ export interface ButtonLinkButtonLink extends Schema.Component {
   };
 }
 
+export interface AboutUsSectionAboutUs extends Schema.Component {
+  collectionName: 'components_about_us_section_about_uses';
+  info: {
+    displayName: 'about_us';
+    icon: 'question';
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    desctiption: Attribute.Text & Attribute.Required;
+    button_text: Attribute.String & Attribute.Required;
+    image: Attribute.Media<'images'> & Attribute.Required;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface Components {
+      'youtube.video': YoutubeVideo;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
       'link.link': LinkLink;
-      'youtube.video': YoutubeVideo;
+      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
+      'category.categories': CategoryCategories;
+      'categories-section.categories': CategoriesSectionCategories;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
+      'about-us-section.about-us': AboutUsSectionAboutUs;
     }
   }
 }

@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_categories_section_categories",
+  "info": {
+    "displayName": "categories",
+    "icon": "grid"
+  },
+  "options": {},
+  "attributes": {
+    "section_name": {
+      "type": "string",
+      "required": true
+    },
+    "heading_in_black": {
+      "type": "string",
+      "required": true
+    },
+    "heading_in_red": {
+      "type": "string",
+      "required": true
+    },
+    "desctiption": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "displayName": "categories",
+      "type": "component",
+      "repeatable": true,
+      "component": "category.categories",
+      "required": true
+    }
+  }
+}

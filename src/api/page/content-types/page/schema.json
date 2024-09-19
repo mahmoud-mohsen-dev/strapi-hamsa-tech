@@ -56,6 +56,27 @@
         }
       },
       "component": "carousel.hero-section"
+    },
+    "products_spotlight": {
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "featured-products.featured-products"
+    },
+    "about_us": {
+      "displayName": "about_us",
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "about-us-section.about-us"
     }
   }
 }

@@ -1009,12 +1009,69 @@ export interface ApiAddressAddress extends Schema.CollectionType {
   };
 }
 
+export interface ApiBlogBlog extends Schema.CollectionType {
+  collectionName: 'blogs';
+  info: {
+    singularName: 'blog';
+    pluralName: 'blogs';
+    displayName: 'blog';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    card_desctiption: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    image: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    tags: Attribute.Relation<'api::blog.blog', 'manyToMany', 'api::tag.tag'>;
+    admin_user: Attribute.Relation<'api::blog.blog', 'oneToOne', 'admin::user'>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::blog.blog', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::blog.blog', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::blog.blog',
+      'oneToMany',
+      'api::blog.blog'
+    >;
+    locale: Attribute.String;
+  };
+}
+
 export interface ApiBrandBrand extends Schema.CollectionType {
   collectionName: 'brands';
   info: {
     singularName: 'brand';
     pluralName: 'brands';
     displayName: 'Brand';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -1045,6 +1102,13 @@ export interface ApiBrandBrand extends Schema.CollectionType {
       'oneToMany',
       'api::product.product'
     >;
+    logo: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1341,6 +1405,18 @@ export interface ApiPagePage extends Schema.CollectionType {
         };
       }>;
     heroSection: Attribute.Component<'carousel.hero-section', true> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    products_spotlight: Attribute.Component<'featured-products.featured-products'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    about_us: Attribute.Component<'about-us-section.about-us'> &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -1823,6 +1899,7 @@ export interface ApiTagTag extends Schema.CollectionType {
           localized: false;
         };
       }>;
+    blogs: Attribute.Relation<'api::tag.tag', 'manyToMany', 'api::blog.blog'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1940,6 +2017,7 @@ declare module '@strapi/types' {
       'plugin::comments.comment': PluginCommentsComment;
       'plugin::comments.comment-report': PluginCommentsCommentReport;
       'api::address.address': ApiAddressAddress;
+      'api::blog.blog': ApiBlogBlog;
       'api::brand.brand': ApiBrandBrand;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
