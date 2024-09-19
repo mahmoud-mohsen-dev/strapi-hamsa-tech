@@ -1,12 +1,16 @@
 {
-  "collectionName": "components_featured_products_featured_products",
+  "collectionName": "components_featured_blogs_featured_blogs",
   "info": {
-    "displayName": "featured_products",
-    "icon": "command",
-    "description": ""
+    "displayName": "featured-blogs",
+    "icon": "pencil"
   },
   "options": {},
   "attributes": {
+    "blogs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::blog.blog"
+    },
     "section_name": {
       "type": "string",
       "required": true
@@ -18,11 +22,6 @@
     "heading_in_red": {
       "type": "string",
       "required": true
-    },
-    "products": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::product.product"
     }
   }
 }

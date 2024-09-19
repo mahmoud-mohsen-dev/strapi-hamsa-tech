@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_footer_footers",
+  "info": {
+    "displayName": "footer",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "social_links": {
+      "displayName": "social_links",
+      "type": "component",
+      "repeatable": true,
+      "component": "link.social-links"
+    },
+    "quick_links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "link.link"
+    },
+    "contact_us_phone": {
+      "type": "string",
+      "required": true
+    },
+    "contact_us_email": {
+      "type": "email",
+      "required": true
+    }
+  }
+}

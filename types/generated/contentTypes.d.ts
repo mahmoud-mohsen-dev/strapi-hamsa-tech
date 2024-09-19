@@ -1033,7 +1033,7 @@ export interface ApiBlogBlog extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    card_desctiption: Attribute.String &
+    card_description: Attribute.String &
       Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
@@ -1417,6 +1417,35 @@ export interface ApiPagePage extends Schema.CollectionType {
         };
       }>;
     about_us: Attribute.Component<'about-us-section.about-us'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    brands: Attribute.Relation<
+      'api::page.page',
+      'oneToMany',
+      'api::brand.brand'
+    >;
+    categories: Attribute.Component<'categories-section.categories'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    featured_blogs: Attribute.Component<'featured-blogs.featured-blogs'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    contact_us: Attribute.Component<'contact-us.contact-us'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    footer: Attribute.Component<'footer.footer'> &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

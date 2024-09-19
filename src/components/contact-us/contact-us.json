@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_contact_us_contact_uses",
+  "info": {
+    "displayName": "contact-us",
+    "icon": "phone"
+  },
+  "options": {},
+  "attributes": {
+    "section_name": {
+      "type": "string",
+      "required": true
+    },
+    "heading": {
+      "type": "text",
+      "required": true
+    },
+    "button_text": {
+      "type": "string",
+      "required": true
+    },
+    "button_url": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

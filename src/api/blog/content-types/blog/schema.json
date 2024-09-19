@@ -25,7 +25,7 @@
       "type": "string",
       "required": true
     },
-    "card_desctiption": {
+    "card_description": {
       "pluginOptions": {
         "i18n": {
           "localized": true
