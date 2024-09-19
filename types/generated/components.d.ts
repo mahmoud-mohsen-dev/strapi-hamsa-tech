@@ -77,10 +77,14 @@ export interface LinkSocialLinks extends Schema.Component {
   info: {
     displayName: 'social_links';
     icon: 'link';
+    description: '';
   };
   attributes: {
     url: Attribute.String & Attribute.Required;
-    logo: Attribute.Media<'images'> & Attribute.Required;
+    icon: Attribute.Enumeration<
+      ['youtube', 'facebook', 'instagram', 'tiktok']
+    > &
+      Attribute.Required;
   };
 }
 
@@ -200,22 +204,6 @@ export interface CategoryCategories extends Schema.Component {
   };
 }
 
-export interface CategoriesSectionCategories extends Schema.Component {
-  collectionName: 'components_categories_section_categories';
-  info: {
-    displayName: 'categories';
-    icon: 'grid';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    desctiption: Attribute.String & Attribute.Required;
-    category: Attribute.Component<'category.categories', true> &
-      Attribute.Required;
-  };
-}
-
 export interface CarouselHeroSection extends Schema.Component {
   collectionName: 'components_carousel_hero_sections';
   info: {
@@ -233,6 +221,22 @@ export interface CarouselHeroSection extends Schema.Component {
     direction: Attribute.Enumeration<['left', 'right']> &
       Attribute.Required &
       Attribute.DefaultTo<'left'>;
+  };
+}
+
+export interface CategoriesSectionCategories extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'grid';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    desctiption: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
   };
 }
 
@@ -281,8 +285,8 @@ declare module '@strapi/types' {
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
-      'categories-section.categories': CategoriesSectionCategories;
       'carousel.hero-section': CarouselHeroSection;
+      'categories-section.categories': CategoriesSectionCategories;
       'button-link.button-link': ButtonLinkButtonLink;
       'about-us-section.about-us': AboutUsSectionAboutUs;
     }
