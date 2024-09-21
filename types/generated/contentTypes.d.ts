@@ -1108,7 +1108,6 @@ export interface ApiBlogBlog extends Schema.CollectionType {
         };
       }>;
     tags: Attribute.Relation<'api::blog.blog', 'manyToMany', 'api::tag.tag'>;
-    admin_user: Attribute.Relation<'api::blog.blog', 'oneToOne', 'admin::user'>;
     author: Attribute.Relation<
       'api::blog.blog',
       'manyToOne',

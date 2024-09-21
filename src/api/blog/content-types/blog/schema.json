@@ -53,11 +53,6 @@
       "target": "api::tag.tag",
       "inversedBy": "blogs"
     },
-    "admin_user": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "admin::user"
-    },
     "author": {
       "type": "relation",
       "relation": "manyToOne",
