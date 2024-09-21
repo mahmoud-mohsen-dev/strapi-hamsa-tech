@@ -196,10 +196,11 @@ export interface CategoryCategories extends Schema.Component {
   info: {
     displayName: 'categories';
     icon: 'chartCircle';
+    description: '';
   };
   attributes: {
     title: Attribute.String & Attribute.Required;
-    desctiption: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
     image: Attribute.Media<'images'> & Attribute.Required;
   };
 }
@@ -209,12 +210,13 @@ export interface CategoriesSectionCategories extends Schema.Component {
   info: {
     displayName: 'categories';
     icon: 'grid';
+    description: '';
   };
   attributes: {
     section_name: Attribute.String & Attribute.Required;
     heading_in_black: Attribute.String & Attribute.Required;
     heading_in_red: Attribute.String & Attribute.Required;
-    desctiption: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
     category: Attribute.Component<'category.categories', true> &
       Attribute.Required;
   };
@@ -262,7 +264,7 @@ export interface AboutUsSectionAboutUs extends Schema.Component {
   };
   attributes: {
     title: Attribute.String & Attribute.Required;
-    desctiption: Attribute.Text & Attribute.Required;
+    description: Attribute.Text & Attribute.Required;
     button_text: Attribute.String & Attribute.Required;
     image: Attribute.Media<'images'> & Attribute.Required;
     section_name: Attribute.String & Attribute.Required;
