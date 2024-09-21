@@ -21,6 +21,35 @@ export interface SocialButtonsSocialLink extends Schema.Component {
   attributes: {};
 }
 
+export interface LinkSocialLinks extends Schema.Component {
+  collectionName: 'components_link_social_links';
+  info: {
+    displayName: 'social_links';
+    icon: 'link';
+    description: '';
+  };
+  attributes: {
+    url: Attribute.String & Attribute.Required;
+    icon: Attribute.Enumeration<
+      ['youtube', 'facebook', 'instagram', 'tiktok']
+    > &
+      Attribute.Required;
+  };
+}
+
+export interface LinkLink extends Schema.Component {
+  collectionName: 'components_link_links';
+  info: {
+    displayName: 'Link';
+    icon: 'typhoon';
+    description: '';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    slug: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -69,35 +98,6 @@ export interface SharedMetaSocial extends Schema.Component {
         maxLength: 65;
       }>;
     image: Attribute.Media<'images' | 'files' | 'videos'>;
-  };
-}
-
-export interface LinkSocialLinks extends Schema.Component {
-  collectionName: 'components_link_social_links';
-  info: {
-    displayName: 'social_links';
-    icon: 'link';
-    description: '';
-  };
-  attributes: {
-    url: Attribute.String & Attribute.Required;
-    icon: Attribute.Enumeration<
-      ['youtube', 'facebook', 'instagram', 'tiktok']
-    > &
-      Attribute.Required;
-  };
-}
-
-export interface LinkLink extends Schema.Component {
-  collectionName: 'components_link_links';
-  info: {
-    displayName: 'Link';
-    icon: 'typhoon';
-    description: '';
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -204,6 +204,22 @@ export interface CategoryCategories extends Schema.Component {
   };
 }
 
+export interface CategoriesSectionCategories extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'grid';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    desctiption: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
+  };
+}
+
 export interface CarouselHeroSection extends Schema.Component {
   collectionName: 'components_carousel_hero_sections';
   info: {
@@ -221,22 +237,6 @@ export interface CarouselHeroSection extends Schema.Component {
     direction: Attribute.Enumeration<['left', 'right']> &
       Attribute.Required &
       Attribute.DefaultTo<'left'>;
-  };
-}
-
-export interface CategoriesSectionCategories extends Schema.Component {
-  collectionName: 'components_categories_section_categories';
-  info: {
-    displayName: 'categories';
-    icon: 'grid';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    desctiption: Attribute.String & Attribute.Required;
-    category: Attribute.Component<'category.categories', true> &
-      Attribute.Required;
   };
 }
 
@@ -274,10 +274,10 @@ declare module '@strapi/types' {
     export interface Components {
       'youtube.video': YoutubeVideo;
       'social-buttons.social-link': SocialButtonsSocialLink;
-      'shared.seo': SharedSeo;
-      'shared.meta-social': SharedMetaSocial;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
+      'shared.seo': SharedSeo;
+      'shared.meta-social': SharedMetaSocial;
       'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
@@ -285,8 +285,8 @@ declare module '@strapi/types' {
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
-      'carousel.hero-section': CarouselHeroSection;
       'categories-section.categories': CategoriesSectionCategories;
+      'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
       'about-us-section.about-us': AboutUsSectionAboutUs;
     }
