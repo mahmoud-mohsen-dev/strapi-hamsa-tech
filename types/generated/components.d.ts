@@ -21,35 +21,6 @@ export interface SocialButtonsSocialLink extends Schema.Component {
   attributes: {};
 }
 
-export interface LinkSocialLinks extends Schema.Component {
-  collectionName: 'components_link_social_links';
-  info: {
-    displayName: 'social_links';
-    icon: 'link';
-    description: '';
-  };
-  attributes: {
-    url: Attribute.String & Attribute.Required;
-    icon: Attribute.Enumeration<
-      ['youtube', 'facebook', 'instagram', 'tiktok']
-    > &
-      Attribute.Required;
-  };
-}
-
-export interface LinkLink extends Schema.Component {
-  collectionName: 'components_link_links';
-  info: {
-    displayName: 'Link';
-    icon: 'typhoon';
-    description: '';
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    slug: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -98,6 +69,35 @@ export interface SharedMetaSocial extends Schema.Component {
         maxLength: 65;
       }>;
     image: Attribute.Media<'images' | 'files' | 'videos'>;
+  };
+}
+
+export interface LinkSocialLinks extends Schema.Component {
+  collectionName: 'components_link_social_links';
+  info: {
+    displayName: 'social_links';
+    icon: 'link';
+    description: '';
+  };
+  attributes: {
+    url: Attribute.String & Attribute.Required;
+    icon: Attribute.Enumeration<
+      ['youtube', 'facebook', 'instagram', 'tiktok']
+    > &
+      Attribute.Required;
+  };
+}
+
+export interface LinkLink extends Schema.Component {
+  collectionName: 'components_link_links';
+  info: {
+    displayName: 'Link';
+    icon: 'typhoon';
+    description: '';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -274,10 +274,10 @@ declare module '@strapi/types' {
     export interface Components {
       'youtube.video': YoutubeVideo;
       'social-buttons.social-link': SocialButtonsSocialLink;
-      'link.social-links': LinkSocialLinks;
-      'link.link': LinkLink;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
+      'link.social-links': LinkSocialLinks;
+      'link.link': LinkLink;
       'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
