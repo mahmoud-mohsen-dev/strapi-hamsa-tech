@@ -78,11 +78,6 @@
       },
       "component": "about-us-section.about-us"
     },
-    "brands": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::brand.brand"
-    },
     "categories": {
       "type": "component",
       "repeatable": false,
@@ -125,6 +120,16 @@
         }
       },
       "component": "footer.footer"
+    },
+    "brands": {
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "brands.brands"
     }
   }
 }

@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_brands_brands",
+  "info": {
+    "displayName": "brands",
+    "icon": "medium"
+  },
+  "options": {},
+  "attributes": {
+    "brands": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::brand.brand"
+    }
+  }
+}

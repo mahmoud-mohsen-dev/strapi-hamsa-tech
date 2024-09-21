@@ -1486,11 +1486,6 @@ export interface ApiPagePage extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    brands: Attribute.Relation<
-      'api::page.page',
-      'oneToMany',
-      'api::brand.brand'
-    >;
     categories: Attribute.Component<'categories-section.categories'> &
       Attribute.SetPluginOptions<{
         i18n: {
@@ -1510,6 +1505,12 @@ export interface ApiPagePage extends Schema.CollectionType {
         };
       }>;
     footer: Attribute.Component<'footer.footer'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    brands: Attribute.Component<'brands.brands'> &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
