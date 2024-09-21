@@ -22,6 +22,10 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "slug": {
+      "type": "string",
+      "required": true
     }
   }
 }
