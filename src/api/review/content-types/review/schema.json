@@ -30,16 +30,16 @@
       "type": "string",
       "required": true
     },
-    "user": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "reviews"
-    },
     "products": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::product.product",
+      "inversedBy": "reviews"
+    },
+    "user_detail": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::user-detail.user-detail",
       "inversedBy": "reviews"
     }
   }

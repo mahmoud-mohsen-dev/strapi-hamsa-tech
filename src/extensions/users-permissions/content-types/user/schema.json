@@ -77,17 +77,17 @@
       "target": "api::cart.cart",
       "mappedBy": "user"
     },
-    "reviews": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::review.review",
-      "mappedBy": "user"
-    },
     "orders": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::order.order",
       "mappedBy": "user"
+    },
+    "user_detail": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::user-detail.user-detail",
+      "mappedBy": "users_permissions_user"
     }
   }
 }
