@@ -57,6 +57,14 @@
       "relation": "oneToMany",
       "target": "api::product.product",
       "mappedBy": "waranty"
+    },
+    "name": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string"
     }
   }
 }
