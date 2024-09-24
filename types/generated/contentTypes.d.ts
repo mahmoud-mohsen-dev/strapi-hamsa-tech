@@ -1748,6 +1748,16 @@ export interface ApiProductProduct extends Schema.CollectionType {
           localized: true;
         };
       }>;
+    tags: Attribute.Relation<
+      'api::product.product',
+      'manyToMany',
+      'api::tag.tag'
+    >;
+    waranty: Attribute.Relation<
+      'api::product.product',
+      'manyToOne',
+      'api::waranty.waranty'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1994,6 +2004,11 @@ export interface ApiTagTag extends Schema.CollectionType {
         };
       }>;
     blogs: Attribute.Relation<'api::tag.tag', 'manyToMany', 'api::blog.blog'>;
+    products: Attribute.Relation<
+      'api::tag.tag',
+      'manyToMany',
+      'api::product.product'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2108,6 +2123,11 @@ export interface ApiWarantyWaranty extends Schema.CollectionType {
           localized: true;
         };
       }>;
+    products: Attribute.Relation<
+      'api::waranty.waranty',
+      'oneToMany',
+      'api::product.product'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

@@ -191,21 +191,6 @@ export interface ContactUsContactUs extends Schema.Component {
   };
 }
 
-export interface CategoryCategories extends Schema.Component {
-  collectionName: 'components_category_categories';
-  info: {
-    displayName: 'categories';
-    icon: 'chartCircle';
-    description: '';
-  };
-  attributes: {
-    title: Attribute.String & Attribute.Required;
-    description: Attribute.String & Attribute.Required;
-    image: Attribute.Media<'images'> & Attribute.Required;
-    slug: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface CategoriesSectionCategories extends Schema.Component {
   collectionName: 'components_categories_section_categories';
   info: {
@@ -220,6 +205,21 @@ export interface CategoriesSectionCategories extends Schema.Component {
     description: Attribute.String & Attribute.Required;
     category: Attribute.Component<'category.categories', true> &
       Attribute.Required;
+  };
+}
+
+export interface CategoryCategories extends Schema.Component {
+  collectionName: 'components_category_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'chartCircle';
+    description: '';
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
+    image: Attribute.Media<'images'> & Attribute.Required;
+    slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -302,8 +302,8 @@ declare module '@strapi/types' {
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
-      'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
+      'category.categories': CategoryCategories;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;
