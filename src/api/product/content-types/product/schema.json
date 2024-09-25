@@ -270,12 +270,6 @@
       "relation": "manyToMany",
       "target": "api::tag.tag",
       "inversedBy": "products"
-    },
-    "waranty": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::waranty.waranty",
-      "inversedBy": "products"
     }
   }
 }

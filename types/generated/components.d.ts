@@ -12,6 +12,15 @@ export interface YoutubeVideo extends Schema.Component {
   };
 }
 
+export interface SocialButtonsSocialLink extends Schema.Component {
+  collectionName: 'components_social_buttons_social_links';
+  info: {
+    displayName: 'social-link';
+    icon: 'link';
+  };
+  attributes: {};
+}
+
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -90,15 +99,6 @@ export interface LinkLink extends Schema.Component {
     name: Attribute.String & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
   };
-}
-
-export interface SocialButtonsSocialLink extends Schema.Component {
-  collectionName: 'components_social_buttons_social_links';
-  info: {
-    displayName: 'social-link';
-    icon: 'link';
-  };
-  attributes: {};
 }
 
 export interface FooterFooter extends Schema.Component {
@@ -291,11 +291,11 @@ declare module '@strapi/types' {
   export module Shared {
     export interface Components {
       'youtube.video': YoutubeVideo;
+      'social-buttons.social-link': SocialButtonsSocialLink;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
-      'social-buttons.social-link': SocialButtonsSocialLink;
       'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;

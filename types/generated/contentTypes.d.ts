@@ -1753,11 +1753,6 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'manyToMany',
       'api::tag.tag'
     >;
-    waranty: Attribute.Relation<
-      'api::product.product',
-      'manyToOne',
-      'api::waranty.waranty'
-    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2068,96 +2063,6 @@ export interface ApiUserDetailUserDetail extends Schema.CollectionType {
   };
 }
 
-export interface ApiWarantyWaranty extends Schema.CollectionType {
-  collectionName: 'waranties';
-  info: {
-    singularName: 'waranty';
-    pluralName: 'waranties';
-    displayName: 'Waranty';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  pluginOptions: {
-    i18n: {
-      localized: true;
-    };
-  };
-  attributes: {
-    duration_value: Attribute.Decimal &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }> &
-      Attribute.SetMinMax<
-        {
-          min: 0;
-        },
-        number
-      > &
-      Attribute.DefaultTo<0>;
-    duration_period: Attribute.Enumeration<
-      [
-        'none',
-        'day',
-        'days',
-        'month',
-        'months',
-        'year',
-        'years',
-        '\u0628\u062F\u0648\u0646',
-        '\u064A\u0648\u0645',
-        '\u0627\u064A\u0627\u0645',
-        '\u0634\u0647\u0631',
-        '\u0634\u0647\u0648\u0631',
-        '\u0633\u0646\u0647',
-        '\u0633\u0646\u0648\u0627\u062A'
-      ]
-    > &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    products: Attribute.Relation<
-      'api::waranty.waranty',
-      'oneToMany',
-      'api::product.product'
-    >;
-    name: Attribute.String &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::waranty.waranty',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::waranty.waranty',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    localizations: Attribute.Relation<
-      'api::waranty.waranty',
-      'oneToMany',
-      'api::waranty.waranty'
-    >;
-    locale: Attribute.String;
-  };
-}
-
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -2194,7 +2099,6 @@ declare module '@strapi/types' {
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::tag.tag': ApiTagTag;
       'api::user-detail.user-detail': ApiUserDetailUserDetail;
-      'api::waranty.waranty': ApiWarantyWaranty;
     }
   }
 }
