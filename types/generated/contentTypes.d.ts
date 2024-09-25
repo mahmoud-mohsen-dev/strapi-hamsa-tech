@@ -1753,6 +1753,11 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'manyToMany',
       'api::tag.tag'
     >;
+    waranty: Attribute.Relation<
+      'api::product.product',
+      'manyToOne',
+      'api::waranty.waranty'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2063,6 +2068,58 @@ export interface ApiUserDetailUserDetail extends Schema.CollectionType {
   };
 }
 
+export interface ApiWarantyWaranty extends Schema.CollectionType {
+  collectionName: 'waranties';
+  info: {
+    singularName: 'waranty';
+    pluralName: 'waranties';
+    displayName: 'Waranty';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    products: Attribute.Relation<
+      'api::waranty.waranty',
+      'oneToMany',
+      'api::product.product'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::waranty.waranty',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::waranty.waranty',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::waranty.waranty',
+      'oneToMany',
+      'api::waranty.waranty'
+    >;
+    locale: Attribute.String;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -2099,6 +2156,7 @@ declare module '@strapi/types' {
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::tag.tag': ApiTagTag;
       'api::user-detail.user-detail': ApiUserDetailUserDetail;
+      'api::waranty.waranty': ApiWarantyWaranty;
     }
   }
 }
