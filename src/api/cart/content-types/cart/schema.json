@@ -12,11 +12,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "products": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::product.product"
-    },
     "guest_users": {
       "type": "relation",
       "relation": "oneToMany",
@@ -34,6 +29,12 @@
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "cart"
+    },
+    "product_details": {
+      "displayName": "product-quantity",
+      "type": "component",
+      "repeatable": true,
+      "component": "cart.product-quantity"
     }
   }
 }

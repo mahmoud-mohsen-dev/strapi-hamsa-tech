@@ -1214,11 +1214,6 @@ export interface ApiCartCart extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    products: Attribute.Relation<
-      'api::cart.cart',
-      'oneToMany',
-      'api::product.product'
-    >;
     guest_users: Attribute.Relation<
       'api::cart.cart',
       'oneToMany',
@@ -1232,6 +1227,7 @@ export interface ApiCartCart extends Schema.CollectionType {
       'oneToOne',
       'plugin::users-permissions.user'
     >;
+    product_details: Attribute.Component<'cart.product-quantity', true>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

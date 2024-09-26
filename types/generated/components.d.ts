@@ -206,6 +206,23 @@ export interface CategoryCategories extends Schema.Component {
   };
 }
 
+export interface CategoriesSectionCategories extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'grid';
+    description: '';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
+  };
+}
+
 export interface CarouselHeroSection extends Schema.Component {
   collectionName: 'components_carousel_hero_sections';
   info: {
@@ -226,20 +243,26 @@ export interface CarouselHeroSection extends Schema.Component {
   };
 }
 
-export interface CategoriesSectionCategories extends Schema.Component {
-  collectionName: 'components_categories_section_categories';
+export interface CartProductQuantity extends Schema.Component {
+  collectionName: 'components_cart_product_quantities';
   info: {
-    displayName: 'categories';
-    icon: 'grid';
-    description: '';
+    displayName: 'product-quantity';
+    icon: 'shoppingCart';
   };
   attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    description: Attribute.String & Attribute.Required;
-    category: Attribute.Component<'category.categories', true> &
-      Attribute.Required;
+    product: Attribute.Relation<
+      'cart.product-quantity',
+      'oneToOne',
+      'api::product.product'
+    >;
+    quantity: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
   };
 }
 
@@ -303,8 +326,9 @@ declare module '@strapi/types' {
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
-      'carousel.hero-section': CarouselHeroSection;
       'categories-section.categories': CategoriesSectionCategories;
+      'carousel.hero-section': CarouselHeroSection;
+      'cart.product-quantity': CartProductQuantity;
       'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;
       'about-us-section.about-us': AboutUsSectionAboutUs;
