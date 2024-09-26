@@ -50,6 +50,12 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "addresses"
+    },
+    "guest_users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::guest-user.guest-user",
+      "mappedBy": "address"
     }
   }
 }

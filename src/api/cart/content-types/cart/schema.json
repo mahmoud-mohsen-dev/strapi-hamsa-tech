@@ -4,16 +4,13 @@
   "info": {
     "singularName": "cart",
     "pluralName": "carts",
-    "displayName": "Cart"
+    "displayName": "Cart",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
-  "pluginOptions": {
-    "i18n": {
-      "localized": true
-    }
-  },
+  "pluginOptions": {},
   "attributes": {
     "products": {
       "type": "relation",
@@ -25,6 +22,12 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "carts"
+    },
+    "guest_users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::guest-user.guest-user",
+      "mappedBy": "cart"
     }
   }
 }

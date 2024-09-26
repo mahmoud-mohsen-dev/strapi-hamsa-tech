@@ -992,6 +992,11 @@ export interface ApiAddressAddress extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    guest_users: Attribute.Relation<
+      'api::address.address',
+      'oneToMany',
+      'api::guest-user.guest-user'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1203,14 +1208,10 @@ export interface ApiCartCart extends Schema.CollectionType {
     singularName: 'cart';
     pluralName: 'carts';
     displayName: 'Cart';
+    description: '';
   };
   options: {
     draftAndPublish: true;
-  };
-  pluginOptions: {
-    i18n: {
-      localized: true;
-    };
   };
   attributes: {
     products: Attribute.Relation<
@@ -1223,6 +1224,11 @@ export interface ApiCartCart extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    guest_users: Attribute.Relation<
+      'api::cart.cart',
+      'oneToMany',
+      'api::guest-user.guest-user'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1230,12 +1236,6 @@ export interface ApiCartCart extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<'api::cart.cart', 'oneToOne', 'admin::user'> &
       Attribute.Private;
-    localizations: Attribute.Relation<
-      'api::cart.cart',
-      'oneToMany',
-      'api::cart.cart'
-    >;
-    locale: Attribute.String;
   };
 }
 
@@ -1374,6 +1374,46 @@ export interface ApiDeliveryDurationDeliveryDuration
       'api::delivery-duration.delivery-duration'
     >;
     locale: Attribute.String;
+  };
+}
+
+export interface ApiGuestUserGuestUser extends Schema.CollectionType {
+  collectionName: 'guest_users';
+  info: {
+    singularName: 'guest-user';
+    pluralName: 'guest-users';
+    displayName: 'Guest User';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    email_or_phone: Attribute.String & Attribute.Required;
+    address: Attribute.Relation<
+      'api::guest-user.guest-user',
+      'manyToOne',
+      'api::address.address'
+    >;
+    cart: Attribute.Relation<
+      'api::guest-user.guest-user',
+      'manyToOne',
+      'api::cart.cart'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::guest-user.guest-user',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::guest-user.guest-user',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
   };
 }
 
@@ -2148,6 +2188,7 @@ declare module '@strapi/types' {
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
       'api::delivery-duration.delivery-duration': ApiDeliveryDurationDeliveryDuration;
+      'api::guest-user.guest-user': ApiGuestUserGuestUser;
       'api::order.order': ApiOrderOrder;
       'api::page.page': ApiPagePage;
       'api::product.product': ApiProductProduct;

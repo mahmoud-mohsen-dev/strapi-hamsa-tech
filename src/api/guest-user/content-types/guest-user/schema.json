@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "guest_users",
+  "info": {
+    "singularName": "guest-user",
+    "pluralName": "guest-users",
+    "displayName": "Guest User"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "email_or_phone": {
+      "type": "string",
+      "required": true
+    },
+    "address": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::address.address",
+      "inversedBy": "guest_users"
+    },
+    "cart": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::cart.cart",
+      "inversedBy": "guest_users"
+    }
+  }
+}
