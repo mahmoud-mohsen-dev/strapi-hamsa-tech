@@ -12,6 +12,7 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "@bn-digital/strapi-plugin-field-uuid": "^1.2.12",
     "@strapi/plugin-cloud": "4.25.11",
     "@strapi/plugin-graphql": "4.25.11",
     "@strapi/plugin-i18n": "4.25.11",

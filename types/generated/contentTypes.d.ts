@@ -816,11 +816,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToMany',
       'api::address.address'
     >;
-    carts: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToMany',
-      'api::cart.cart'
-    >;
     orders: Attribute.Relation<
       'plugin::users-permissions.user',
       'oneToMany',
@@ -830,6 +825,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'plugin::users-permissions.user',
       'oneToOne',
       'api::user-detail.user-detail'
+    >;
+    cart: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToOne',
+      'api::cart.cart'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -1219,15 +1219,18 @@ export interface ApiCartCart extends Schema.CollectionType {
       'oneToMany',
       'api::product.product'
     >;
-    user: Attribute.Relation<
-      'api::cart.cart',
-      'manyToOne',
-      'plugin::users-permissions.user'
-    >;
     guest_users: Attribute.Relation<
       'api::cart.cart',
       'oneToMany',
       'api::guest-user.guest-user'
+    >;
+    uuid: Attribute.UID &
+      Attribute.Required &
+      Attribute.CustomField<'plugin::field-uuid.uuid'>;
+    users_permissions_user: Attribute.Relation<
+      'api::cart.cart',
+      'oneToOne',
+      'plugin::users-permissions.user'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -1383,6 +1386,7 @@ export interface ApiGuestUserGuestUser extends Schema.CollectionType {
     singularName: 'guest-user';
     pluralName: 'guest-users';
     displayName: 'Guest User';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -1399,6 +1403,7 @@ export interface ApiGuestUserGuestUser extends Schema.CollectionType {
       'manyToOne',
       'api::cart.cart'
     >;
+    name: Attribute.String & Attribute.Required;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

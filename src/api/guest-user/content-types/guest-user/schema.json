@@ -4,7 +4,8 @@
   "info": {
     "singularName": "guest-user",
     "pluralName": "guest-users",
-    "displayName": "Guest User"
+    "displayName": "Guest User",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -26,6 +27,10 @@
       "relation": "manyToOne",
       "target": "api::cart.cart",
       "inversedBy": "guest_users"
+    },
+    "name": {
+      "type": "string",
+      "required": true
     }
   }
 }
