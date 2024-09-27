@@ -1219,9 +1219,6 @@ export interface ApiCartCart extends Schema.CollectionType {
       'oneToMany',
       'api::guest-user.guest-user'
     >;
-    uuid: Attribute.UID &
-      Attribute.Required &
-      Attribute.CustomField<'plugin::field-uuid.uuid'>;
     users_permissions_user: Attribute.Relation<
       'api::cart.cart',
       'oneToOne',

@@ -223,26 +223,6 @@ export interface CategoriesSectionCategories extends Schema.Component {
   };
 }
 
-export interface CarouselHeroSection extends Schema.Component {
-  collectionName: 'components_carousel_hero_sections';
-  info: {
-    displayName: 'Hero Section';
-    icon: 'picture';
-    description: '';
-  };
-  attributes: {
-    image: Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
-      Attribute.Required;
-    headingTop: Attribute.String & Attribute.Required;
-    headingBottom: Attribute.String;
-    buttonLink: Attribute.Component<'button-link.button-link'> &
-      Attribute.Required;
-    direction: Attribute.Enumeration<['left', 'right']> &
-      Attribute.Required &
-      Attribute.DefaultTo<'left'>;
-  };
-}
-
 export interface CartProductQuantity extends Schema.Component {
   collectionName: 'components_cart_product_quantities';
   info: {
@@ -276,6 +256,26 @@ export interface ButtonLinkButtonLink extends Schema.Component {
   attributes: {
     buttonText: Attribute.String & Attribute.Required;
     button_slug: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface CarouselHeroSection extends Schema.Component {
+  collectionName: 'components_carousel_hero_sections';
+  info: {
+    displayName: 'Hero Section';
+    icon: 'picture';
+    description: '';
+  };
+  attributes: {
+    image: Attribute.Media<'images' | 'files' | 'videos' | 'audios'> &
+      Attribute.Required;
+    headingTop: Attribute.String & Attribute.Required;
+    headingBottom: Attribute.String;
+    buttonLink: Attribute.Component<'button-link.button-link'> &
+      Attribute.Required;
+    direction: Attribute.Enumeration<['left', 'right']> &
+      Attribute.Required &
+      Attribute.DefaultTo<'left'>;
   };
 }
 
@@ -327,9 +327,9 @@ declare module '@strapi/types' {
       'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
-      'carousel.hero-section': CarouselHeroSection;
       'cart.product-quantity': CartProductQuantity;
       'button-link.button-link': ButtonLinkButtonLink;
+      'carousel.hero-section': CarouselHeroSection;
       'brands.brands': BrandsBrands;
       'about-us-section.about-us': AboutUsSectionAboutUs;
     }
