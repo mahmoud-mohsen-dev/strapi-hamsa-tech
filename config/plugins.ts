@@ -14,9 +14,6 @@ export default ({env}) => ({
     seo: {
       enabled: true,
     },
-    "custom-api": {
-        enabled: true,
-    },
     upload: {
         config: {
           provider: 'cloudinary',

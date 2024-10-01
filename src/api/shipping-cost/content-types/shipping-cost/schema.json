@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_costs",
+  "info": {
+    "singularName": "shipping-cost",
+    "pluralName": "shipping-costs",
+    "displayName": "Shipping Cost",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "governorate": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "delivery_cost": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "decimal",
+      "required": true,
+      "min": 0
+    },
+    "delivery_duration_in_days": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "decimal",
+      "required": true
+    }
+  }
+}

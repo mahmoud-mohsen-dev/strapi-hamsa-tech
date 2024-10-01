@@ -12,19 +12,15 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "products": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::product.product"
-    },
-    "status": {
+    "delivery_status": {
       "type": "enumeration",
       "enum": [
         "pending",
         "confirmed",
         "shipped",
         "delivered",
-        "cancelled"
+        "cancelled",
+        "returned"
       ],
       "required": true,
       "default": "pending"
@@ -40,6 +36,58 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "orders"
+    },
+    "cart": {
+      "type": "component",
+      "repeatable": true,
+      "component": "cart.product-quantity"
+    },
+    "guest_user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::guest-user.guest-user",
+      "inversedBy": "orders"
+    },
+    "payment_method": {
+      "type": "enumeration",
+      "enum": [
+        "card",
+        "cash on delivery"
+      ],
+      "required": true
+    },
+    "shipping_address": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::address.address"
+    },
+    "billing_address": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::address.address"
+    },
+    "copoun": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::offer.offer",
+      "inversedBy": "orders"
+    },
+    "payment_status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid off",
+        "failed",
+        "refunded"
+      ],
+      "required": true,
+      "default": "pending"
+    },
+    "delivery_cost": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
     }
   }
 }

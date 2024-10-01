@@ -58,6 +58,15 @@
       "relation": "manyToOne",
       "target": "api::author.author",
       "inversedBy": "blogs"
+    },
+    "content": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "blocks",
+      "required": true
     }
   }
 }

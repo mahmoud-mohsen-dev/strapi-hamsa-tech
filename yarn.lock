@@ -10156,11 +10156,6 @@ strapi-plugin-comments@^2.3.1:
     react-query "3.39.3"
     styled-components "^5.3.8"
 
-strapi-plugin-custom-api@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/strapi-plugin-custom-api/-/strapi-plugin-custom-api-1.0.6.tgz#bddabc98a742d3657803a26ea6a631dfb68b6d50"
-  integrity sha512-15JGKhHvYsilAjYFjz0VX2LIN9DRkADb6Ex/l0//skoXWbDzmOdapyUg4mhp6vkq8ehBpd0ba48prAMxokCUXg==
-
 stream-chain@2.2.5, stream-chain@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/stream-chain/-/stream-chain-2.2.5.tgz#b30967e8f14ee033c5b9a19bbe8a2cba90ba0d09"

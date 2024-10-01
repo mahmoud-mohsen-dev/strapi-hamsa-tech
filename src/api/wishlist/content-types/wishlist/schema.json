@@ -1,11 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "carts",
+  "collectionName": "wishlists",
   "info": {
-    "singularName": "cart",
-    "pluralName": "carts",
-    "displayName": "Cart",
-    "description": ""
+    "singularName": "wishlist",
+    "pluralName": "wishlists",
+    "displayName": "Wishlist"
   },
   "options": {
     "draftAndPublish": true
@@ -16,26 +15,23 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::guest-user.guest-user",
-      "inversedBy": "cart"
+      "inversedBy": "wishlist"
     },
     "users_permissions_user": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "cart"
+      "inversedBy": "wishlist"
     },
     "product_details": {
-      "displayName": "product-quantity",
       "type": "component",
       "repeatable": true,
-      "component": "cart.product-quantity",
-      "pluginOptions": {}
+      "component": "cart.product-quantity"
     },
-    "total_cart_cost": {
+    "total_wishlist_cost": {
       "type": "decimal",
       "required": true,
-      "min": 0,
-      "pluginOptions": {}
+      "min": 0
     }
   }
 }

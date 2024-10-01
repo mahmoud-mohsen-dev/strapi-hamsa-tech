@@ -2,7 +2,8 @@
   "collectionName": "components_cart_product_quantities",
   "info": {
     "displayName": "product-quantity",
-    "icon": "shoppingCart"
+    "icon": "shoppingCart",
+    "description": ""
   },
   "options": {},
   "attributes": {
@@ -15,6 +16,11 @@
       "type": "integer",
       "required": true,
       "min": 1
+    },
+    "cost": {
+      "type": "decimal",
+      "required": true,
+      "min": 0
     }
   }
 }

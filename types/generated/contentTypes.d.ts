@@ -590,47 +590,6 @@ export interface PluginContentReleasesReleaseAction
   };
 }
 
-export interface PluginCustomApiCustomApi extends Schema.CollectionType {
-  collectionName: 'custom_apis';
-  info: {
-    singularName: 'custom-api';
-    pluralName: 'custom-apis';
-    displayName: 'Custom API';
-    description: '';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: true;
-    };
-    'content-type-builder': {
-      visible: true;
-    };
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    selectedContentType: Attribute.JSON;
-    structure: Attribute.JSON;
-    slug: Attribute.UID<'plugin::custom-api.custom-api', 'name'>;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'plugin::custom-api.custom-api',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'plugin::custom-api.custom-api',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface PluginI18NLocale extends Schema.CollectionType {
   collectionName: 'i18n_locale';
   info: {
@@ -831,6 +790,11 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToOne',
       'api::cart.cart'
     >;
+    wishlist: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToOne',
+      'api::wishlist.wishlist'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -979,14 +943,6 @@ export interface ApiAddressAddress extends Schema.CollectionType {
     address_1: Attribute.Text & Attribute.Required;
     address_2: Attribute.Text & Attribute.Required;
     zip_code: Attribute.Integer & Attribute.Required;
-    building_number: Attribute.String & Attribute.Required;
-    floor: Attribute.Integer & Attribute.Required;
-    apartment_number: Attribute.Integer & Attribute.Required;
-    delivery_duration: Attribute.Relation<
-      'api::address.address',
-      'oneToOne',
-      'api::delivery-duration.delivery-duration'
-    >;
     user: Attribute.Relation<
       'api::address.address',
       'manyToOne',
@@ -997,6 +953,14 @@ export interface ApiAddressAddress extends Schema.CollectionType {
       'oneToMany',
       'api::guest-user.guest-user'
     >;
+    shipping_cost: Attribute.Relation<
+      'api::address.address',
+      'oneToOne',
+      'api::shipping-cost.shipping-cost'
+    >;
+    first_name: Attribute.String & Attribute.Required;
+    last_name: Attribute.String & Attribute.Required;
+    delivery_phone: Attribute.String & Attribute.Required;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1118,6 +1082,13 @@ export interface ApiBlogBlog extends Schema.CollectionType {
       'manyToOne',
       'api::author.author'
     >;
+    content: Attribute.Blocks &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1214,9 +1185,9 @@ export interface ApiCartCart extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    guest_users: Attribute.Relation<
+    guest_user: Attribute.Relation<
       'api::cart.cart',
-      'oneToMany',
+      'oneToOne',
       'api::guest-user.guest-user'
     >;
     users_permissions_user: Attribute.Relation<
@@ -1225,6 +1196,14 @@ export interface ApiCartCart extends Schema.CollectionType {
       'plugin::users-permissions.user'
     >;
     product_details: Attribute.Component<'cart.product-quantity', true>;
+    total_cart_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1295,81 +1274,35 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   };
 }
 
-export interface ApiDeliveryDurationDeliveryDuration
-  extends Schema.CollectionType {
-  collectionName: 'delivery_durations';
+export interface ApiFreeShippingFreeShipping extends Schema.SingleType {
+  collectionName: 'free_shippings';
   info: {
-    singularName: 'delivery-duration';
-    pluralName: 'delivery-durations';
-    displayName: 'Delivery Duration';
+    singularName: 'free-shipping';
+    pluralName: 'free-shippings';
+    displayName: 'Free Shipping';
     description: '';
   };
   options: {
     draftAndPublish: true;
   };
-  pluginOptions: {
-    i18n: {
-      localized: true;
-    };
-  };
   attributes: {
-    duration_period: Attribute.Enumeration<
-      [
-        'day',
-        'days',
-        'month',
-        'months',
-        'year',
-        'years',
-        '\u064A\u0648\u0645',
-        '\u0627\u064A\u0627\u0645',
-        '\u0634\u0647\u0631',
-        '\u0634\u0647\u0648\u0631',
-        '\u0633\u0646\u0647',
-        '\u0633\u0646\u0648\u0627\u062A'
-      ]
-    > &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    duration_value: Attribute.Decimal &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }> &
-      Attribute.SetMinMax<
-        {
-          min: 0;
-        },
-        number
-      > &
-      Attribute.DefaultTo<0>;
+    apply_free_shipping_if_total_cart_cost_equals: Attribute.Integer;
+    enable: Attribute.Boolean & Attribute.Required & Attribute.DefaultTo<true>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
-      'api::delivery-duration.delivery-duration',
+      'api::free-shipping.free-shipping',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     updatedBy: Attribute.Relation<
-      'api::delivery-duration.delivery-duration',
+      'api::free-shipping.free-shipping',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
-    localizations: Attribute.Relation<
-      'api::delivery-duration.delivery-duration',
-      'oneToMany',
-      'api::delivery-duration.delivery-duration'
-    >;
-    locale: Attribute.String;
   };
 }
 
@@ -1391,12 +1324,24 @@ export interface ApiGuestUserGuestUser extends Schema.CollectionType {
       'manyToOne',
       'api::address.address'
     >;
+    orders: Attribute.Relation<
+      'api::guest-user.guest-user',
+      'oneToMany',
+      'api::order.order'
+    >;
+    subscribed_to_news_and_offers: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    wishlist: Attribute.Relation<
+      'api::guest-user.guest-user',
+      'oneToOne',
+      'api::wishlist.wishlist'
+    >;
     cart: Attribute.Relation<
       'api::guest-user.guest-user',
-      'manyToOne',
+      'oneToOne',
       'api::cart.cart'
     >;
-    name: Attribute.String & Attribute.Required;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1415,6 +1360,99 @@ export interface ApiGuestUserGuestUser extends Schema.CollectionType {
   };
 }
 
+export interface ApiOfferOffer extends Schema.CollectionType {
+  collectionName: 'offers';
+  info: {
+    singularName: 'offer';
+    pluralName: 'offers';
+    displayName: 'Offer';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    image: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    copoun_code: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    expiration_date: Attribute.Date &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    start_date: Attribute.Date &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    orders: Attribute.Relation<
+      'api::offer.offer',
+      'oneToMany',
+      'api::order.order'
+    >;
+    deduction_value: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    deduction_value_by_percent: Attribute.Decimal &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::offer.offer',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::offer.offer',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::offer.offer',
+      'oneToMany',
+      'api::offer.offer'
+    >;
+    locale: Attribute.String;
+  };
+}
+
 export interface ApiOrderOrder extends Schema.CollectionType {
   collectionName: 'orders';
   info: {
@@ -1427,13 +1465,8 @@ export interface ApiOrderOrder extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    products: Attribute.Relation<
-      'api::order.order',
-      'oneToMany',
-      'api::product.product'
-    >;
-    status: Attribute.Enumeration<
-      ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
+    delivery_status: Attribute.Enumeration<
+      ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned']
     > &
       Attribute.Required &
       Attribute.DefaultTo<'pending'>;
@@ -1451,6 +1484,43 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
+    cart: Attribute.Component<'cart.product-quantity', true>;
+    guest_user: Attribute.Relation<
+      'api::order.order',
+      'manyToOne',
+      'api::guest-user.guest-user'
+    >;
+    payment_method: Attribute.Enumeration<['card', 'cash on delivery']> &
+      Attribute.Required;
+    shipping_address: Attribute.Relation<
+      'api::order.order',
+      'oneToOne',
+      'api::address.address'
+    >;
+    billing_address: Attribute.Relation<
+      'api::order.order',
+      'oneToOne',
+      'api::address.address'
+    >;
+    copoun: Attribute.Relation<
+      'api::order.order',
+      'manyToOne',
+      'api::offer.offer'
+    >;
+    payment_status: Attribute.Enumeration<
+      ['pending', 'paid off', 'failed', 'refunded']
+    > &
+      Attribute.Required &
+      Attribute.DefaultTo<'pending'>;
+    delivery_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1939,6 +2009,75 @@ export interface ApiReviewReview extends Schema.CollectionType {
   };
 }
 
+export interface ApiShippingCostShippingCost extends Schema.CollectionType {
+  collectionName: 'shipping_costs';
+  info: {
+    singularName: 'shipping-cost';
+    pluralName: 'shipping-costs';
+    displayName: 'Shipping Cost';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    governorate: Attribute.String &
+      Attribute.Required &
+      Attribute.Unique &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    delivery_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    delivery_duration_in_days: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::shipping-cost.shipping-cost',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::shipping-cost.shipping-cost',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::shipping-cost.shipping-cost',
+      'oneToMany',
+      'api::shipping-cost.shipping-cost'
+    >;
+    locale: Attribute.String;
+  };
+}
+
 export interface ApiSubCategorySubCategory extends Schema.CollectionType {
   collectionName: 'sub_categories';
   info: {
@@ -2158,6 +2297,54 @@ export interface ApiWarantyWaranty extends Schema.CollectionType {
   };
 }
 
+export interface ApiWishlistWishlist extends Schema.CollectionType {
+  collectionName: 'wishlists';
+  info: {
+    singularName: 'wishlist';
+    pluralName: 'wishlists';
+    displayName: 'Wishlist';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    guest_user: Attribute.Relation<
+      'api::wishlist.wishlist',
+      'oneToOne',
+      'api::guest-user.guest-user'
+    >;
+    users_permissions_user: Attribute.Relation<
+      'api::wishlist.wishlist',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+    product_details: Attribute.Component<'cart.product-quantity', true>;
+    total_wishlist_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::wishlist.wishlist',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::wishlist.wishlist',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -2172,7 +2359,6 @@ declare module '@strapi/types' {
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
-      'plugin::custom-api.custom-api': PluginCustomApiCustomApi;
       'plugin::i18n.locale': PluginI18NLocale;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
@@ -2185,17 +2371,20 @@ declare module '@strapi/types' {
       'api::brand.brand': ApiBrandBrand;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
-      'api::delivery-duration.delivery-duration': ApiDeliveryDurationDeliveryDuration;
+      'api::free-shipping.free-shipping': ApiFreeShippingFreeShipping;
       'api::guest-user.guest-user': ApiGuestUserGuestUser;
+      'api::offer.offer': ApiOfferOffer;
       'api::order.order': ApiOrderOrder;
       'api::page.page': ApiPagePage;
       'api::product.product': ApiProductProduct;
       'api::product-spotlight.product-spotlight': ApiProductSpotlightProductSpotlight;
       'api::review.review': ApiReviewReview;
+      'api::shipping-cost.shipping-cost': ApiShippingCostShippingCost;
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::tag.tag': ApiTagTag;
       'api::user-detail.user-detail': ApiUserDetailUserDetail;
       'api::waranty.waranty': ApiWarantyWaranty;
+      'api::wishlist.wishlist': ApiWishlistWishlist;
     }
   }
 }

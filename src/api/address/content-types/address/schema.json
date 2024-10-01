@@ -28,23 +28,6 @@
       "type": "integer",
       "required": true
     },
-    "building_number": {
-      "type": "string",
-      "required": true
-    },
-    "floor": {
-      "type": "integer",
-      "required": true
-    },
-    "apartment_number": {
-      "type": "integer",
-      "required": true
-    },
-    "delivery_duration": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::delivery-duration.delivery-duration"
-    },
     "user": {
       "type": "relation",
       "relation": "manyToOne",
@@ -56,6 +39,23 @@
       "relation": "oneToMany",
       "target": "api::guest-user.guest-user",
       "mappedBy": "address"
+    },
+    "shipping_cost": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::shipping-cost.shipping-cost"
+    },
+    "first_name": {
+      "type": "string",
+      "required": true
+    },
+    "last_name": {
+      "type": "string",
+      "required": true
+    },
+    "delivery_phone": {
+      "type": "string",
+      "required": true
     }
   }
 }

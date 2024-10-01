@@ -22,15 +22,28 @@
       "target": "api::address.address",
       "inversedBy": "guest_users"
     },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "guest_user"
+    },
+    "subscribed_to_news_and_offers": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "wishlist": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::wishlist.wishlist",
+      "mappedBy": "guest_user"
+    },
     "cart": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "oneToOne",
       "target": "api::cart.cart",
-      "inversedBy": "guest_users"
-    },
-    "name": {
-      "type": "string",
-      "required": true
+      "mappedBy": "guest_user"
     }
   }
 }
