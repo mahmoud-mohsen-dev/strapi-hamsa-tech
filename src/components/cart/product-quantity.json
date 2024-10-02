@@ -15,12 +15,14 @@
     "quantity": {
       "type": "integer",
       "required": true,
-      "min": 1
+      "min": 1,
+      "default": 1
     },
     "cost": {
       "type": "decimal",
       "required": true,
-      "min": 0
+      "min": 0,
+      "default": 0
     }
   }
 }

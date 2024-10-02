@@ -35,7 +35,8 @@
       "type": "decimal",
       "required": true,
       "min": 0,
-      "pluginOptions": {}
+      "pluginOptions": {},
+      "default": 0
     }
   }
 }

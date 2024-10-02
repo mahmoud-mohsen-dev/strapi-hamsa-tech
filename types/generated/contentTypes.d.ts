@@ -1203,7 +1203,8 @@ export interface ApiCartCart extends Schema.CollectionType {
           min: 0;
         },
         number
-      >;
+      > &
+      Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
