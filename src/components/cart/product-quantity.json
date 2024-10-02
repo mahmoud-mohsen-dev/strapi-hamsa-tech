@@ -23,6 +23,12 @@
       "required": true,
       "min": 0,
       "default": 0
+    },
+    "total_cost": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
     }
   }
 }
