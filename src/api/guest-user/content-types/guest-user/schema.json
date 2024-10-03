@@ -16,12 +16,6 @@
       "type": "string",
       "required": true
     },
-    "address": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::address.address",
-      "inversedBy": "guest_users"
-    },
     "orders": {
       "type": "relation",
       "relation": "oneToMany",
@@ -43,6 +37,12 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::cart.cart",
+      "mappedBy": "guest_user"
+    },
+    "addresses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::address.address",
       "mappedBy": "guest_user"
     }
   }

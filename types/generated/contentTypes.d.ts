@@ -948,9 +948,9 @@ export interface ApiAddressAddress extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-    guest_users: Attribute.Relation<
+    guest_user: Attribute.Relation<
       'api::address.address',
-      'oneToMany',
+      'manyToOne',
       'api::guest-user.guest-user'
     >;
     shipping_cost: Attribute.Relation<
@@ -1320,11 +1320,6 @@ export interface ApiGuestUserGuestUser extends Schema.CollectionType {
   };
   attributes: {
     email_or_phone: Attribute.String & Attribute.Required;
-    address: Attribute.Relation<
-      'api::guest-user.guest-user',
-      'manyToOne',
-      'api::address.address'
-    >;
     orders: Attribute.Relation<
       'api::guest-user.guest-user',
       'oneToMany',
@@ -1342,6 +1337,11 @@ export interface ApiGuestUserGuestUser extends Schema.CollectionType {
       'api::guest-user.guest-user',
       'oneToOne',
       'api::cart.cart'
+    >;
+    addresses: Attribute.Relation<
+      'api::guest-user.guest-user',
+      'oneToMany',
+      'api::address.address'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -1407,7 +1407,6 @@ export interface ApiOfferOffer extends Schema.CollectionType {
         };
       }>;
     deduction_value: Attribute.Decimal &
-      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: false;

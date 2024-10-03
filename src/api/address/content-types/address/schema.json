@@ -34,11 +34,11 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "addresses"
     },
-    "guest_users": {
+    "guest_user": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToOne",
       "target": "api::guest-user.guest-user",
-      "mappedBy": "address"
+      "inversedBy": "addresses"
     },
     "shipping_cost": {
       "type": "relation",

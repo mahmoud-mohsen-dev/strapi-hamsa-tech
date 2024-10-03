@@ -64,7 +64,7 @@
         }
       },
       "type": "decimal",
-      "required": true,
+      "required": false,
       "min": 0
     },
     "deduction_value_by_percent": {
