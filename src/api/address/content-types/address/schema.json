@@ -14,19 +14,19 @@
   "attributes": {
     "city": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "address_1": {
       "type": "text",
-      "required": true
+      "required": false
     },
     "address_2": {
       "type": "text",
-      "required": true
+      "required": false
     },
     "zip_code": {
       "type": "integer",
-      "required": true
+      "required": false
     },
     "user": {
       "type": "relation",
@@ -47,15 +47,15 @@
     },
     "first_name": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "last_name": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "delivery_phone": {
       "type": "string",
-      "required": true
+      "required": false
     }
   }
 }

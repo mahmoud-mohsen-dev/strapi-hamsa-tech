@@ -939,10 +939,10 @@ export interface ApiAddressAddress extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    city: Attribute.String & Attribute.Required;
-    address_1: Attribute.Text & Attribute.Required;
-    address_2: Attribute.Text & Attribute.Required;
-    zip_code: Attribute.Integer & Attribute.Required;
+    city: Attribute.String;
+    address_1: Attribute.Text;
+    address_2: Attribute.Text;
+    zip_code: Attribute.Integer;
     user: Attribute.Relation<
       'api::address.address',
       'manyToOne',
@@ -958,9 +958,9 @@ export interface ApiAddressAddress extends Schema.CollectionType {
       'oneToOne',
       'api::shipping-cost.shipping-cost'
     >;
-    first_name: Attribute.String & Attribute.Required;
-    last_name: Attribute.String & Attribute.Required;
-    delivery_phone: Attribute.String & Attribute.Required;
+    first_name: Attribute.String;
+    last_name: Attribute.String;
+    delivery_phone: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
