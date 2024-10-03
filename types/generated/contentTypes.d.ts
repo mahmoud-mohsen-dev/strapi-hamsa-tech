@@ -1205,6 +1205,7 @@ export interface ApiCartCart extends Schema.CollectionType {
         number
       > &
       Attribute.DefaultTo<0>;
+    order: Attribute.Relation<'api::cart.cart', 'oneToOne', 'api::order.order'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1484,7 +1485,6 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.user'
     >;
-    cart: Attribute.Component<'cart.product-quantity', true>;
     guest_user: Attribute.Relation<
       'api::order.order',
       'manyToOne',
@@ -1530,6 +1530,7 @@ export interface ApiOrderOrder extends Schema.CollectionType {
         number
       > &
       Attribute.DefaultTo<0>;
+    cart: Attribute.Relation<'api::order.order', 'oneToOne', 'api::cart.cart'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

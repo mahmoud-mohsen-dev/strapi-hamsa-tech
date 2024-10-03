@@ -37,11 +37,6 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "orders"
     },
-    "cart": {
-      "type": "component",
-      "repeatable": true,
-      "component": "cart.product-quantity"
-    },
     "guest_user": {
       "type": "relation",
       "relation": "manyToOne",
@@ -94,6 +89,12 @@
       "required": true,
       "min": 0,
       "default": 0
+    },
+    "cart": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::cart.cart",
+      "inversedBy": "order"
     }
   }
 }

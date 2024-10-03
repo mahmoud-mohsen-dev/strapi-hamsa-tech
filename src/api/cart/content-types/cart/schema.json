@@ -37,6 +37,12 @@
       "min": 0,
       "pluginOptions": {},
       "default": 0
+    },
+    "order": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::order.order",
+      "inversedBy": "cart"
     }
   }
 }
