@@ -14,7 +14,7 @@
   "attributes": {
     "email_or_phone": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "orders": {
       "type": "relation",

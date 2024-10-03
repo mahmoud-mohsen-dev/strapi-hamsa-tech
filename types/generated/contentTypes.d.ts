@@ -1319,7 +1319,7 @@ export interface ApiGuestUserGuestUser extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    email_or_phone: Attribute.String & Attribute.Required;
+    email_or_phone: Attribute.String;
     orders: Attribute.Relation<
       'api::guest-user.guest-user',
       'oneToMany',
