@@ -1385,7 +1385,7 @@ export interface ApiOfferOffer extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    copoun_code: Attribute.String &
+    coupon_code: Attribute.String &
       Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
@@ -1406,11 +1406,6 @@ export interface ApiOfferOffer extends Schema.CollectionType {
           localized: false;
         };
       }>;
-    orders: Attribute.Relation<
-      'api::offer.offer',
-      'oneToMany',
-      'api::order.order'
-    >;
     deduction_value: Attribute.Decimal &
       Attribute.Required &
       Attribute.SetPluginOptions<{
@@ -1430,6 +1425,11 @@ export interface ApiOfferOffer extends Schema.CollectionType {
           localized: false;
         };
       }>;
+    orders: Attribute.Relation<
+      'api::offer.offer',
+      'oneToMany',
+      'api::order.order'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1471,7 +1471,7 @@ export interface ApiOrderOrder extends Schema.CollectionType {
     > &
       Attribute.Required &
       Attribute.DefaultTo<'pending'>;
-    total_cost: Attribute.Decimal &
+    total_order_cost: Attribute.Decimal &
       Attribute.Required &
       Attribute.SetMinMax<
         {
@@ -1503,7 +1503,7 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       'oneToOne',
       'api::address.address'
     >;
-    copoun: Attribute.Relation<
+    coupon: Attribute.Relation<
       'api::order.order',
       'manyToOne',
       'api::offer.offer'
@@ -1514,6 +1514,15 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       Attribute.Required &
       Attribute.DefaultTo<'pending'>;
     delivery_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    coupon_applied_value: Attribute.Decimal &
       Attribute.Required &
       Attribute.SetMinMax<
         {

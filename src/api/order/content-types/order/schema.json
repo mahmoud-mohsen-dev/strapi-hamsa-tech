@@ -25,7 +25,7 @@
       "required": true,
       "default": "pending"
     },
-    "total_cost": {
+    "total_order_cost": {
       "type": "decimal",
       "required": true,
       "min": 0,
@@ -66,7 +66,7 @@
       "relation": "oneToOne",
       "target": "api::address.address"
     },
-    "copoun": {
+    "coupon": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::offer.offer",
@@ -84,6 +84,12 @@
       "default": "pending"
     },
     "delivery_cost": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "coupon_applied_value": {
       "type": "decimal",
       "required": true,
       "min": 0,

@@ -286,6 +286,19 @@ export interface CarouselHeroSection extends Schema.Component {
   };
 }
 
+export interface ButtonLinkButtonLink extends Schema.Component {
+  collectionName: 'components_button_link_button_links';
+  info: {
+    displayName: 'buttonLink';
+    icon: 'link';
+    description: '';
+  };
+  attributes: {
+    buttonText: Attribute.String & Attribute.Required;
+    button_slug: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface BrandsBrands extends Schema.Component {
   collectionName: 'components_brands_brands';
   info: {
@@ -298,19 +311,6 @@ export interface BrandsBrands extends Schema.Component {
       'oneToMany',
       'api::brand.brand'
     >;
-  };
-}
-
-export interface ButtonLinkButtonLink extends Schema.Component {
-  collectionName: 'components_button_link_button_links';
-  info: {
-    displayName: 'buttonLink';
-    icon: 'link';
-    description: '';
-  };
-  attributes: {
-    buttonText: Attribute.String & Attribute.Required;
-    button_slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -349,8 +349,8 @@ declare module '@strapi/types' {
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;
-      'brands.brands': BrandsBrands;
       'button-link.button-link': ButtonLinkButtonLink;
+      'brands.brands': BrandsBrands;
       'about-us-section.about-us': AboutUsSectionAboutUs;
     }
   }
