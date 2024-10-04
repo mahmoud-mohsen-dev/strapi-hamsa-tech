@@ -91,10 +91,13 @@
       "default": 0
     },
     "cart": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::cart.cart",
-      "inversedBy": "order"
+      "type": "component",
+      "repeatable": true,
+      "component": "cart.product-quantity"
+    },
+    "subtotal_cart_cost": {
+      "type": "decimal",
+      "min": 0
     }
   }
 }

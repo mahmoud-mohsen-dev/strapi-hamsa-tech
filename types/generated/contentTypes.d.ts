@@ -1205,7 +1205,6 @@ export interface ApiCartCart extends Schema.CollectionType {
         number
       > &
       Attribute.DefaultTo<0>;
-    order: Attribute.Relation<'api::cart.cart', 'oneToOne', 'api::order.order'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1530,7 +1529,14 @@ export interface ApiOrderOrder extends Schema.CollectionType {
         number
       > &
       Attribute.DefaultTo<0>;
-    cart: Attribute.Relation<'api::order.order', 'oneToOne', 'api::cart.cart'>;
+    cart: Attribute.Component<'cart.product-quantity', true>;
+    subtotal_cart_cost: Attribute.Decimal &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
