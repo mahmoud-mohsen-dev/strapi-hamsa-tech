@@ -116,6 +116,24 @@ export interface FooterFooter extends Schema.Component {
   };
 }
 
+export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
+  collectionName: 'components_featured_blogs_featured_blogs';
+  info: {
+    displayName: 'featured-blogs';
+    icon: 'pencil';
+  };
+  attributes: {
+    blogs: Attribute.Relation<
+      'featured-blogs.featured-blogs',
+      'oneToMany',
+      'api::blog.blog'
+    >;
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface FeaturedProductsFeaturedProducts extends Schema.Component {
   collectionName: 'components_featured_products_featured_products';
   info: {
@@ -132,24 +150,6 @@ export interface FeaturedProductsFeaturedProducts extends Schema.Component {
       'oneToMany',
       'api::product.product'
     >;
-  };
-}
-
-export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
-  collectionName: 'components_featured_blogs_featured_blogs';
-  info: {
-    displayName: 'featured-blogs';
-    icon: 'pencil';
-  };
-  attributes: {
-    blogs: Attribute.Relation<
-      'featured-blogs.featured-blogs',
-      'oneToMany',
-      'api::blog.blog'
-    >;
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
   };
 }
 
@@ -191,21 +191,6 @@ export interface ContactUsContactUs extends Schema.Component {
   };
 }
 
-export interface CategoryCategories extends Schema.Component {
-  collectionName: 'components_category_categories';
-  info: {
-    displayName: 'categories';
-    icon: 'chartCircle';
-    description: '';
-  };
-  attributes: {
-    title: Attribute.String & Attribute.Required;
-    description: Attribute.String & Attribute.Required;
-    image: Attribute.Media<'images'> & Attribute.Required;
-    slug: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface CategoriesSectionCategories extends Schema.Component {
   collectionName: 'components_categories_section_categories';
   info: {
@@ -220,6 +205,21 @@ export interface CategoriesSectionCategories extends Schema.Component {
     description: Attribute.String & Attribute.Required;
     category: Attribute.Component<'category.categories', true> &
       Attribute.Required;
+  };
+}
+
+export interface CategoryCategories extends Schema.Component {
+  collectionName: 'components_category_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'chartCircle';
+    description: '';
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
+    image: Attribute.Media<'images'> & Attribute.Required;
+    slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -340,13 +340,13 @@ declare module '@strapi/types' {
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
-      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
+      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
-      'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
+      'category.categories': CategoryCategories;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;

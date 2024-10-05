@@ -15,5 +15,33 @@ export default {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  bootstrap(/*{ strapi }*/) {},
+  // bootstrap(/*{ strapi }*/) {},
+
+  async bootstrap(/*{ strapi }*/) {
+    //...
+
+    //  declare a provider function, which gets firstname and lastname
+    const googleProvider = ({ purest }) => {
+      return async ({ accessToken }) => {
+      const google = purest({ provider: 'google' });
+
+      return google
+        .query('oauth')
+        .get('tokeninfo')
+        .qs({ accessToken })
+        .request()
+        .then(({ body }) => ({
+          username: body.email.split('@')[0],
+          email: body.email,
+          firstname: body.givenName, // added
+          lastname: body.surname, // added
+        }));
+    }}
+
+
+    // register new provider, overriding existing microsoft provider
+    strapi.plugin('users-permissions').service('providers-registry').register('google', googleProvider);
+  },
+
+  
 };
