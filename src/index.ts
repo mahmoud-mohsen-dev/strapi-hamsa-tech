@@ -30,12 +30,15 @@ export default {
         .get('tokeninfo')
         .qs({ accessToken })
         .request()
-        .then(({ body }) => ({
+        .then(({ body }) => {
+          console.log(JSON.stringify(body));
+          console.log(body);
+          return {
           username: body.email.split('@')[0],
           email: body.email,
           firstname: body.givenName, // added
           lastname: body.surname, // added
-        }));
+        }});
     }}
 
 
