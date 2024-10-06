@@ -105,12 +105,12 @@
     },
     "phone": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "aggree_to_our_terms": {
       "type": "boolean",
       "default": false,
-      "required": true
+      "required": false
     },
     "subscribed_to_new_offers_and_newsletters": {
       "type": "boolean",
@@ -123,12 +123,15 @@
         "(Egypt +20)"
       ],
       "default": "(Egypt +20)",
-      "required": true
+      "required": false
     },
     "total_spending": {
       "type": "biginteger",
       "default": "0",
       "required": false
+    },
+    "full_name": {
+      "type": "string"
     }
   }
 }

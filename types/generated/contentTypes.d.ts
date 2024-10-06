@@ -796,16 +796,14 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'api::review.review'
     >;
     avatar_photo: Attribute.Media<'images'>;
-    phone: Attribute.String & Attribute.Required;
-    aggree_to_our_terms: Attribute.Boolean &
-      Attribute.Required &
-      Attribute.DefaultTo<false>;
+    phone: Attribute.String;
+    aggree_to_our_terms: Attribute.Boolean & Attribute.DefaultTo<false>;
     subscribed_to_new_offers_and_newsletters: Attribute.Boolean &
       Attribute.DefaultTo<false>;
     phone_country_code: Attribute.Enumeration<['(Egypt +20)']> &
-      Attribute.Required &
       Attribute.DefaultTo<'(Egypt +20)'>;
     total_spending: Attribute.BigInteger & Attribute.DefaultTo<'0'>;
+    full_name: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
