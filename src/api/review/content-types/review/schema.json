@@ -36,10 +36,10 @@
       "target": "api::product.product",
       "inversedBy": "reviews"
     },
-    "user_detail": {
+    "users_permissions_user": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::user-detail.user-detail",
+      "target": "plugin::users-permissions.user",
       "inversedBy": "reviews"
     }
   }

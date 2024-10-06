@@ -77,12 +77,6 @@
       "target": "api::order.order",
       "mappedBy": "user"
     },
-    "user_detail": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::user-detail.user-detail",
-      "mappedBy": "users_permissions_user"
-    },
     "cart": {
       "type": "relation",
       "relation": "oneToOne",
@@ -94,6 +88,47 @@
       "relation": "oneToOne",
       "target": "api::wishlist.wishlist",
       "mappedBy": "users_permissions_user"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "users_permissions_user"
+    },
+    "avatar_photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "phone": {
+      "type": "string",
+      "required": true
+    },
+    "aggree_to_our_terms": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "subscribed_to_new_offers_and_newsletters": {
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    "phone_country_code": {
+      "type": "enumeration",
+      "enum": [
+        "(Egypt +20)"
+      ],
+      "default": "(Egypt +20)",
+      "required": true
+    },
+    "total_spending": {
+      "type": "biginteger",
+      "default": "0",
+      "required": false
     }
   }
 }

@@ -780,11 +780,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToMany',
       'api::order.order'
     >;
-    user_detail: Attribute.Relation<
-      'plugin::users-permissions.user',
-      'oneToOne',
-      'api::user-detail.user-detail'
-    >;
     cart: Attribute.Relation<
       'plugin::users-permissions.user',
       'oneToOne',
@@ -795,6 +790,22 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'oneToOne',
       'api::wishlist.wishlist'
     >;
+    reviews: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::review.review'
+    >;
+    avatar_photo: Attribute.Media<'images'>;
+    phone: Attribute.String & Attribute.Required;
+    aggree_to_our_terms: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    subscribed_to_new_offers_and_newsletters: Attribute.Boolean &
+      Attribute.DefaultTo<false>;
+    phone_country_code: Attribute.Enumeration<['(Egypt +20)']> &
+      Attribute.Required &
+      Attribute.DefaultTo<'(Egypt +20)'>;
+    total_spending: Attribute.BigInteger & Attribute.DefaultTo<'0'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -2002,10 +2013,10 @@ export interface ApiReviewReview extends Schema.CollectionType {
       'manyToMany',
       'api::product.product'
     >;
-    user_detail: Attribute.Relation<
+    users_permissions_user: Attribute.Relation<
       'api::review.review',
       'manyToOne',
-      'api::user-detail.user-detail'
+      'plugin::users-permissions.user'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -2218,49 +2229,6 @@ export interface ApiTagTag extends Schema.CollectionType {
   };
 }
 
-export interface ApiUserDetailUserDetail extends Schema.CollectionType {
-  collectionName: 'user_details';
-  info: {
-    singularName: 'user-detail';
-    pluralName: 'user-details';
-    displayName: 'User Detail';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    first_name: Attribute.String & Attribute.Required;
-    last_name: Attribute.String & Attribute.Required;
-    avatar_photo: Attribute.Media<'images'> & Attribute.Required;
-    reviews: Attribute.Relation<
-      'api::user-detail.user-detail',
-      'oneToMany',
-      'api::review.review'
-    >;
-    users_permissions_user: Attribute.Relation<
-      'api::user-detail.user-detail',
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::user-detail.user-detail',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::user-detail.user-detail',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 export interface ApiWarantyWaranty extends Schema.CollectionType {
   collectionName: 'waranties';
   info: {
@@ -2398,7 +2366,6 @@ declare module '@strapi/types' {
       'api::shipping-cost.shipping-cost': ApiShippingCostShippingCost;
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::tag.tag': ApiTagTag;
-      'api::user-detail.user-detail': ApiUserDetailUserDetail;
       'api::waranty.waranty': ApiWarantyWaranty;
       'api::wishlist.wishlist': ApiWishlistWishlist;
     }
