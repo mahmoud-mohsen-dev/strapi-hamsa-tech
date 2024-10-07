@@ -4,7 +4,8 @@
   "info": {
     "singularName": "wishlist",
     "pluralName": "wishlists",
-    "displayName": "Wishlist"
+    "displayName": "Wishlist",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -23,15 +24,10 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "wishlist"
     },
-    "product_details": {
-      "type": "component",
-      "repeatable": true,
-      "component": "cart.product-quantity"
-    },
-    "total_wishlist_cost": {
-      "type": "decimal",
-      "required": true,
-      "min": 0
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
     }
   }
 }

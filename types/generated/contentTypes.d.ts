@@ -2283,6 +2283,7 @@ export interface ApiWishlistWishlist extends Schema.CollectionType {
     singularName: 'wishlist';
     pluralName: 'wishlists';
     displayName: 'Wishlist';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -2298,15 +2299,11 @@ export interface ApiWishlistWishlist extends Schema.CollectionType {
       'oneToOne',
       'plugin::users-permissions.user'
     >;
-    product_details: Attribute.Component<'cart.product-quantity', true>;
-    total_wishlist_cost: Attribute.Decimal &
-      Attribute.Required &
-      Attribute.SetMinMax<
-        {
-          min: 0;
-        },
-        number
-      >;
+    products: Attribute.Relation<
+      'api::wishlist.wishlist',
+      'oneToMany',
+      'api::product.product'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
