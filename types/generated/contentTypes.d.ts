@@ -2288,6 +2288,11 @@ export interface ApiWishlistWishlist extends Schema.CollectionType {
   options: {
     draftAndPublish: true;
   };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
   attributes: {
     guest_user: Attribute.Relation<
       'api::wishlist.wishlist',
@@ -2319,6 +2324,12 @@ export interface ApiWishlistWishlist extends Schema.CollectionType {
       'admin::user'
     > &
       Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::wishlist.wishlist',
+      'oneToMany',
+      'api::wishlist.wishlist'
+    >;
+    locale: Attribute.String;
   };
 }
 
