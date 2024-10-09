@@ -1784,14 +1784,6 @@ export interface ApiProductProduct extends Schema.CollectionType {
         },
         number
       >;
-    sku: Attribute.UID &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }> &
-      Attribute.DefaultTo<'sku-uuid'>;
     connectivity: Attribute.String &
       Attribute.SetPluginOptions<{
         i18n: {
@@ -1889,6 +1881,19 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'manyToOne',
       'api::waranty.waranty'
     >;
+    final_product_price: Attribute.Decimal &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

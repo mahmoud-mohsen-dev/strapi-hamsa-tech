@@ -124,16 +124,6 @@
       "required": true,
       "min": 0
     },
-    "sku": {
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "type": "uid",
-      "default": "sku-uuid",
-      "required": true
-    },
     "connectivity": {
       "pluginOptions": {
         "i18n": {
@@ -276,6 +266,16 @@
       "relation": "manyToOne",
       "target": "api::waranty.waranty",
       "inversedBy": "products"
+    },
+    "final_product_price": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "decimal",
+      "min": 0,
+      "default": 0
     }
   }
 }
