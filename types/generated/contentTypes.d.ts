@@ -1076,7 +1076,7 @@ export interface ApiBlogBlog extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    image: Attribute.Media<'images'> &
+    image_card: Attribute.Media<'images'> &
       Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
@@ -1096,6 +1096,34 @@ export interface ApiBlogBlog extends Schema.CollectionType {
           localized: true;
         };
       }>;
+    image_header: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    related_blogs: Attribute.Relation<
+      'api::blog.blog',
+      'manyToMany',
+      'api::blog.blog'
+    >;
+    connected_to_blogs: Attribute.Relation<
+      'api::blog.blog',
+      'manyToMany',
+      'api::blog.blog'
+    >;
+    read_time: Attribute.Time &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    reviews: Attribute.Relation<
+      'api::blog.blog',
+      'oneToMany',
+      'api::review.review'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2018,6 +2046,11 @@ export interface ApiReviewReview extends Schema.CollectionType {
       'api::review.review',
       'manyToOne',
       'plugin::users-permissions.user'
+    >;
+    blog: Attribute.Relation<
+      'api::review.review',
+      'manyToOne',
+      'api::blog.blog'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
