@@ -98,6 +98,14 @@
     "subtotal_cart_cost": {
       "type": "decimal",
       "min": 0
+    },
+    "invoice": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
     }
   }
 }

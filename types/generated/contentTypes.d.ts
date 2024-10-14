@@ -1114,9 +1114,10 @@ export interface ApiBlogBlog extends Schema.CollectionType {
       'api::blog.blog'
     >;
     read_time: Attribute.Time &
+      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
-          localized: true;
+          localized: false;
         };
       }>;
     reviews: Attribute.Relation<
@@ -1572,6 +1573,7 @@ export interface ApiOrderOrder extends Schema.CollectionType {
         },
         number
       >;
+    invoice: Attribute.Media<'files'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

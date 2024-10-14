@@ -69,37 +69,40 @@
       "required": true
     },
     "image_header": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
       "allowedTypes": [
         "images"
       ],
-      "type": "media",
-      "multiple": false,
       "pluginOptions": {
         "i18n": {
           "localized": false
         }
-      },
-      "required": true
+      }
     },
     "related_blogs": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::blog.blog",
-      "inversedBy": "connected_to_blogs"
+      "inversedBy": "connected_to_blogs",
+      "mappedBy": "connected_to_blogs"
     },
     "connected_to_blogs": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::blog.blog",
-      "inversedBy": "related_blogs"
+      "inversedBy": "related_blogs",
+      "mappedBy": "related_blogs"
     },
     "read_time": {
       "pluginOptions": {
         "i18n": {
-          "localized": true
+          "localized": false
         }
       },
-      "type": "time"
+      "type": "time",
+      "required": true
     },
     "reviews": {
       "type": "relation",
