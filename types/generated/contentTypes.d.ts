@@ -2245,6 +2245,38 @@ export interface ApiSupportSupport extends Schema.CollectionType {
   };
 }
 
+export interface ApiSupportPageSupportPage extends Schema.SingleType {
+  collectionName: 'support_pages';
+  info: {
+    singularName: 'support-page';
+    pluralName: 'support-pages';
+    displayName: 'support-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    telephone: Attribute.String & Attribute.Required;
+    whatsapp: Attribute.String & Attribute.Required;
+    email: Attribute.Email & Attribute.Required;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::support-page.support-page',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::support-page.support-page',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiTagTag extends Schema.CollectionType {
   collectionName: 'tags';
   info: {
@@ -2442,6 +2474,7 @@ declare module '@strapi/types' {
       'api::shipping-cost.shipping-cost': ApiShippingCostShippingCost;
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::support.support': ApiSupportSupport;
+      'api::support-page.support-page': ApiSupportPageSupportPage;
       'api::tag.tag': ApiTagTag;
       'api::waranty.waranty': ApiWarantyWaranty;
       'api::wishlist.wishlist': ApiWishlistWishlist;

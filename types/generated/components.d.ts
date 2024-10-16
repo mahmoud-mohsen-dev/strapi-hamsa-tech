@@ -257,19 +257,6 @@ export interface CartProductQuantity extends Schema.Component {
   };
 }
 
-export interface ButtonLinkButtonLink extends Schema.Component {
-  collectionName: 'components_button_link_button_links';
-  info: {
-    displayName: 'buttonLink';
-    icon: 'link';
-    description: '';
-  };
-  attributes: {
-    buttonText: Attribute.String & Attribute.Required;
-    button_slug: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface CarouselHeroSection extends Schema.Component {
   collectionName: 'components_carousel_hero_sections';
   info: {
@@ -287,6 +274,19 @@ export interface CarouselHeroSection extends Schema.Component {
     direction: Attribute.Enumeration<['left', 'right']> &
       Attribute.Required &
       Attribute.DefaultTo<'left'>;
+  };
+}
+
+export interface ButtonLinkButtonLink extends Schema.Component {
+  collectionName: 'components_button_link_button_links';
+  info: {
+    displayName: 'buttonLink';
+    icon: 'link';
+    description: '';
+  };
+  attributes: {
+    buttonText: Attribute.String & Attribute.Required;
+    button_slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -339,8 +339,8 @@ declare module '@strapi/types' {
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
-      'button-link.button-link': ButtonLinkButtonLink;
       'carousel.hero-section': CarouselHeroSection;
+      'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;
       'about-us-section.about-us': AboutUsSectionAboutUs;
     }
