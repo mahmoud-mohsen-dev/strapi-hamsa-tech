@@ -92,7 +92,6 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::blog.blog",
-      "inversedBy": "related_blogs",
       "mappedBy": "related_blogs"
     },
     "read_time": {

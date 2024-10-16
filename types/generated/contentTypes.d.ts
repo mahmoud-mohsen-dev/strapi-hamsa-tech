@@ -2213,6 +2213,38 @@ export interface ApiSubCategorySubCategory extends Schema.CollectionType {
   };
 }
 
+export interface ApiSupportSupport extends Schema.CollectionType {
+  collectionName: 'supports';
+  info: {
+    singularName: 'support';
+    pluralName: 'supports';
+    displayName: 'Support';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    full_name: Attribute.String & Attribute.Required;
+    email: Attribute.Email & Attribute.Required;
+    message: Attribute.Text & Attribute.Required;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::support.support',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::support.support',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiTagTag extends Schema.CollectionType {
   collectionName: 'tags';
   info: {
@@ -2409,6 +2441,7 @@ declare module '@strapi/types' {
       'api::review.review': ApiReviewReview;
       'api::shipping-cost.shipping-cost': ApiShippingCostShippingCost;
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
+      'api::support.support': ApiSupportSupport;
       'api::tag.tag': ApiTagTag;
       'api::waranty.waranty': ApiWarantyWaranty;
       'api::wishlist.wishlist': ApiWishlistWishlist;
