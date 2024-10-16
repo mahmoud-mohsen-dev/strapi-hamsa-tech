@@ -2250,7 +2250,8 @@ export interface ApiSupportPageSupportPage extends Schema.SingleType {
   info: {
     singularName: 'support-page';
     pluralName: 'support-pages';
-    displayName: 'support-page';
+    displayName: 'Support Page';
+    description: '';
   };
   options: {
     draftAndPublish: true;
