@@ -21,6 +21,18 @@ export interface SocialButtonsSocialLink extends Schema.Component {
   attributes: {};
 }
 
+export interface PhonePhone extends Schema.Component {
+  collectionName: 'components_phone_phones';
+  info: {
+    displayName: 'phone';
+    icon: 'phone';
+    description: '';
+  };
+  attributes: {
+    phone_number: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -258,19 +270,6 @@ export interface CartProductQuantity extends Schema.Component {
   };
 }
 
-export interface ButtonLinkButtonLink extends Schema.Component {
-  collectionName: 'components_button_link_button_links';
-  info: {
-    displayName: 'buttonLink';
-    icon: 'link';
-    description: '';
-  };
-  attributes: {
-    buttonText: Attribute.String & Attribute.Required;
-    button_slug: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface CarouselHeroSection extends Schema.Component {
   collectionName: 'components_carousel_hero_sections';
   info: {
@@ -291,6 +290,19 @@ export interface CarouselHeroSection extends Schema.Component {
   };
 }
 
+export interface ButtonLinkButtonLink extends Schema.Component {
+  collectionName: 'components_button_link_button_links';
+  info: {
+    displayName: 'buttonLink';
+    icon: 'link';
+    description: '';
+  };
+  attributes: {
+    buttonText: Attribute.String & Attribute.Required;
+    button_slug: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface BrandsBrands extends Schema.Component {
   collectionName: 'components_brands_brands';
   info: {
@@ -303,6 +315,22 @@ export interface BrandsBrands extends Schema.Component {
       'oneToMany',
       'api::brand.brand'
     >;
+  };
+}
+
+export interface BranchInfoBranch extends Schema.Component {
+  collectionName: 'components_branch_info_branches';
+  info: {
+    displayName: 'branch';
+    icon: 'manyToOne';
+  };
+  attributes: {
+    location: Attribute.JSON &
+      Attribute.Required &
+      Attribute.CustomField<'plugin::google-maps.location-picker'>;
+    address: Attribute.Text & Attribute.Required;
+    phone: Attribute.Component<'phone.phone', true> & Attribute.Required;
+    name: Attribute.String & Attribute.Required;
   };
 }
 
@@ -327,6 +355,7 @@ declare module '@strapi/types' {
     export interface Components {
       'youtube.video': YoutubeVideo;
       'social-buttons.social-link': SocialButtonsSocialLink;
+      'phone.phone': PhonePhone;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
       'link.social-links': LinkSocialLinks;
@@ -340,9 +369,10 @@ declare module '@strapi/types' {
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
-      'button-link.button-link': ButtonLinkButtonLink;
       'carousel.hero-section': CarouselHeroSection;
+      'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;
+      'branch-info.branch': BranchInfoBranch;
       'about-us-section.about-us': AboutUsSectionAboutUs;
     }
   }

@@ -10,8 +10,8 @@
     "strapi": "strapi",
     "deploy": "strapi deploy"
   },
-  "devDependencies": {},
   "dependencies": {
+    "@amicaldo/strapi-google-maps": "^1.1.5",
     "@bn-digital/strapi-plugin-field-uuid": "^1.2.12",
     "@strapi/plugin-cloud": "4.25.11",
     "@strapi/plugin-graphql": "4.25.11",

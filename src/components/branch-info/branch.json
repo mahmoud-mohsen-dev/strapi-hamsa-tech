@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_branch_info_branches",
+  "info": {
+    "displayName": "branch",
+    "icon": "manyToOne"
+  },
+  "options": {},
+  "attributes": {
+    "location": {
+      "type": "customField",
+      "customField": "plugin::google-maps.location-picker",
+      "required": true
+    },
+    "address": {
+      "type": "text",
+      "required": true
+    },
+    "phone": {
+      "displayName": "phone",
+      "type": "component",
+      "repeatable": true,
+      "component": "phone.phone",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}
