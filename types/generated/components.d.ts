@@ -21,18 +21,6 @@ export interface SocialButtonsSocialLink extends Schema.Component {
   attributes: {};
 }
 
-export interface PhonePhone extends Schema.Component {
-  collectionName: 'components_phone_phones';
-  info: {
-    displayName: 'phone';
-    icon: 'phone';
-    description: '';
-  };
-  attributes: {
-    phone_number: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -81,6 +69,18 @@ export interface SharedMetaSocial extends Schema.Component {
         maxLength: 65;
       }>;
     image: Attribute.Media<'images' | 'files' | 'videos'>;
+  };
+}
+
+export interface PhonePhone extends Schema.Component {
+  collectionName: 'components_phone_phones';
+  info: {
+    displayName: 'phone';
+    icon: 'phone';
+    description: '';
+  };
+  attributes: {
+    phone_number: Attribute.String & Attribute.Required;
   };
 }
 
@@ -355,9 +355,9 @@ declare module '@strapi/types' {
     export interface Components {
       'youtube.video': YoutubeVideo;
       'social-buttons.social-link': SocialButtonsSocialLink;
-      'phone.phone': PhonePhone;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
+      'phone.phone': PhonePhone;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;

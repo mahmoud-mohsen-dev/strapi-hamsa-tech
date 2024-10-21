@@ -998,7 +998,7 @@ export interface ApiAboutUsAboutUs extends Schema.SingleType {
           localized: true;
         };
       }>;
-    description: Attribute.String &
+    description: Attribute.Text &
       Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
