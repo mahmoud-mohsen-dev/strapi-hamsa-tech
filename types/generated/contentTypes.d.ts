@@ -968,6 +968,16 @@ export interface ApiAddressAddress extends Schema.CollectionType {
     first_name: Attribute.String;
     last_name: Attribute.String;
     delivery_phone: Attribute.String;
+    building: Attribute.String & Attribute.Required;
+    floor: Attribute.String & Attribute.Required;
+    apartment: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

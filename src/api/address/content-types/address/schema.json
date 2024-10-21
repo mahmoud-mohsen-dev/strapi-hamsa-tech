@@ -56,6 +56,19 @@
     "delivery_phone": {
       "type": "string",
       "required": false
+    },
+    "building": {
+      "type": "string",
+      "required": true
+    },
+    "floor": {
+      "type": "string",
+      "required": true
+    },
+    "apartment": {
+      "type": "integer",
+      "required": true,
+      "min": 0
     }
   }
 }
