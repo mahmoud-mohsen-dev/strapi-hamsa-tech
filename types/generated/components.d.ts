@@ -267,6 +267,7 @@ export interface CartProductQuantity extends Schema.Component {
         number
       > &
       Attribute.DefaultTo<0>;
+    description: Attribute.Text;
   };
 }
 
