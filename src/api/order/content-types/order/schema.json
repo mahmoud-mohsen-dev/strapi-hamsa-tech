@@ -20,7 +20,9 @@
         "shipped",
         "delivered",
         "cancelled",
-        "returned"
+        "failed",
+        "returned",
+        "on hold"
       ],
       "required": true,
       "default": "pending"
@@ -72,8 +74,10 @@
       "enum": [
         "pending",
         "paid off",
-        "failed",
-        "refunded"
+        "refunded",
+        "partial refund",
+        "canceled",
+        "failed"
       ],
       "required": true,
       "default": "pending"

@@ -1621,7 +1621,16 @@ export interface ApiOrderOrder extends Schema.CollectionType {
   };
   attributes: {
     delivery_status: Attribute.Enumeration<
-      ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled', 'returned']
+      [
+        'pending',
+        'confirmed',
+        'shipped',
+        'delivered',
+        'cancelled',
+        'failed',
+        'returned',
+        'on hold'
+      ]
     > &
       Attribute.Required &
       Attribute.DefaultTo<'pending'>;
@@ -1662,7 +1671,14 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       'api::offer.offer'
     >;
     payment_status: Attribute.Enumeration<
-      ['pending', 'paid off', 'failed', 'refunded']
+      [
+        'pending',
+        'paid off',
+        'refunded',
+        'partial refund',
+        'canceled',
+        'failed'
+      ]
     > &
       Attribute.Required &
       Attribute.DefaultTo<'pending'>;
