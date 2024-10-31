@@ -69,6 +69,13 @@
       "type": "integer",
       "required": true,
       "min": 0
+    },
+    "address_name": {
+      "type": "string"
+    },
+    "default": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

@@ -21,18 +21,6 @@ export interface SocialButtonsSocialLink extends Schema.Component {
   attributes: {};
 }
 
-export interface PhonePhone extends Schema.Component {
-  collectionName: 'components_phone_phones';
-  info: {
-    displayName: 'phone';
-    icon: 'phone';
-    description: '';
-  };
-  attributes: {
-    phone_number: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -81,6 +69,18 @@ export interface SharedMetaSocial extends Schema.Component {
         maxLength: 65;
       }>;
     image: Attribute.Media<'images' | 'files' | 'videos'>;
+  };
+}
+
+export interface PhonePhone extends Schema.Component {
+  collectionName: 'components_phone_phones';
+  info: {
+    displayName: 'phone';
+    icon: 'phone';
+    description: '';
+  };
+  attributes: {
+    phone_number: Attribute.String & Attribute.Required;
   };
 }
 
@@ -166,6 +166,18 @@ export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
   };
 }
 
+export interface FeatureFeatures extends Schema.Component {
+  collectionName: 'components_feature_features';
+  info: {
+    displayName: 'features';
+    icon: 'apps';
+    description: '';
+  };
+  attributes: {
+    feature: Attribute.Text;
+  };
+}
+
 export interface DetailsSpecification extends Schema.Component {
   collectionName: 'components_details_specifications';
   info: {
@@ -178,15 +190,17 @@ export interface DetailsSpecification extends Schema.Component {
   };
 }
 
-export interface FeatureFeatures extends Schema.Component {
-  collectionName: 'components_feature_features';
+export interface ContactUsContactUs extends Schema.Component {
+  collectionName: 'components_contact_us_contact_uses';
   info: {
-    displayName: 'features';
-    icon: 'apps';
-    description: '';
+    displayName: 'contact-us';
+    icon: 'phone';
   };
   attributes: {
-    feature: Attribute.Text;
+    section_name: Attribute.String & Attribute.Required;
+    heading: Attribute.Text & Attribute.Required;
+    button_text: Attribute.String & Attribute.Required;
+    button_url: Attribute.String & Attribute.Required;
   };
 }
 
@@ -202,20 +216,6 @@ export interface CategoryCategories extends Schema.Component {
     description: Attribute.String & Attribute.Required;
     image: Attribute.Media<'images'> & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface ContactUsContactUs extends Schema.Component {
-  collectionName: 'components_contact_us_contact_uses';
-  info: {
-    displayName: 'contact-us';
-    icon: 'phone';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading: Attribute.Text & Attribute.Required;
-    button_text: Attribute.String & Attribute.Required;
-    button_url: Attribute.String & Attribute.Required;
   };
 }
 
@@ -304,21 +304,6 @@ export interface ButtonLinkButtonLink extends Schema.Component {
   };
 }
 
-export interface BrandsBrands extends Schema.Component {
-  collectionName: 'components_brands_brands';
-  info: {
-    displayName: 'brands';
-    icon: 'medium';
-  };
-  attributes: {
-    brands: Attribute.Relation<
-      'brands.brands',
-      'oneToMany',
-      'api::brand.brand'
-    >;
-  };
-}
-
 export interface BranchInfoBranch extends Schema.Component {
   collectionName: 'components_branch_info_branches';
   info: {
@@ -332,6 +317,21 @@ export interface BranchInfoBranch extends Schema.Component {
     address: Attribute.Text & Attribute.Required;
     phone: Attribute.Component<'phone.phone', true> & Attribute.Required;
     name: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface BrandsBrands extends Schema.Component {
+  collectionName: 'components_brands_brands';
+  info: {
+    displayName: 'brands';
+    icon: 'medium';
+  };
+  attributes: {
+    brands: Attribute.Relation<
+      'brands.brands',
+      'oneToMany',
+      'api::brand.brand'
+    >;
   };
 }
 
@@ -356,24 +356,24 @@ declare module '@strapi/types' {
     export interface Components {
       'youtube.video': YoutubeVideo;
       'social-buttons.social-link': SocialButtonsSocialLink;
-      'phone.phone': PhonePhone;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
+      'phone.phone': PhonePhone;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
-      'details.specification': DetailsSpecification;
       'feature.features': FeatureFeatures;
-      'category.categories': CategoryCategories;
+      'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
+      'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
-      'brands.brands': BrandsBrands;
       'branch-info.branch': BranchInfoBranch;
+      'brands.brands': BrandsBrands;
       'about-us-section.about-us': AboutUsSectionAboutUs;
     }
   }

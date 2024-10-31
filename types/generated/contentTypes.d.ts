@@ -1087,6 +1087,8 @@ export interface ApiAddressAddress extends Schema.CollectionType {
         },
         number
       >;
+    address_name: Attribute.String;
+    default: Attribute.Boolean & Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
