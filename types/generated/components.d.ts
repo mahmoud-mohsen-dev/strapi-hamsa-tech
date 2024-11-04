@@ -128,7 +128,8 @@ export interface FooterFooter extends Schema.Component {
   };
 }
 
-export interface FeaturedProductsFeaturedProducts extends Schema.Component {
+export interface FeaturedProductsFeaturedProducts
+  extends Schema.Component {
   collectionName: 'components_featured_products_featured_products';
   info: {
     displayName: 'featured_products';
@@ -219,6 +220,24 @@ export interface CategoryCategories extends Schema.Component {
   };
 }
 
+export interface CategoriesSectionCategories
+  extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'grid';
+    description: '';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
+  };
+}
+
 export interface CartProductQuantity extends Schema.Component {
   collectionName: 'components_cart_product_quantities';
   info: {
@@ -251,23 +270,6 @@ export interface CartProductQuantity extends Schema.Component {
       > &
       Attribute.DefaultTo<0>;
     description: Attribute.Text;
-  };
-}
-
-export interface CategoriesSectionCategories extends Schema.Component {
-  collectionName: 'components_categories_section_categories';
-  info: {
-    displayName: 'categories';
-    icon: 'grid';
-    description: '';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    description: Attribute.String & Attribute.Required;
-    category: Attribute.Component<'category.categories', true> &
-      Attribute.Required;
   };
 }
 
@@ -330,7 +332,8 @@ export interface BranchInfoBranch extends Schema.Component {
       Attribute.Required &
       Attribute.CustomField<'plugin::google-maps.location-picker'>;
     address: Attribute.Text & Attribute.Required;
-    phone: Attribute.Component<'phone.phone', true> & Attribute.Required;
+    phone: Attribute.Component<'phone.phone', true> &
+      Attribute.Required;
     name: Attribute.String & Attribute.Required;
   };
 }
@@ -368,8 +371,8 @@ declare module '@strapi/types' {
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
-      'cart.product-quantity': CartProductQuantity;
       'categories-section.categories': CategoriesSectionCategories;
+      'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;

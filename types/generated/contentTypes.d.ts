@@ -30,7 +30,11 @@ export interface AdminPermission extends Schema.CollectionType {
       }>;
     properties: Attribute.JSON & Attribute.DefaultTo<{}>;
     conditions: Attribute.JSON & Attribute.DefaultTo<[]>;
-    role: Attribute.Relation<'admin::permission', 'manyToOne', 'admin::role'>;
+    role: Attribute.Relation<
+      'admin::permission',
+      'manyToOne',
+      'admin::role'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -92,15 +96,29 @@ export interface AdminUser extends Schema.CollectionType {
     isActive: Attribute.Boolean &
       Attribute.Private &
       Attribute.DefaultTo<false>;
-    roles: Attribute.Relation<'admin::user', 'manyToMany', 'admin::role'> &
+    roles: Attribute.Relation<
+      'admin::user',
+      'manyToMany',
+      'admin::role'
+    > &
       Attribute.Private;
-    blocked: Attribute.Boolean & Attribute.Private & Attribute.DefaultTo<false>;
+    blocked: Attribute.Boolean &
+      Attribute.Private &
+      Attribute.DefaultTo<false>;
     preferedLanguage: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'admin::user', 'oneToOne', 'admin::user'> &
+    createdBy: Attribute.Relation<
+      'admin::user',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
-    updatedBy: Attribute.Relation<'admin::user', 'oneToOne', 'admin::user'> &
+    updatedBy: Attribute.Relation<
+      'admin::user',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
   };
 }
@@ -136,7 +154,11 @@ export interface AdminRole extends Schema.CollectionType {
         minLength: 1;
       }>;
     description: Attribute.String;
-    users: Attribute.Relation<'admin::role', 'manyToMany', 'admin::user'>;
+    users: Attribute.Relation<
+      'admin::role',
+      'manyToMany',
+      'admin::user'
+    >;
     permissions: Attribute.Relation<
       'admin::role',
       'oneToMany',
@@ -144,9 +166,17 @@ export interface AdminRole extends Schema.CollectionType {
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'admin::role', 'oneToOne', 'admin::user'> &
+    createdBy: Attribute.Relation<
+      'admin::role',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
-    updatedBy: Attribute.Relation<'admin::role', 'oneToOne', 'admin::user'> &
+    updatedBy: Attribute.Relation<
+      'admin::role',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
   };
 }
@@ -180,7 +210,9 @@ export interface AdminApiToken extends Schema.CollectionType {
         minLength: 1;
       }> &
       Attribute.DefaultTo<''>;
-    type: Attribute.Enumeration<['read-only', 'full-access', 'custom']> &
+    type: Attribute.Enumeration<
+      ['read-only', 'full-access', 'custom']
+    > &
       Attribute.Required &
       Attribute.DefaultTo<'read-only'>;
     accessKey: Attribute.String &
@@ -213,7 +245,8 @@ export interface AdminApiToken extends Schema.CollectionType {
   };
 }
 
-export interface AdminApiTokenPermission extends Schema.CollectionType {
+export interface AdminApiTokenPermission
+  extends Schema.CollectionType {
   collectionName: 'strapi_api_token_permissions';
   info: {
     name: 'API Token Permission';
@@ -317,7 +350,8 @@ export interface AdminTransferToken extends Schema.CollectionType {
   };
 }
 
-export interface AdminTransferTokenPermission extends Schema.CollectionType {
+export interface AdminTransferTokenPermission
+  extends Schema.CollectionType {
   collectionName: 'strapi_transfer_token_permissions';
   info: {
     name: 'Transfer Token Permission';
@@ -491,7 +525,8 @@ export interface PluginUploadFolder extends Schema.CollectionType {
   };
 }
 
-export interface PluginContentReleasesRelease extends Schema.CollectionType {
+export interface PluginContentReleasesRelease
+  extends Schema.CollectionType {
   collectionName: 'strapi_releases';
   info: {
     singularName: 'release';
@@ -560,7 +595,8 @@ export interface PluginContentReleasesReleaseAction
     };
   };
   attributes: {
-    type: Attribute.Enumeration<['publish', 'unpublish']> & Attribute.Required;
+    type: Attribute.Enumeration<['publish', 'unpublish']> &
+      Attribute.Required;
     entry: Attribute.Relation<
       'plugin::content-releases.release-action',
       'morphToOne'
@@ -719,7 +755,8 @@ export interface PluginUsersPermissionsPermission
   };
 }
 
-export interface PluginUsersPermissionsRole extends Schema.CollectionType {
+export interface PluginUsersPermissionsRole
+  extends Schema.CollectionType {
   collectionName: 'up_roles';
   info: {
     name: 'role';
@@ -771,7 +808,8 @@ export interface PluginUsersPermissionsRole extends Schema.CollectionType {
   };
 }
 
-export interface PluginUsersPermissionsUser extends Schema.CollectionType {
+export interface PluginUsersPermissionsUser
+  extends Schema.CollectionType {
   collectionName: 'up_users';
   info: {
     name: 'user';
@@ -835,7 +873,8 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     >;
     avatar_photo: Attribute.Media<'images'>;
     phone: Attribute.String;
-    aggree_to_our_terms: Attribute.Boolean & Attribute.DefaultTo<false>;
+    aggree_to_our_terms: Attribute.Boolean &
+      Attribute.DefaultTo<false>;
     subscribed_to_new_offers_and_newsletters: Attribute.Boolean &
       Attribute.DefaultTo<false>;
     phone_country_code: Attribute.Enumeration<['(Egypt +20)']> &
@@ -925,7 +964,8 @@ export interface PluginCommentsComment extends Schema.CollectionType {
   };
 }
 
-export interface PluginCommentsCommentReport extends Schema.CollectionType {
+export interface PluginCommentsCommentReport
+  extends Schema.CollectionType {
   collectionName: 'comments_comment-report';
   info: {
     tableName: 'plugin-comments-reports';
@@ -948,7 +988,9 @@ export interface PluginCommentsCommentReport extends Schema.CollectionType {
   };
   attributes: {
     content: Attribute.Text;
-    reason: Attribute.Enumeration<['BAD_LANGUAGE', 'DISCRIMINATION', 'OTHER']> &
+    reason: Attribute.Enumeration<
+      ['BAD_LANGUAGE', 'DISCRIMINATION', 'OTHER']
+    > &
       Attribute.Required &
       Attribute.DefaultTo<'OTHER'>;
     resolved: Attribute.Boolean & Attribute.DefaultTo<false>;
@@ -1204,7 +1246,11 @@ export interface ApiBlogBlog extends Schema.CollectionType {
           localized: false;
         };
       }>;
-    tags: Attribute.Relation<'api::blog.blog', 'manyToMany', 'api::tag.tag'>;
+    tags: Attribute.Relation<
+      'api::blog.blog',
+      'manyToMany',
+      'api::tag.tag'
+    >;
     author: Attribute.Relation<
       'api::blog.blog',
       'manyToOne',
@@ -1249,9 +1295,17 @@ export interface ApiBlogBlog extends Schema.CollectionType {
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::blog.blog', 'oneToOne', 'admin::user'> &
+    createdBy: Attribute.Relation<
+      'api::blog.blog',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
-    updatedBy: Attribute.Relation<'api::blog.blog', 'oneToOne', 'admin::user'> &
+    updatedBy: Attribute.Relation<
+      'api::blog.blog',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
     localizations: Attribute.Relation<
       'api::blog.blog',
@@ -1352,7 +1406,10 @@ export interface ApiCartCart extends Schema.CollectionType {
       'oneToOne',
       'plugin::users-permissions.user'
     >;
-    product_details: Attribute.Component<'cart.product-quantity', true>;
+    product_details: Attribute.Component<
+      'cart.product-quantity',
+      true
+    >;
     total_cart_cost: Attribute.Decimal &
       Attribute.Required &
       Attribute.SetMinMax<
@@ -1365,9 +1422,17 @@ export interface ApiCartCart extends Schema.CollectionType {
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::cart.cart', 'oneToOne', 'admin::user'> &
+    createdBy: Attribute.Relation<
+      'api::cart.cart',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
-    updatedBy: Attribute.Relation<'api::cart.cart', 'oneToOne', 'admin::user'> &
+    updatedBy: Attribute.Relation<
+      'api::cart.cart',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
   };
 }
@@ -1432,7 +1497,8 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   };
 }
 
-export interface ApiFreeShippingFreeShipping extends Schema.SingleType {
+export interface ApiFreeShippingFreeShipping
+  extends Schema.SingleType {
   collectionName: 'free_shippings';
   info: {
     singularName: 'free-shipping';
@@ -1445,7 +1511,9 @@ export interface ApiFreeShippingFreeShipping extends Schema.SingleType {
   };
   attributes: {
     apply_free_shipping_if_total_cart_cost_equals: Attribute.Integer;
-    enable: Attribute.Boolean & Attribute.Required & Attribute.DefaultTo<true>;
+    enable: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<true>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1655,7 +1723,9 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       'manyToOne',
       'api::guest-user.guest-user'
     >;
-    payment_method: Attribute.Enumeration<['card', 'cash on delivery']> &
+    payment_method: Attribute.Enumeration<
+      ['card', 'cash on delivery']
+    > &
       Attribute.Required;
     shipping_address: Attribute.Relation<
       'api::order.order',
@@ -1817,9 +1887,17 @@ export interface ApiPagePage extends Schema.CollectionType {
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::page.page', 'oneToOne', 'admin::user'> &
+    createdBy: Attribute.Relation<
+      'api::page.page',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
-    updatedBy: Attribute.Relation<'api::page.page', 'oneToOne', 'admin::user'> &
+    updatedBy: Attribute.Relation<
+      'api::page.page',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
     localizations: Attribute.Relation<
       'api::page.page',
@@ -1995,7 +2073,10 @@ export interface ApiProductProduct extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    sepcification: Attribute.Component<'details.specification', true> &
+    sepcification: Attribute.Component<
+      'details.specification',
+      true
+    > &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -2209,7 +2290,8 @@ export interface ApiReviewReview extends Schema.CollectionType {
   };
 }
 
-export interface ApiShippingCostShippingCost extends Schema.CollectionType {
+export interface ApiShippingCostShippingCost
+  extends Schema.CollectionType {
   collectionName: 'shipping_costs';
   info: {
     singularName: 'shipping-cost';
@@ -2278,7 +2360,8 @@ export interface ApiShippingCostShippingCost extends Schema.CollectionType {
   };
 }
 
-export interface ApiSubCategorySubCategory extends Schema.CollectionType {
+export interface ApiSubCategorySubCategory
+  extends Schema.CollectionType {
   collectionName: 'sub_categories';
   info: {
     singularName: 'sub-category';
@@ -2445,7 +2528,11 @@ export interface ApiTagTag extends Schema.CollectionType {
           localized: false;
         };
       }>;
-    blogs: Attribute.Relation<'api::tag.tag', 'manyToMany', 'api::blog.blog'>;
+    blogs: Attribute.Relation<
+      'api::tag.tag',
+      'manyToMany',
+      'api::blog.blog'
+    >;
     products: Attribute.Relation<
       'api::tag.tag',
       'manyToMany',
@@ -2454,9 +2541,17 @@ export interface ApiTagTag extends Schema.CollectionType {
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::tag.tag', 'oneToOne', 'admin::user'> &
+    createdBy: Attribute.Relation<
+      'api::tag.tag',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
-    updatedBy: Attribute.Relation<'api::tag.tag', 'oneToOne', 'admin::user'> &
+    updatedBy: Attribute.Relation<
+      'api::tag.tag',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
     localizations: Attribute.Relation<
       'api::tag.tag',
