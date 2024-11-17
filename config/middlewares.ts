@@ -60,14 +60,7 @@ export default [
     config: {
       enabled: true,
       headers: '*',
-      origin: [
-        'http://localhost:3000',
-        'https://localhost:3000',
-        'https://hamsatech-eg.com',
-        'https://www.hamsatech-eg.com',
-        'http://hamsatech-eg.com',
-        'http://www.hamsatech-eg.com'
-      ]
+      origin: '*'
     }
   },
   'strapi::query',
