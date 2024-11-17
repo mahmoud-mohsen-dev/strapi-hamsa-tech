@@ -61,7 +61,8 @@ export default [
       enabled: true,
       headers: '*',
       origin: [
-        'http://localhost:1337',
+        'http://localhost:3000',
+        'https://localhost:3000',
         'https://hamsatech-eg.com',
         'https://www.hamsatech-eg.com',
         'http://hamsatech-eg.com',

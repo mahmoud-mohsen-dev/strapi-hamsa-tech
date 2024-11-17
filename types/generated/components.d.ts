@@ -162,18 +162,6 @@ export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
   };
 }
 
-export interface FeatureFeatures extends Schema.Component {
-  collectionName: 'components_feature_features';
-  info: {
-    displayName: 'features';
-    icon: 'apps';
-    description: '';
-  };
-  attributes: {
-    feature: Attribute.Text;
-  };
-}
-
 export interface DetailsSpecification extends Schema.Component {
   collectionName: 'components_details_specifications';
   info: {
@@ -186,17 +174,15 @@ export interface DetailsSpecification extends Schema.Component {
   };
 }
 
-export interface ContactUsContactUs extends Schema.Component {
-  collectionName: 'components_contact_us_contact_uses';
+export interface FeatureFeatures extends Schema.Component {
+  collectionName: 'components_feature_features';
   info: {
-    displayName: 'contact-us';
-    icon: 'phone';
+    displayName: 'features';
+    icon: 'apps';
+    description: '';
   };
   attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading: Attribute.Text & Attribute.Required;
-    button_text: Attribute.String & Attribute.Required;
-    button_url: Attribute.String & Attribute.Required;
+    feature: Attribute.Text;
   };
 }
 
@@ -212,6 +198,20 @@ export interface CategoryCategories extends Schema.Component {
     description: Attribute.String & Attribute.Required;
     image: Attribute.Media<'images'> & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface ContactUsContactUs extends Schema.Component {
+  collectionName: 'components_contact_us_contact_uses';
+  info: {
+    displayName: 'contact-us';
+    icon: 'phone';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading: Attribute.Text & Attribute.Required;
+    button_text: Attribute.String & Attribute.Required;
+    button_url: Attribute.String & Attribute.Required;
   };
 }
 
@@ -362,10 +362,10 @@ declare module '@strapi/types' {
       'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
-      'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
-      'contact-us.contact-us': ContactUsContactUs;
+      'feature.features': FeatureFeatures;
       'category.categories': CategoryCategories;
+      'contact-us.contact-us': ContactUsContactUs;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;
