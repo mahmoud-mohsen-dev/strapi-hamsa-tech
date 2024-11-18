@@ -29,30 +29,30 @@ export default {
                   'plugin::graphql.format'
                 ).returnTypes;
                 // Extract the authenticated user's ID from the context
-                console.log('context', JSON.stringify(context));
-                console.log('=================================');
-                console.log('id', JSON.stringify(id));
-                console.log(
-                  'parent.id',
-                  JSON.stringify(parent?.id ?? null)
-                );
+                // console.log('context', JSON.stringify(context));
+                // console.log('=================================');
+                // console.log('id', JSON.stringify(id));
+                // console.log(
+                //   'parent.id',
+                //   JSON.stringify(parent?.id ?? null)
+                // );
                 const userIdFromToken =
                   // context.state.user?.id ||
                   context?.state?.user?.id || null;
-                console.log('userIdFromToken', userIdFromToken);
+                // console.log('userIdFromToken', userIdFromToken);
 
                 if (!userIdFromToken) {
                   throw new Error(
                     'Unauthorized: No user found in token.'
                   );
                 }
-                console.log(
-                  !userIdFromToken ||
-                    !id ||
-                    `${userIdFromToken}` !== `${id}`
-                );
-                console.log(`${userIdFromToken}`);
-                console.log(`${id}`);
+                // console.log(
+                //   !userIdFromToken ||
+                //     !id ||
+                //     `${userIdFromToken}` !== `${id}`
+                // );
+                // console.log(`${userIdFromToken}`);
+                // console.log(`${id}`);
 
                 // Check if the ID from the token matches the requested ID
                 if (
@@ -87,7 +87,7 @@ export default {
                 if (!user) {
                   throw new Error('User not found.');
                 }
-                console.log('user', user);
+                // console.log('user', user);
 
                 // Sanitize user data
                 const sanitizedUser =
@@ -96,15 +96,15 @@ export default {
                     strapi.getModel('plugin::users-permissions.user')
                   );
 
-                console.log('sanitizedUser', sanitizedUser);
+                // console.log('sanitizedUser', sanitizedUser);
 
                 const response = toEntityResponse(sanitizedUser);
 
-                console.log(
-                  '##################',
-                  JSON.stringify(response),
-                  '##################'
-                );
+                // console.log(
+                //   '##################',
+                //   JSON.stringify(response),
+                //   '##################'
+                // );
 
                 return response;
               } catch (error) {
@@ -146,7 +146,8 @@ export default {
       subscribed_to_new_offers_and_newsletters: Boolean
       phone_country_code: String
       total_spending: String
-      full_name: String
+      first_name: String
+      last_name: String
     }
   `,
       resolvers: {
@@ -190,11 +191,11 @@ export default {
 
                 const response = toEntityResponse(sanitizedUser);
 
-                console.log(
-                  '##################',
-                  JSON.stringify(response),
-                  '##################'
-                );
+                // console.log(
+                //   '##################',
+                //   JSON.stringify(response),
+                //   '##################'
+                // );
 
                 return response;
               } catch (error) {
@@ -260,7 +261,8 @@ export default {
           type: 'UsersPermissionsMe',
           definition(t) {
             // Basic fields
-            t.string('full_name');
+            t.string('first_name');
+            t.string('last_name');
             t.string('username');
             t.string('email');
             t.string('provider');

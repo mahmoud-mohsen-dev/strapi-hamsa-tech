@@ -130,11 +130,14 @@
       "default": "0",
       "required": false
     },
-    "full_name": {
+    "first_name": {
       "type": "string"
     },
     "birth_date": {
       "type": "date"
+    },
+    "last_name": {
+      "type": "string"
     }
   }
 }

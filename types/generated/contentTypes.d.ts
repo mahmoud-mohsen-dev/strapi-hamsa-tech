@@ -880,8 +880,9 @@ export interface PluginUsersPermissionsUser
     phone_country_code: Attribute.Enumeration<['(Egypt +20)']> &
       Attribute.DefaultTo<'(Egypt +20)'>;
     total_spending: Attribute.BigInteger & Attribute.DefaultTo<'0'>;
-    full_name: Attribute.String;
+    first_name: Attribute.String;
     birth_date: Attribute.Date;
+    last_name: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
