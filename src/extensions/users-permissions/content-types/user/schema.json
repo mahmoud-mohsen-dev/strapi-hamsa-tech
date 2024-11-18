@@ -132,6 +132,9 @@
     },
     "full_name": {
       "type": "string"
+    },
+    "birth_date": {
+      "type": "date"
     }
   }
 }

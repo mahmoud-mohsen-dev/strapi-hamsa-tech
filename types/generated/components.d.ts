@@ -108,6 +108,21 @@ export interface LinkLink extends Schema.Component {
   };
 }
 
+export interface FooterFooter extends Schema.Component {
+  collectionName: 'components_footer_footers';
+  info: {
+    displayName: 'footer';
+    icon: 'layout';
+  };
+  attributes: {
+    description: Attribute.Text & Attribute.Required;
+    social_links: Attribute.Component<'link.social-links', true>;
+    quick_links: Attribute.Component<'link.link', true>;
+    contact_us_phone: Attribute.String & Attribute.Required;
+    contact_us_email: Attribute.Email & Attribute.Required;
+  };
+}
+
 export interface FeaturedProductsFeaturedProducts
   extends Schema.Component {
   collectionName: 'components_featured_products_featured_products';
@@ -125,21 +140,6 @@ export interface FeaturedProductsFeaturedProducts
       'oneToMany',
       'api::product.product'
     >;
-  };
-}
-
-export interface FooterFooter extends Schema.Component {
-  collectionName: 'components_footer_footers';
-  info: {
-    displayName: 'footer';
-    icon: 'layout';
-  };
-  attributes: {
-    description: Attribute.Text & Attribute.Required;
-    social_links: Attribute.Component<'link.social-links', true>;
-    quick_links: Attribute.Component<'link.link', true>;
-    contact_us_phone: Attribute.String & Attribute.Required;
-    contact_us_email: Attribute.Email & Attribute.Required;
   };
 }
 
@@ -186,20 +186,6 @@ export interface DetailsSpecification extends Schema.Component {
   };
 }
 
-export interface ContactUsContactUs extends Schema.Component {
-  collectionName: 'components_contact_us_contact_uses';
-  info: {
-    displayName: 'contact-us';
-    icon: 'phone';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading: Attribute.Text & Attribute.Required;
-    button_text: Attribute.String & Attribute.Required;
-    button_url: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface CategoryCategories extends Schema.Component {
   collectionName: 'components_category_categories';
   info: {
@@ -212,6 +198,20 @@ export interface CategoryCategories extends Schema.Component {
     description: Attribute.String & Attribute.Required;
     image: Attribute.Media<'images'> & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface ContactUsContactUs extends Schema.Component {
+  collectionName: 'components_contact_us_contact_uses';
+  info: {
+    displayName: 'contact-us';
+    icon: 'phone';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading: Attribute.Text & Attribute.Required;
+    button_text: Attribute.String & Attribute.Required;
+    button_url: Attribute.String & Attribute.Required;
   };
 }
 
@@ -359,13 +359,13 @@ declare module '@strapi/types' {
       'phone.phone': PhonePhone;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
-      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'footer.footer': FooterFooter;
+      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
-      'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
+      'contact-us.contact-us': ContactUsContactUs;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;

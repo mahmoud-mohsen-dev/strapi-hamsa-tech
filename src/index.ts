@@ -271,12 +271,13 @@ export default {
             t.boolean('subscribed_to_new_offers_and_newsletters');
             t.string('phone_country_code');
             t.string('total_spending');
+            t.date('birth_date');
 
             // Relations and media
-            t.field('avatar_photo', {
-              type: 'UploadFile',
-              resolve: (parent) => parent.avatar_photo // Direct reference if image is populated
-            });
+            // t.field('avatar_photo', {
+            //   type: 'UploadFile',
+            //   resolve: (parent) => parent.avatar_photo // Direct reference if image is populated
+            // });
 
             // Relations with custom resolvers
             t.list.field('addresses', {
