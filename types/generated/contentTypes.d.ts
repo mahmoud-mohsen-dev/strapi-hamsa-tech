@@ -2441,6 +2441,7 @@ export interface ApiSupportSupport extends Schema.CollectionType {
     singularName: 'support';
     pluralName: 'supports';
     displayName: 'Support';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -2449,6 +2450,7 @@ export interface ApiSupportSupport extends Schema.CollectionType {
     full_name: Attribute.String & Attribute.Required;
     email: Attribute.Email & Attribute.Required;
     message: Attribute.Text & Attribute.Required;
+    resolved: Attribute.Boolean & Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
