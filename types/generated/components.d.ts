@@ -12,15 +12,6 @@ export interface YoutubeVideo extends Schema.Component {
   };
 }
 
-export interface SocialButtonsSocialLink extends Schema.Component {
-  collectionName: 'components_social_buttons_social_links';
-  info: {
-    displayName: 'social-link';
-    icon: 'link';
-  };
-  attributes: {};
-}
-
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -67,6 +58,27 @@ export interface SharedMetaSocial extends Schema.Component {
   };
 }
 
+export interface SocialButtonsSocialLink extends Schema.Component {
+  collectionName: 'components_social_buttons_social_links';
+  info: {
+    displayName: 'social-link';
+    icon: 'link';
+  };
+  attributes: {};
+}
+
+export interface PhonePhone extends Schema.Component {
+  collectionName: 'components_phone_phones';
+  info: {
+    displayName: 'phone';
+    icon: 'phone';
+    description: '';
+  };
+  attributes: {
+    phone_number: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface LinkSocialLinks extends Schema.Component {
   collectionName: 'components_link_social_links';
   info: {
@@ -93,18 +105,6 @@ export interface LinkLink extends Schema.Component {
   attributes: {
     name: Attribute.String & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface PhonePhone extends Schema.Component {
-  collectionName: 'components_phone_phones';
-  info: {
-    displayName: 'phone';
-    icon: 'phone';
-    description: '';
-  };
-  attributes: {
-    phone_number: Attribute.String & Attribute.Required;
   };
 }
 
@@ -186,6 +186,20 @@ export interface DetailsSpecification extends Schema.Component {
   };
 }
 
+export interface ContactUsContactUs extends Schema.Component {
+  collectionName: 'components_contact_us_contact_uses';
+  info: {
+    displayName: 'contact-us';
+    icon: 'phone';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading: Attribute.Text & Attribute.Required;
+    button_text: Attribute.String & Attribute.Required;
+    button_url: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface CategoryCategories extends Schema.Component {
   collectionName: 'components_category_categories';
   info: {
@@ -198,20 +212,6 @@ export interface CategoryCategories extends Schema.Component {
     description: Attribute.String & Attribute.Required;
     image: Attribute.Media<'images'> & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface ContactUsContactUs extends Schema.Component {
-  collectionName: 'components_contact_us_contact_uses';
-  info: {
-    displayName: 'contact-us';
-    icon: 'phone';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading: Attribute.Text & Attribute.Required;
-    button_text: Attribute.String & Attribute.Required;
-    button_url: Attribute.String & Attribute.Required;
   };
 }
 
@@ -353,19 +353,19 @@ declare module '@strapi/types' {
   export module Shared {
     export interface Components {
       'youtube.video': YoutubeVideo;
-      'social-buttons.social-link': SocialButtonsSocialLink;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
+      'social-buttons.social-link': SocialButtonsSocialLink;
+      'phone.phone': PhonePhone;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
-      'phone.phone': PhonePhone;
       'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
-      'category.categories': CategoryCategories;
       'contact-us.contact-us': ContactUsContactUs;
+      'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;
