@@ -39,6 +39,16 @@
       },
       "type": "string",
       "required": true
+    },
+    "order": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "uid",
+      "default": "en-1",
+      "required": true
     }
   }
 }

@@ -276,6 +276,12 @@
       "type": "decimal",
       "min": 0,
       "default": 0
+    },
+    "compatible_with_these_products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::address.address",
+      "mappedBy": "product"
     }
   }
 }

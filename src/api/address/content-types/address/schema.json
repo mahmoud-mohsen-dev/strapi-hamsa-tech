@@ -76,6 +76,12 @@
     "default": {
       "type": "boolean",
       "default": false
+    },
+    "product": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::product.product",
+      "inversedBy": "compatible_with_these_products"
     }
   }
 }
