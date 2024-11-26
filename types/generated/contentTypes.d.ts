@@ -2162,6 +2162,13 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'oneToMany',
       'api::address.address'
     >;
+    sort_by_order: Attribute.UID &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Attribute.DefaultTo<'en-1'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

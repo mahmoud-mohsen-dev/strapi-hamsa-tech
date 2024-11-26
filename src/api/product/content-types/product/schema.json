@@ -282,6 +282,15 @@
       "relation": "oneToMany",
       "target": "api::address.address",
       "mappedBy": "product"
+    },
+    "sort_by_order": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "uid",
+      "default": "en-1"
     }
   }
 }
