@@ -1133,11 +1133,6 @@ export interface ApiAddressAddress extends Schema.CollectionType {
       >;
     address_name: Attribute.String;
     default: Attribute.Boolean & Attribute.DefaultTo<false>;
-    product: Attribute.Relation<
-      'api::address.address',
-      'manyToOne',
-      'api::product.product'
-    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2160,7 +2155,7 @@ export interface ApiProductProduct extends Schema.CollectionType {
     compatible_with_these_products: Attribute.Relation<
       'api::product.product',
       'oneToMany',
-      'api::address.address'
+      'api::product.product'
     >;
     sort_by_order: Attribute.String &
       Attribute.SetPluginOptions<{

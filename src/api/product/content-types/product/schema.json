@@ -280,8 +280,7 @@
     "compatible_with_these_products": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::address.address",
-      "mappedBy": "product"
+      "target": "api::product.product"
     },
     "sort_by_order": {
       "pluginOptions": {

@@ -79,21 +79,6 @@ export interface PhonePhone extends Schema.Component {
   };
 }
 
-export interface FooterFooter extends Schema.Component {
-  collectionName: 'components_footer_footers';
-  info: {
-    displayName: 'footer';
-    icon: 'layout';
-  };
-  attributes: {
-    description: Attribute.Text & Attribute.Required;
-    social_links: Attribute.Component<'link.social-links', true>;
-    quick_links: Attribute.Component<'link.link', true>;
-    contact_us_phone: Attribute.String & Attribute.Required;
-    contact_us_email: Attribute.Email & Attribute.Required;
-  };
-}
-
 export interface LinkSocialLinks extends Schema.Component {
   collectionName: 'components_link_social_links';
   info: {
@@ -120,6 +105,21 @@ export interface LinkLink extends Schema.Component {
   attributes: {
     name: Attribute.String & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface FooterFooter extends Schema.Component {
+  collectionName: 'components_footer_footers';
+  info: {
+    displayName: 'footer';
+    icon: 'layout';
+  };
+  attributes: {
+    description: Attribute.Text & Attribute.Required;
+    social_links: Attribute.Component<'link.social-links', true>;
+    quick_links: Attribute.Component<'link.link', true>;
+    contact_us_phone: Attribute.String & Attribute.Required;
+    contact_us_email: Attribute.Email & Attribute.Required;
   };
 }
 
@@ -357,9 +357,9 @@ declare module '@strapi/types' {
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
       'phone.phone': PhonePhone;
-      'footer.footer': FooterFooter;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
+      'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
