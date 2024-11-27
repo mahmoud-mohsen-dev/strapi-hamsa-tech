@@ -2162,13 +2162,12 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'oneToMany',
       'api::address.address'
     >;
-    sort_by_order: Attribute.UID &
+    sort_by_order: Attribute.String &
       Attribute.SetPluginOptions<{
         i18n: {
-          localized: true;
+          localized: false;
         };
-      }> &
-      Attribute.DefaultTo<'en-1'>;
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2271,7 +2270,6 @@ export interface ApiReviewReview extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    create_at: Attribute.DateTime;
     rating: Attribute.Decimal &
       Attribute.Required &
       Attribute.SetMinMax<
@@ -2298,6 +2296,11 @@ export interface ApiReviewReview extends Schema.CollectionType {
       'api::review.review',
       'manyToOne',
       'api::blog.blog'
+    >;
+    likes: Attribute.Relation<
+      'api::review.review',
+      'oneToMany',
+      'plugin::users-permissions.user'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;

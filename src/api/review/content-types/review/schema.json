@@ -12,9 +12,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "create_at": {
-      "type": "datetime"
-    },
     "rating": {
       "type": "decimal",
       "min": 0,
@@ -47,6 +44,11 @@
       "relation": "manyToOne",
       "target": "api::blog.blog",
       "inversedBy": "reviews"
+    },
+    "likes": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

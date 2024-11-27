@@ -286,11 +286,11 @@
     "sort_by_order": {
       "pluginOptions": {
         "i18n": {
-          "localized": true
+          "localized": false
         }
       },
-      "type": "uid",
-      "default": "en-1"
+      "type": "string",
+      "unique": false
     }
   }
 }
