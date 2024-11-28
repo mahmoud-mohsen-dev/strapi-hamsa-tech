@@ -67,6 +67,28 @@ export interface SharedMetaSocial extends Schema.Component {
   };
 }
 
+export interface ReportAbuseReportAbuse extends Schema.Component {
+  collectionName: 'components_report_abuse_report_abuses';
+  info: {
+    displayName: 'report_abuse';
+    icon: 'discuss';
+  };
+  attributes: {
+    resolved: Attribute.Boolean & Attribute.DefaultTo<false>;
+    resolved_comment___users_can_not_see_this_comment: Attribute.String;
+    issue_type: Attribute.Enumeration<
+      ['off topic', 'inappropriate', 'fake', 'other']
+    > &
+      Attribute.Required &
+      Attribute.DefaultTo<'other'>;
+    user: Attribute.Relation<
+      'report-abuse.report-abuse',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface PhonePhone extends Schema.Component {
   collectionName: 'components_phone_phones';
   info: {
@@ -123,6 +145,25 @@ export interface FooterFooter extends Schema.Component {
   };
 }
 
+export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
+  collectionName: 'components_featured_blogs_featured_blogs';
+  info: {
+    displayName: 'featured-blogs';
+    icon: 'pencil';
+    description: '';
+  };
+  attributes: {
+    blogs: Attribute.Relation<
+      'featured-blogs.featured-blogs',
+      'oneToMany',
+      'api::blog.blog'
+    >;
+    slug: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface FeaturedProductsFeaturedProducts
   extends Schema.Component {
   collectionName: 'components_featured_products_featured_products';
@@ -140,25 +181,6 @@ export interface FeaturedProductsFeaturedProducts
       'oneToMany',
       'api::product.product'
     >;
-  };
-}
-
-export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
-  collectionName: 'components_featured_blogs_featured_blogs';
-  info: {
-    displayName: 'featured-blogs';
-    icon: 'pencil';
-    description: '';
-  };
-  attributes: {
-    blogs: Attribute.Relation<
-      'featured-blogs.featured-blogs',
-      'oneToMany',
-      'api::blog.blog'
-    >;
-    slug: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
   };
 }
 
@@ -356,12 +378,13 @@ declare module '@strapi/types' {
       'social-buttons.social-link': SocialButtonsSocialLink;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
+      'report-abuse.report-abuse': ReportAbuseReportAbuse;
       'phone.phone': PhonePhone;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
-      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
+      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;

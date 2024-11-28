@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_report_abuse_report_abuses",
+  "info": {
+    "displayName": "report_abuse",
+    "icon": "discuss"
+  },
+  "options": {},
+  "attributes": {
+    "resolved": {
+      "type": "boolean",
+      "default": false
+    },
+    "resolved_comment___users_can_not_see_this_comment": {
+      "type": "string"
+    },
+    "issue_type": {
+      "type": "enumeration",
+      "enum": [
+        "off topic",
+        "inappropriate",
+        "fake",
+        "other"
+      ],
+      "required": true,
+      "default": "other"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

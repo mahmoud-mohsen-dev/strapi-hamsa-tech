@@ -49,6 +49,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user"
+    },
+    "report_abuse": {
+      "displayName": "report_abuse",
+      "type": "component",
+      "repeatable": false,
+      "component": "report-abuse.report-abuse"
     }
   }
 }
