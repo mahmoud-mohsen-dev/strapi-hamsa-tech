@@ -2297,7 +2297,10 @@ export interface ApiReviewReview extends Schema.CollectionType {
       'oneToMany',
       'plugin::users-permissions.user'
     >;
-    report_abuse: Attribute.Component<'report-abuse.report-abuse'>;
+    report_abuse: Attribute.Component<
+      'report-abuse.report-abuse',
+      true
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

@@ -2,7 +2,8 @@
   "collectionName": "components_report_abuse_report_abuses",
   "info": {
     "displayName": "report_abuse",
-    "icon": "discuss"
+    "icon": "discuss",
+    "description": ""
   },
   "options": {},
   "attributes": {
@@ -11,7 +12,7 @@
       "default": false
     },
     "resolved_comment___users_can_not_see_this_comment": {
-      "type": "string"
+      "type": "text"
     },
     "issue_type": {
       "type": "enumeration",

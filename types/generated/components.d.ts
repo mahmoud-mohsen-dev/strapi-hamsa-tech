@@ -72,10 +72,11 @@ export interface ReportAbuseReportAbuse extends Schema.Component {
   info: {
     displayName: 'report_abuse';
     icon: 'discuss';
+    description: '';
   };
   attributes: {
     resolved: Attribute.Boolean & Attribute.DefaultTo<false>;
-    resolved_comment___users_can_not_see_this_comment: Attribute.String;
+    resolved_comment___users_can_not_see_this_comment: Attribute.Text;
     issue_type: Attribute.Enumeration<
       ['off topic', 'inappropriate', 'fake', 'other']
     > &
@@ -145,25 +146,6 @@ export interface FooterFooter extends Schema.Component {
   };
 }
 
-export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
-  collectionName: 'components_featured_blogs_featured_blogs';
-  info: {
-    displayName: 'featured-blogs';
-    icon: 'pencil';
-    description: '';
-  };
-  attributes: {
-    blogs: Attribute.Relation<
-      'featured-blogs.featured-blogs',
-      'oneToMany',
-      'api::blog.blog'
-    >;
-    slug: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface FeaturedProductsFeaturedProducts
   extends Schema.Component {
   collectionName: 'components_featured_products_featured_products';
@@ -181,6 +163,25 @@ export interface FeaturedProductsFeaturedProducts
       'oneToMany',
       'api::product.product'
     >;
+  };
+}
+
+export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
+  collectionName: 'components_featured_blogs_featured_blogs';
+  info: {
+    displayName: 'featured-blogs';
+    icon: 'pencil';
+    description: '';
+  };
+  attributes: {
+    blogs: Attribute.Relation<
+      'featured-blogs.featured-blogs',
+      'oneToMany',
+      'api::blog.blog'
+    >;
+    slug: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
   };
 }
 
@@ -383,8 +384,8 @@ declare module '@strapi/types' {
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
-      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
+      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
