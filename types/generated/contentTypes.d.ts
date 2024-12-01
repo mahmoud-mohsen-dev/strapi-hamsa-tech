@@ -2301,6 +2301,7 @@ export interface ApiReviewReview extends Schema.CollectionType {
       'report-abuse.report-abuse',
       true
     >;
+    hidden: Attribute.Boolean & Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

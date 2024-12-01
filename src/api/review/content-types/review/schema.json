@@ -55,6 +55,10 @@
       "type": "component",
       "repeatable": true,
       "component": "report-abuse.report-abuse"
+    },
+    "hidden": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
