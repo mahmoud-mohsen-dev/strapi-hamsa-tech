@@ -653,6 +653,10 @@ export default {
       // After a review is updated
       afterUpdate: async ({ result }) => {
         await handleReviewLifecycleEvent(result);
+      },
+
+      afterDelete: async ({ result }) => {
+        await handleReviewLifecycleEvent(result);
       }
     });
 
