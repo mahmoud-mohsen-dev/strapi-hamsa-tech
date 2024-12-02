@@ -641,6 +641,8 @@ export default {
       }
     });
 
+    let productsOfDeletedReview = null; // Temporary storage for associated products during deletion
+
     // Subscribe to lifecycle events for the review model
     strapi.db.lifecycles.subscribe({
       models: ['api::review.review'],
@@ -655,8 +657,61 @@ export default {
         await handleReviewLifecycleEvent(result);
       },
 
-      afterDelete: async ({ result }) => {
-        await handleReviewLifecycleEvent(result);
+      beforeDelete: async (event) => {
+        console.log(
+          'beforeDelete Review ID: ',
+          event?.params?.where?.id
+        );
+        const reviewCustomFieldsPopulated =
+          await strapi.entityService.findOne(
+            'api::review.review',
+            event?.params?.where?.id ?? null,
+            {
+              populate: ['products']
+            }
+          );
+
+        console.log(
+          'Review event triggered:',
+          reviewCustomFieldsPopulated
+        );
+
+        // Find associated products
+        const associatedProducts =
+          reviewCustomFieldsPopulated?.products ?? [];
+        console.log('Associated Products: ', associatedProducts);
+
+        const associatedProductsId = associatedProducts
+          .map((product) => product?.id ?? null)
+          .filter((id) => id);
+
+        console.log('Associated products ID:', associatedProductsId);
+
+        if (!associatedProductsId.length) {
+          console.warn('Review has no associated products.');
+          productsOfDeletedReview = null;
+          return;
+        }
+
+        productsOfDeletedReview = [...associatedProductsId];
+      },
+      afterDelete: async () => {
+        if (
+          !productsOfDeletedReview ||
+          productsOfDeletedReview.length === 0
+        ) {
+          console.warn('Deleted review had no associated products.');
+          return;
+        }
+        console.log(
+          'AfterDelete productsOfDeletedReview',
+          productsOfDeletedReview
+        );
+        for (const productId of productsOfDeletedReview) {
+          await updateProductReviews(productId);
+        }
+
+        productsOfDeletedReview = null;
       }
     });
 
