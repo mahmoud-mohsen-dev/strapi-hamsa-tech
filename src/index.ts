@@ -568,34 +568,210 @@ export default {
           result.sale_price
         );
 
+        const productCustomFieldsPopulated =
+          await strapi.entityService.findOne(
+            'api::product.product',
+            result.id,
+            {
+              populate: {
+                reviews: {
+                  populate: ['rating'] // Populate relevant fields
+                }
+              }
+            }
+          );
+
+        console.log('product', productCustomFieldsPopulated);
+
+        const averageReviews = calculateAverageReviews(
+          productCustomFieldsPopulated?.reviews ?? []
+        );
+        console.log('Average reviews:', averageReviews);
+
+        const totalReviews = calculateTotalReviews(
+          productCustomFieldsPopulated?.reviews ?? []
+        );
+        console.log('Total reviews:', totalReviews);
+
         // Update the product with final_product_price only if it differs
-        if (finalPrice !== result.final_product_price) {
+        // Update the product with totla_reviews only if it differs
+        // Update the product with average_reviews only if it differs
+        if (
+          finalPrice !== result.final_product_price ||
+          totalReviews !== result.total_reviews ||
+          averageReviews !== result.average_reviews
+        ) {
           await strapi.entityService.update(
             'api::product.product',
             result.id,
             {
-              data: { final_product_price: finalPrice }
+              data: {
+                final_product_price: finalPrice,
+                average_reviews: averageReviews,
+                total_reviews: totalReviews
+              }
             }
           );
           console.log(
             'Product updated and final price set:',
             finalPrice
           );
+          console.log(
+            'Product updated and total reviews set:',
+            totalReviews
+          );
+          console.log(
+            'Product updated and average reviews set:',
+            averageReviews
+          );
         } else {
           console.log(
             'Final price is already set correctly:',
             finalPrice
           );
+          console.log(
+            'Total reviews is already set correctly:',
+            totalReviews
+          );
+          console.log(
+            'Average reviews is already set correctly:',
+            averageReviews
+          );
         }
       }
     });
 
+    // Subscribe to lifecycle events for the review model
+    strapi.db.lifecycles.subscribe({
+      models: ['api::review.review'],
+
+      // After a review is created
+      afterCreate: async ({ result }) => {
+        await handleReviewLifecycleEvent(result);
+      },
+
+      // After a review is updated
+      afterUpdate: async ({ result }) => {
+        await handleReviewLifecycleEvent(result);
+      }
+    });
+
+    // Helper functions
+    // Handle shared logic for lifecycle events
+    async function handleReviewLifecycleEvent(review) {
+      const reviewCustomFieldsPopulated =
+        await strapi.entityService.findOne(
+          'api::review.review',
+          review.id,
+          {
+            populate: ['products']
+          }
+        );
+
+      console.log(
+        'Review event triggered:',
+        reviewCustomFieldsPopulated
+      );
+
+      // Find associated products
+      const associatedProducts =
+        reviewCustomFieldsPopulated?.products ?? [];
+      console.log('Associated Products: ', associatedProducts);
+
+      const associatedProductsId = associatedProducts
+        .map((product) => product?.id ?? null)
+        .filter((id) => id);
+
+      console.log('Associated products ID:', associatedProductsId);
+
+      if (!associatedProductsId.length) {
+        console.warn('Review has no associated products.');
+        return;
+      }
+
+      for (const productId of associatedProductsId) {
+        await updateProductReviews(productId);
+      }
+    }
+
+    // Update product reviews
+    async function updateProductReviews(productId) {
+      const productWithReviews = await strapi.entityService.findOne(
+        'api::product.product',
+        productId,
+        {
+          populate: {
+            reviews: {
+              populate: ['rating']
+            }
+          }
+        }
+      );
+
+      const reviews = productWithReviews?.reviews ?? [];
+      const averageReviews = calculateAverageReviews(reviews);
+      const totalReviews = calculateTotalReviews(reviews);
+
+      if (
+        totalReviews !== productWithReviews.total_reviews ||
+        averageReviews !== productWithReviews.average_reviews
+      ) {
+        await strapi.entityService.update(
+          'api::product.product',
+          productId,
+          {
+            data: {
+              average_reviews: averageReviews,
+              total_reviews: totalReviews
+            }
+          }
+        );
+
+        console.log(`Product ID ${productId} updated`);
+        console.log('Total reviews set:', totalReviews);
+        console.log('Average reviews set:', averageReviews);
+      } else {
+        console.log(`Product ID ${productId} already up-to-date`);
+        console.log('Total reviews:', totalReviews);
+        console.log('Average reviews:', averageReviews);
+      }
+    }
+
     // Function to calculate the final price
     function calculateFinalPrice(price, salePrice) {
-      if (!salePrice || salePrice === 0 || salePrice >= price) {
+      if (!salePrice || salePrice === 0) {
         return price; // If sale price is not defined or invalid, use price
       }
       return salePrice; // Use sale price if valid
+    }
+
+    // Calculate average reviews
+    function calculateAverageReviews(reviews) {
+      if (!reviews.length) return 0;
+
+      const filteredReviews = reviews.filter(
+        (review) => review.rating >= 0 && review.hidden === false
+      );
+
+      const totalRating = filteredReviews.reduce(
+        (sum, review) => sum + (review.rating ?? 0),
+        0
+      );
+
+      const averageRating = parseFloat(
+        (totalRating / filteredReviews.length).toFixed(2)
+      );
+
+      return isNaN(averageRating) ? 0 : averageRating;
+    }
+
+    // Calculate total reviews
+    function calculateTotalReviews(reviews) {
+      if (!reviews.length) return 0;
+
+      return reviews.filter(
+        (review) => review.rating >= 0 && review.hidden === false
+      ).length;
     }
   }
 };
