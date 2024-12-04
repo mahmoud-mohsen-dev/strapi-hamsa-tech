@@ -1,14 +1,18 @@
 {
   "name": "strapi-hamsa-tech",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "description": "A Strapi application",
+  "license": "MIT",
+  "author": {
+    "name": "A Strapi developer"
+  },
   "scripts": {
+    "build": "strapi build",
+    "deploy": "strapi deploy",
     "dev": "strapi develop",
     "start": "strapi start",
-    "build": "strapi build",
-    "strapi": "strapi",
-    "deploy": "strapi deploy"
+    "strapi": "strapi"
   },
   "dependencies": {
     "@amicaldo/strapi-google-maps": "^1.1.5",
@@ -25,18 +29,14 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "5.3.4",
-    "strapi-plugin-comments": "^2.3.1",
+    "strapi-plugin-meilisearch": "0.12.0",
     "styled-components": "5.3.3"
-  },
-  "author": {
-    "name": "A Strapi developer"
-  },
-  "strapi": {
-    "uuid": "d7ac9c87-2c80-4d77-989e-fc1ef2f304fe"
   },
   "engines": {
     "node": ">=18.0.0 <=20.x.x",
     "npm": ">=6.0.0"
   },
-  "license": "MIT"
+  "strapi": {
+    "uuid": "d7ac9c87-2c80-4d77-989e-fc1ef2f304fe"
+  }
 }

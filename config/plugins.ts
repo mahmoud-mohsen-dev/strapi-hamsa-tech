@@ -39,5 +39,11 @@ export default ({ env }) => ({
         defaultReplyTo: 'mahmoud.mohsen.developer@gmail.com'
       }
     }
+  },
+  meilisearch: {
+    config: {
+      host: env('MEILISEARCH_HOST'),
+      apiKey: env('MEILI_MASTER_KEY')
+    }
   }
 });
