@@ -57,9 +57,7 @@
       "type": "media",
       "multiple": false,
       "required": true,
-      "allowedTypes": [
-        "images"
-      ],
+      "allowedTypes": ["images"],
       "pluginOptions": {
         "i18n": {
           "localized": false
@@ -96,9 +94,7 @@
       "type": "media",
       "multiple": true,
       "required": true,
-      "allowedTypes": [
-        "images"
-      ],
+      "allowedTypes": ["images"],
       "pluginOptions": {
         "i18n": {
           "localized": false
@@ -145,9 +141,7 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": [
-        "files"
-      ],
+      "allowedTypes": ["files"],
       "pluginOptions": {
         "i18n": {
           "localized": false
@@ -158,9 +152,7 @@
       "type": "media",
       "multiple": false,
       "required": false,
-      "allowedTypes": [
-        "files"
-      ],
+      "allowedTypes": ["files"],
       "pluginOptions": {
         "i18n": {
           "localized": false
