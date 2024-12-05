@@ -29,14 +29,20 @@ export default ({ env }) => ({
     }
   },
   email: {
+    logger: {
+      debug: console.log,
+      info: console.info,
+      warn: console.warn,
+      error: console.error
+    },
     config: {
       provider: 'sendgrid',
       providerOptions: {
         apiKey: env('SENDGRID_API_KEY')
       },
       settings: {
-        defaultFrom: 'mahmoud.mohsen.developer@gmail.com',
-        defaultReplyTo: 'mahmoud.mohsen.developer@gmail.com'
+        defaultFrom: env('SENDGRID_DEFAULT_FROM'),
+        defaultReplyTo: env('SENDGRID_DEFAULT_REPLY_TO')
       }
     }
   },
@@ -54,7 +60,7 @@ export default ({ env }) => ({
           return entry.locale === `ar`;
         },
         transformEntry({ entry }) {
-          // console.log(entry);
+          console.log(JSON.stringify(entry));
           const transformedEntry = {
             id: entry.id,
             name: entry.name,
