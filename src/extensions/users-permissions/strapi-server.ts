@@ -10,6 +10,13 @@ const forgotPasswordSchema = yup
   })
   .noUnknown();
 
+const otpValidationSchema = yup
+  .object({
+    email: yup.string().email().required(),
+    otp: yup.string().length(6).required() // OTP is assumed to be 6 digits long
+  })
+  .noUnknown();
+
 const sanitizeUser = (user: any, ctx: any) => {
   const { auth } = ctx.state;
   const userSchema = strapi.getModel(
@@ -152,6 +159,51 @@ module.exports = (plugin: any) => {
       prefix: ''
     }
   });
+
+  // OTP Validation Controller
+  plugin.controllers.auth.validateOtp = async (ctx: any) => {
+    const { email, otp } = await validateYupSchema(
+      otpValidationSchema
+    )(ctx.request.body);
+
+    // Find the user by email
+    const user = await strapi
+      .query('plugin::users-permissions.user')
+      .findOne({ where: { email: email.toLowerCase() } });
+
+    if (!user || user.blocked) {
+      return ctx.send({
+        data: { ok: false },
+        error: { message: 'Invalid email address' }
+      });
+    }
+
+    // Check if the OTP matches the stored resetPasswordToken for the user
+    if (user.resetPasswordToken !== otp) {
+      return ctx.send({
+        data: { ok: false },
+        error: { message: 'Invalid OTP' }
+      });
+    }
+
+    // If OTP is valid
+    ctx.send({
+      data: { ok: true, error: null }
+    });
+  };
+
+  console.log(plugin.routes['content-api'].routes);
+  // Adding the route for OTP validation
+  plugin.routes['content-api'].routes.unshift({
+    method: 'POST',
+    path: '/auth/validate-otp',
+    handler: 'auth.validateOtp',
+    config: {
+      middlewares: ['plugin::users-permissions.rateLimit'],
+      prefix: ''
+    }
+  });
+  console.log(plugin.routes['content-api'].routes);
 
   return plugin;
 };

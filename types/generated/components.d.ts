@@ -166,6 +166,18 @@ export interface FeaturedProductsFeaturedProducts
   };
 }
 
+export interface FeatureFeatures extends Schema.Component {
+  collectionName: 'components_feature_features';
+  info: {
+    displayName: 'features';
+    icon: 'apps';
+    description: '';
+  };
+  attributes: {
+    feature: Attribute.Text;
+  };
+}
+
 export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
   collectionName: 'components_featured_blogs_featured_blogs';
   info: {
@@ -185,30 +197,6 @@ export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
   };
 }
 
-export interface FeatureFeatures extends Schema.Component {
-  collectionName: 'components_feature_features';
-  info: {
-    displayName: 'features';
-    icon: 'apps';
-    description: '';
-  };
-  attributes: {
-    feature: Attribute.Text;
-  };
-}
-
-export interface DetailsSpecification extends Schema.Component {
-  collectionName: 'components_details_specifications';
-  info: {
-    displayName: 'specification';
-    icon: 'layer';
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    value: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface ContactUsContactUs extends Schema.Component {
   collectionName: 'components_contact_us_contact_uses';
   info: {
@@ -223,21 +211,30 @@ export interface ContactUsContactUs extends Schema.Component {
   };
 }
 
-export interface CategoriesSectionCategories
-  extends Schema.Component {
-  collectionName: 'components_categories_section_categories';
+export interface CategoryCategories extends Schema.Component {
+  collectionName: 'components_category_categories';
   info: {
     displayName: 'categories';
-    icon: 'grid';
+    icon: 'chartCircle';
     description: '';
   };
   attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
+    title: Attribute.String & Attribute.Required;
     description: Attribute.String & Attribute.Required;
-    category: Attribute.Component<'category.categories', true> &
-      Attribute.Required;
+    image: Attribute.Media<'images'> & Attribute.Required;
+    slug: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface DetailsSpecification extends Schema.Component {
+  collectionName: 'components_details_specifications';
+  info: {
+    displayName: 'specification';
+    icon: 'layer';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    value: Attribute.String & Attribute.Required;
   };
 }
 
@@ -276,18 +273,21 @@ export interface CartProductQuantity extends Schema.Component {
   };
 }
 
-export interface CategoryCategories extends Schema.Component {
-  collectionName: 'components_category_categories';
+export interface CategoriesSectionCategories
+  extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
   info: {
     displayName: 'categories';
-    icon: 'chartCircle';
+    icon: 'grid';
     description: '';
   };
   attributes: {
-    title: Attribute.String & Attribute.Required;
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
     description: Attribute.String & Attribute.Required;
-    image: Attribute.Media<'images'> & Attribute.Required;
-    slug: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
   };
 }
 
@@ -385,13 +385,13 @@ declare module '@strapi/types' {
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
-      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
-      'details.specification': DetailsSpecification;
+      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'contact-us.contact-us': ContactUsContactUs;
-      'categories-section.categories': CategoriesSectionCategories;
-      'cart.product-quantity': CartProductQuantity;
       'category.categories': CategoryCategories;
+      'details.specification': DetailsSpecification;
+      'cart.product-quantity': CartProductQuantity;
+      'categories-section.categories': CategoriesSectionCategories;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;
