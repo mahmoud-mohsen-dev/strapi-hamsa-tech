@@ -92,7 +92,23 @@ module.exports = (plugin: any) => {
     }
     console.log('start custom controller2');
     // Generate random token.
-    const userInfo = await sanitizeUser(user, ctx);
+    const userInfo: any = await sanitizeUser(user, ctx);
+
+    // console.log('userInfo', userInfo);
+    // console.log('userInfo', JSON.stringify(userInfo));
+
+    if (
+      userInfo?.provider === 'facebook' ||
+      userInfo?.provider === 'google'
+    ) {
+      return ctx.send({
+        data: { ok: false },
+        error: {
+          message:
+            'This email address was registered using Facebook or Google login and cannot be used to change the password.'
+        }
+      });
+    }
 
     const resetPasswordToken = crypto
       .randomInt(100000, 999999)
