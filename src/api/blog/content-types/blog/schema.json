@@ -81,18 +81,10 @@
         }
       }
     },
-    "related_blogs": {
+    "footer_related_blogs": {
       "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::blog.blog",
-      "inversedBy": "connected_to_blogs",
-      "mappedBy": "connected_to_blogs"
-    },
-    "connected_to_blogs": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::blog.blog",
-      "mappedBy": "related_blogs"
+      "relation": "oneToMany",
+      "target": "api::blog.blog"
     },
     "read_time": {
       "pluginOptions": {
@@ -103,11 +95,46 @@
       "type": "time",
       "required": true
     },
-    "reviews": {
+    "sidebar_related_blogs": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::review.review",
-      "mappedBy": "blog"
+      "target": "api::blog.blog"
+    },
+    "blog_comments": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog-comment.blog-comment",
+      "mappedBy": "blogs"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.seo"
+    },
+    "short_title": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string",
+      "required": true,
+      "maxLength": 20
+    },
+    "short_description": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string",
+      "maxLength": 52,
+      "required": true
     }
   }
 }

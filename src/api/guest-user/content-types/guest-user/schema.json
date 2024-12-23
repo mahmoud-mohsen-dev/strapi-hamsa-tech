@@ -25,7 +25,7 @@
     "subscribed_to_news_and_offers": {
       "type": "boolean",
       "default": false,
-      "required": true
+      "required": false
     },
     "wishlist": {
       "type": "relation",

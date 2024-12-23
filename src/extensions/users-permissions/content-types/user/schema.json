@@ -138,6 +138,18 @@
     },
     "last_name": {
       "type": "string"
+    },
+    "blog_comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::blog-comment.blog-comment",
+      "mappedBy": "user"
+    },
+    "blog_liked_comments": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog-comment.blog-comment",
+      "mappedBy": "likes"
     }
   }
 }

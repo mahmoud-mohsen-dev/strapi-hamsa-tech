@@ -39,12 +39,6 @@
       "target": "plugin::users-permissions.user",
       "inversedBy": "reviews"
     },
-    "blog": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::blog.blog",
-      "inversedBy": "reviews"
-    },
     "likes": {
       "type": "relation",
       "relation": "oneToMany",

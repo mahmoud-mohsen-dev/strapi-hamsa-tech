@@ -883,6 +883,16 @@ export interface PluginUsersPermissionsUser
     first_name: Attribute.String;
     birth_date: Attribute.Date;
     last_name: Attribute.String;
+    blog_comments: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'oneToMany',
+      'api::blog-comment.blog-comment'
+    >;
+    blog_liked_comments: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::blog-comment.blog-comment'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -1039,6 +1049,7 @@ export interface ApiAuthorAuthor extends Schema.CollectionType {
     singularName: 'author';
     pluralName: 'authors';
     displayName: 'Author';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -1154,14 +1165,9 @@ export interface ApiBlogBlog extends Schema.CollectionType {
           localized: false;
         };
       }>;
-    related_blogs: Attribute.Relation<
+    footer_related_blogs: Attribute.Relation<
       'api::blog.blog',
-      'manyToMany',
-      'api::blog.blog'
-    >;
-    connected_to_blogs: Attribute.Relation<
-      'api::blog.blog',
-      'manyToMany',
+      'oneToMany',
       'api::blog.blog'
     >;
     read_time: Attribute.Time &
@@ -1171,11 +1177,42 @@ export interface ApiBlogBlog extends Schema.CollectionType {
           localized: false;
         };
       }>;
-    reviews: Attribute.Relation<
+    sidebar_related_blogs: Attribute.Relation<
       'api::blog.blog',
       'oneToMany',
-      'api::review.review'
+      'api::blog.blog'
     >;
+    blog_comments: Attribute.Relation<
+      'api::blog.blog',
+      'manyToMany',
+      'api::blog-comment.blog-comment'
+    >;
+    seo: Attribute.Component<'shared.seo'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    short_title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Attribute.SetMinMaxLength<{
+        maxLength: 20;
+      }>;
+    short_description: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Attribute.SetMinMaxLength<{
+        maxLength: 52;
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1197,6 +1234,68 @@ export interface ApiBlogBlog extends Schema.CollectionType {
       'api::blog.blog'
     >;
     locale: Attribute.String;
+  };
+}
+
+export interface ApiBlogCommentBlogComment
+  extends Schema.CollectionType {
+  collectionName: 'blog_comments';
+  info: {
+    singularName: 'blog-comment';
+    pluralName: 'blog-comments';
+    displayName: 'Blog Comments';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    hidden: Attribute.Boolean & Attribute.DefaultTo<false>;
+    comment: Attribute.Text & Attribute.Required;
+    blogs: Attribute.Relation<
+      'api::blog-comment.blog-comment',
+      'manyToMany',
+      'api::blog.blog'
+    >;
+    user: Attribute.Relation<
+      'api::blog-comment.blog-comment',
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+    report_abuses: Attribute.Component<
+      'report-abuse.report-abuse',
+      true
+    >;
+    likes: Attribute.Relation<
+      'api::blog-comment.blog-comment',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    replies: Attribute.Relation<
+      'api::blog-comment.blog-comment',
+      'oneToMany',
+      'api::blog-comment.blog-comment'
+    >;
+    replied_to: Attribute.Relation<
+      'api::blog-comment.blog-comment',
+      'manyToOne',
+      'api::blog-comment.blog-comment'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::blog-comment.blog-comment',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::blog-comment.blog-comment',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
   };
 }
 
@@ -1443,7 +1542,6 @@ export interface ApiGuestUserGuestUser extends Schema.CollectionType {
       'api::order.order'
     >;
     subscribed_to_news_and_offers: Attribute.Boolean &
-      Attribute.Required &
       Attribute.DefaultTo<false>;
     wishlist: Attribute.Relation<
       'api::guest-user.guest-user',
@@ -1800,6 +1898,68 @@ export interface ApiPagePage extends Schema.CollectionType {
   };
 }
 
+export interface ApiPrivacyPolicyPrivacyPolicy
+  extends Schema.SingleType {
+  collectionName: 'privacy_policies';
+  info: {
+    singularName: 'privacy-policy';
+    pluralName: 'privacy-policies';
+    displayName: 'Privacy Policy';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    content: Attribute.Blocks &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo: Attribute.Component<'shared.seo'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo_meta_image: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::privacy-policy.privacy-policy',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::privacy-policy.privacy-policy',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::privacy-policy.privacy-policy',
+      'oneToMany',
+      'api::privacy-policy.privacy-policy'
+    >;
+    locale: Attribute.String;
+  };
+}
+
 export interface ApiProductProduct extends Schema.CollectionType {
   collectionName: 'products';
   info: {
@@ -2135,6 +2295,67 @@ export interface ApiProductSpotlightProductSpotlight
   };
 }
 
+export interface ApiReturnPolicyReturnPolicy
+  extends Schema.SingleType {
+  collectionName: 'return_policies';
+  info: {
+    singularName: 'return-policy';
+    pluralName: 'return-policies';
+    displayName: 'Return Policy';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    content: Attribute.Blocks &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo: Attribute.Component<'shared.seo'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo_meta_image: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::return-policy.return-policy',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::return-policy.return-policy',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::return-policy.return-policy',
+      'oneToMany',
+      'api::return-policy.return-policy'
+    >;
+    locale: Attribute.String;
+  };
+}
+
 export interface ApiReviewReview extends Schema.CollectionType {
   collectionName: 'reviews';
   info: {
@@ -2168,11 +2389,6 @@ export interface ApiReviewReview extends Schema.CollectionType {
       'api::review.review',
       'manyToOne',
       'plugin::users-permissions.user'
-    >;
-    blog: Attribute.Relation<
-      'api::review.review',
-      'manyToOne',
-      'api::blog.blog'
     >;
     likes: Attribute.Relation<
       'api::review.review',
@@ -2476,6 +2692,69 @@ export interface ApiTagTag extends Schema.CollectionType {
   };
 }
 
+export interface ApiTermsOfServiceTermsOfService
+  extends Schema.SingleType {
+  collectionName: 'terms_of_services';
+  info: {
+    singularName: 'terms-of-service';
+    pluralName: 'terms-of-services';
+    displayName: 'Terms of Service';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    content: Attribute.Blocks &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo: Attribute.Component<'shared.seo'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo_meta_image: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::terms-of-service.terms-of-service',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::terms-of-service.terms-of-service',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::terms-of-service.terms-of-service',
+      'oneToMany',
+      'api::terms-of-service.terms-of-service'
+    >;
+    locale: Attribute.String;
+  };
+}
+
 export interface ApiWarantyWaranty extends Schema.CollectionType {
   collectionName: 'waranties';
   info: {
@@ -2523,6 +2802,68 @@ export interface ApiWarantyWaranty extends Schema.CollectionType {
       'api::waranty.waranty',
       'oneToMany',
       'api::waranty.waranty'
+    >;
+    locale: Attribute.String;
+  };
+}
+
+export interface ApiWarrantyTermWarrantyTerm
+  extends Schema.SingleType {
+  collectionName: 'warranty_terms';
+  info: {
+    singularName: 'warranty-term';
+    pluralName: 'warranty-terms';
+    displayName: 'Warranty Terms';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    content: Attribute.Blocks &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo: Attribute.Component<'shared.seo'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo_meta_image: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::warranty-term.warranty-term',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::warranty-term.warranty-term',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::warranty-term.warranty-term',
+      'oneToMany',
+      'api::warranty-term.warranty-term'
     >;
     locale: Attribute.String;
   };
@@ -2607,6 +2948,7 @@ declare module '@strapi/types' {
       'api::address.address': ApiAddressAddress;
       'api::author.author': ApiAuthorAuthor;
       'api::blog.blog': ApiBlogBlog;
+      'api::blog-comment.blog-comment': ApiBlogCommentBlogComment;
       'api::brand.brand': ApiBrandBrand;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
@@ -2615,15 +2957,19 @@ declare module '@strapi/types' {
       'api::offer.offer': ApiOfferOffer;
       'api::order.order': ApiOrderOrder;
       'api::page.page': ApiPagePage;
+      'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::product.product': ApiProductProduct;
       'api::product-spotlight.product-spotlight': ApiProductSpotlightProductSpotlight;
+      'api::return-policy.return-policy': ApiReturnPolicyReturnPolicy;
       'api::review.review': ApiReviewReview;
       'api::shipping-cost.shipping-cost': ApiShippingCostShippingCost;
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::support.support': ApiSupportSupport;
       'api::support-page.support-page': ApiSupportPageSupportPage;
       'api::tag.tag': ApiTagTag;
+      'api::terms-of-service.terms-of-service': ApiTermsOfServiceTermsOfService;
       'api::waranty.waranty': ApiWarantyWaranty;
+      'api::warranty-term.warranty-term': ApiWarrantyTermWarrantyTerm;
       'api::wishlist.wishlist': ApiWishlistWishlist;
     }
   }

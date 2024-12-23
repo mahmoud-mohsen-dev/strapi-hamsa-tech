@@ -61,10 +61,10 @@ export default {
                   `${userIdFromToken}` !== `${id}`
                 ) {
                   console.error(
-                    'Unauthorized: You can only access your own profile.'
+                    'Unauthorized - You can only access your own profile.'
                   );
                   throw new Error(
-                    'Unauthorized: You can only access your own profile.'
+                    'Unauthorized - You can only access your own profile.'
                   );
                 }
 
@@ -109,9 +109,7 @@ export default {
                 return response;
               } catch (error) {
                 console.error(`Error fetching user( `, error + ' )');
-                throw new Error(
-                  'Failed to fetch user( ' + error + ' )'
-                );
+                throw new Error(error);
               }
             }
           }
@@ -140,6 +138,8 @@ export default {
       cart: ID # ID for the related cart
       wishlist: ID # ID for the related wishlist
       reviews: [ID] # Array of review IDs for the one-to-many relation
+      blog_comments: [ID] # Array of review IDs for the one-to-many relation
+      blog_liked_comments: [ID] # Array of review IDs for the one-to-many relation
       avatar_photo: ID # ID for the media object (image)
       phone: String
       aggree_to_our_terms: Boolean
@@ -253,6 +253,7 @@ export default {
       }
     }));
 
+    // I didn't add update blog_comments, blog_liked_comments in UsersPermissionsMe
     const extensionService = strapi
       .plugin('graphql')
       .service('extension');
