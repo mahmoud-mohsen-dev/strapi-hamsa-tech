@@ -1905,6 +1905,7 @@ export interface ApiPrivacyPolicyPrivacyPolicy
     singularName: 'privacy-policy';
     pluralName: 'privacy-policies';
     displayName: 'Privacy Policy';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -1934,6 +1935,13 @@ export interface ApiPrivacyPolicyPrivacyPolicy
       Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
+        };
+      }>;
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
         };
       }>;
     createdAt: Attribute.DateTime;
@@ -2302,6 +2310,7 @@ export interface ApiReturnPolicyReturnPolicy
     singularName: 'return-policy';
     pluralName: 'return-policies';
     displayName: 'Return Policy';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -2330,6 +2339,13 @@ export interface ApiReturnPolicyReturnPolicy
       Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
+        };
+      }>;
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
         };
       }>;
     createdAt: Attribute.DateTime;
@@ -2731,6 +2747,13 @@ export interface ApiTermsOfServiceTermsOfService
           localized: false;
         };
       }>;
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2814,6 +2837,7 @@ export interface ApiWarrantyTermWarrantyTerm
     singularName: 'warranty-term';
     pluralName: 'warranty-terms';
     displayName: 'Warranty Terms';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -2843,6 +2867,13 @@ export interface ApiWarrantyTermWarrantyTerm
       Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
+        };
+      }>;
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
         };
       }>;
     createdAt: Attribute.DateTime;
