@@ -102,21 +102,6 @@ export interface PhonePhone extends Schema.Component {
   };
 }
 
-export interface FooterFooter extends Schema.Component {
-  collectionName: 'components_footer_footers';
-  info: {
-    displayName: 'footer';
-    icon: 'layout';
-  };
-  attributes: {
-    description: Attribute.Text & Attribute.Required;
-    social_links: Attribute.Component<'link.social-links', true>;
-    quick_links: Attribute.Component<'link.link', true>;
-    contact_us_phone: Attribute.String & Attribute.Required;
-    contact_us_email: Attribute.Email & Attribute.Required;
-  };
-}
-
 export interface LinkSocialLinks extends Schema.Component {
   collectionName: 'components_link_social_links';
   info: {
@@ -143,6 +128,21 @@ export interface LinkLink extends Schema.Component {
   attributes: {
     name: Attribute.String & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface FooterFooter extends Schema.Component {
+  collectionName: 'components_footer_footers';
+  info: {
+    displayName: 'footer';
+    icon: 'layout';
+  };
+  attributes: {
+    description: Attribute.Text & Attribute.Required;
+    social_links: Attribute.Component<'link.social-links', true>;
+    quick_links: Attribute.Component<'link.link', true>;
+    contact_us_phone: Attribute.String & Attribute.Required;
+    contact_us_email: Attribute.Email & Attribute.Required;
   };
 }
 
@@ -197,6 +197,18 @@ export interface FeatureFeatures extends Schema.Component {
   };
 }
 
+export interface DetailsSpecification extends Schema.Component {
+  collectionName: 'components_details_specifications';
+  info: {
+    displayName: 'specification';
+    icon: 'layer';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    value: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface ContactUsContactUs extends Schema.Component {
   collectionName: 'components_contact_us_contact_uses';
   info: {
@@ -208,18 +220,6 @@ export interface ContactUsContactUs extends Schema.Component {
     heading: Attribute.Text & Attribute.Required;
     button_text: Attribute.String & Attribute.Required;
     button_url: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface DetailsSpecification extends Schema.Component {
-  collectionName: 'components_details_specifications';
-  info: {
-    displayName: 'specification';
-    icon: 'layer';
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    value: Attribute.String & Attribute.Required;
   };
 }
 
@@ -381,14 +381,14 @@ declare module '@strapi/types' {
       'shared.meta-social': SharedMetaSocial;
       'report-abuse.report-abuse': ReportAbuseReportAbuse;
       'phone.phone': PhonePhone;
-      'footer.footer': FooterFooter;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
+      'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
-      'contact-us.contact-us': ContactUsContactUs;
       'details.specification': DetailsSpecification;
+      'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;

@@ -2303,14 +2303,13 @@ export interface ApiProductSpotlightProductSpotlight
   };
 }
 
-export interface ApiReturnPolicyReturnPolicy
+export interface ApiReturnAndRefundPolicyReturnAndRefundPolicy
   extends Schema.SingleType {
-  collectionName: 'return_policies';
+  collectionName: 'return_and_refund_policies';
   info: {
-    singularName: 'return-policy';
-    pluralName: 'return-policies';
-    displayName: 'Return Policy';
-    description: '';
+    singularName: 'return-and-refund-policy';
+    pluralName: 'return-and-refund-policies';
+    displayName: 'Return and Refund Policy';
   };
   options: {
     draftAndPublish: true;
@@ -2321,6 +2320,13 @@ export interface ApiReturnPolicyReturnPolicy
     };
   };
   attributes: {
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     content: Attribute.Blocks &
       Attribute.Required &
       Attribute.SetPluginOptions<{
@@ -2329,6 +2335,7 @@ export interface ApiReturnPolicyReturnPolicy
         };
       }>;
     seo: Attribute.Component<'shared.seo'> &
+      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -2341,32 +2348,25 @@ export interface ApiReturnPolicyReturnPolicy
           localized: false;
         };
       }>;
-    title: Attribute.String &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
-      'api::return-policy.return-policy',
+      'api::return-and-refund-policy.return-and-refund-policy',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     updatedBy: Attribute.Relation<
-      'api::return-policy.return-policy',
+      'api::return-and-refund-policy.return-and-refund-policy',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     localizations: Attribute.Relation<
-      'api::return-policy.return-policy',
+      'api::return-and-refund-policy.return-and-refund-policy',
       'oneToMany',
-      'api::return-policy.return-policy'
+      'api::return-and-refund-policy.return-and-refund-policy'
     >;
     locale: Attribute.String;
   };
@@ -2499,6 +2499,75 @@ export interface ApiShippingCostShippingCost
       'api::shipping-cost.shipping-cost',
       'oneToMany',
       'api::shipping-cost.shipping-cost'
+    >;
+    locale: Attribute.String;
+  };
+}
+
+export interface ApiShippingPolicyShippingPolicy
+  extends Schema.SingleType {
+  collectionName: 'shipping_policies';
+  info: {
+    singularName: 'shipping-policy';
+    pluralName: 'shipping-policies';
+    displayName: 'Shipping Policy';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    title: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo: Attribute.Component<'shared.seo'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    seo_meta_image: Attribute.Media<'images'> &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    content: Attribute.Blocks &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::shipping-policy.shipping-policy',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::shipping-policy.shipping-policy',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::shipping-policy.shipping-policy',
+      'oneToMany',
+      'api::shipping-policy.shipping-policy'
     >;
     locale: Attribute.String;
   };
@@ -2991,9 +3060,10 @@ declare module '@strapi/types' {
       'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::product.product': ApiProductProduct;
       'api::product-spotlight.product-spotlight': ApiProductSpotlightProductSpotlight;
-      'api::return-policy.return-policy': ApiReturnPolicyReturnPolicy;
+      'api::return-and-refund-policy.return-and-refund-policy': ApiReturnAndRefundPolicyReturnAndRefundPolicy;
       'api::review.review': ApiReviewReview;
       'api::shipping-cost.shipping-cost': ApiShippingCostShippingCost;
+      'api::shipping-policy.shipping-policy': ApiShippingPolicyShippingPolicy;
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::support.support': ApiSupportSupport;
       'api::support-page.support-page': ApiSupportPageSupportPage;

@@ -1,10 +1,10 @@
 {
   "kind": "singleType",
-  "collectionName": "return_policies",
+  "collectionName": "shipping_policies",
   "info": {
-    "singularName": "return-policy",
-    "pluralName": "return-policies",
-    "displayName": "Return Policy",
+    "singularName": "shipping-policy",
+    "pluralName": "shipping-policies",
+    "displayName": "Shipping Policy",
     "description": ""
   },
   "options": {
@@ -16,13 +16,13 @@
     }
   },
   "attributes": {
-    "content": {
+    "title": {
       "pluginOptions": {
         "i18n": {
           "localized": true
         }
       },
-      "type": "blocks",
+      "type": "string",
       "required": true
     },
     "seo": {
@@ -48,13 +48,13 @@
         }
       }
     },
-    "title": {
+    "content": {
       "pluginOptions": {
         "i18n": {
           "localized": true
         }
       },
-      "type": "string",
+      "type": "blocks",
       "required": true
     }
   }
