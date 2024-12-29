@@ -56,6 +56,15 @@
       },
       "type": "blocks",
       "required": true
+    },
+    "hidden": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "boolean",
+      "default": false
     }
   }
 }

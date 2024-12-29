@@ -2,7 +2,8 @@
   "collectionName": "components_footer_footers",
   "info": {
     "displayName": "footer",
-    "icon": "layout"
+    "icon": "layout",
+    "description": ""
   },
   "options": {},
   "attributes": {
@@ -27,6 +28,12 @@
     },
     "contact_us_email": {
       "type": "email",
+      "required": true
+    },
+    "terms": {
+      "type": "component",
+      "repeatable": true,
+      "component": "link.link",
       "required": true
     }
   }

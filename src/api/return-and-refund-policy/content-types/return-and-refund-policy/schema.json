@@ -4,7 +4,8 @@
   "info": {
     "singularName": "return-and-refund-policy",
     "pluralName": "return-and-refund-policies",
-    "displayName": "Return and Refund Policy"
+    "displayName": "Return and Refund Policy",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -45,17 +46,26 @@
       "required": true
     },
     "seo_meta_image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
       "allowedTypes": [
         "images"
       ],
-      "type": "media",
-      "multiple": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "hidden": {
       "pluginOptions": {
         "i18n": {
           "localized": false
         }
       },
-      "required": true
+      "type": "boolean",
+      "default": false
     }
   }
 }

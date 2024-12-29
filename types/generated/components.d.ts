@@ -136,6 +136,7 @@ export interface FooterFooter extends Schema.Component {
   info: {
     displayName: 'footer';
     icon: 'layout';
+    description: '';
   };
   attributes: {
     description: Attribute.Text & Attribute.Required;
@@ -143,6 +144,8 @@ export interface FooterFooter extends Schema.Component {
     quick_links: Attribute.Component<'link.link', true>;
     contact_us_phone: Attribute.String & Attribute.Required;
     contact_us_email: Attribute.Email & Attribute.Required;
+    terms: Attribute.Component<'link.link', true> &
+      Attribute.Required;
   };
 }
 
@@ -197,18 +200,6 @@ export interface FeatureFeatures extends Schema.Component {
   };
 }
 
-export interface DetailsSpecification extends Schema.Component {
-  collectionName: 'components_details_specifications';
-  info: {
-    displayName: 'specification';
-    icon: 'layer';
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    value: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface ContactUsContactUs extends Schema.Component {
   collectionName: 'components_contact_us_contact_uses';
   info: {
@@ -220,6 +211,18 @@ export interface ContactUsContactUs extends Schema.Component {
     heading: Attribute.Text & Attribute.Required;
     button_text: Attribute.String & Attribute.Required;
     button_url: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface DetailsSpecification extends Schema.Component {
+  collectionName: 'components_details_specifications';
+  info: {
+    displayName: 'specification';
+    icon: 'layer';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    value: Attribute.String & Attribute.Required;
   };
 }
 
@@ -291,19 +294,6 @@ export interface CartProductQuantity extends Schema.Component {
   };
 }
 
-export interface ButtonLinkButtonLink extends Schema.Component {
-  collectionName: 'components_button_link_button_links';
-  info: {
-    displayName: 'buttonLink';
-    icon: 'link';
-    description: '';
-  };
-  attributes: {
-    buttonText: Attribute.String & Attribute.Required;
-    button_slug: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface CarouselHeroSection extends Schema.Component {
   collectionName: 'components_carousel_hero_sections';
   info: {
@@ -321,6 +311,19 @@ export interface CarouselHeroSection extends Schema.Component {
     direction: Attribute.Enumeration<['left', 'right']> &
       Attribute.Required &
       Attribute.DefaultTo<'left'>;
+  };
+}
+
+export interface ButtonLinkButtonLink extends Schema.Component {
+  collectionName: 'components_button_link_button_links';
+  info: {
+    displayName: 'buttonLink';
+    icon: 'link';
+    description: '';
+  };
+  attributes: {
+    buttonText: Attribute.String & Attribute.Required;
+    button_slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -387,13 +390,13 @@ declare module '@strapi/types' {
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
-      'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
+      'details.specification': DetailsSpecification;
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
-      'button-link.button-link': ButtonLinkButtonLink;
       'carousel.hero-section': CarouselHeroSection;
+      'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;
       'branch-info.branch': BranchInfoBranch;
       'about-us-section.about-us': AboutUsSectionAboutUs;

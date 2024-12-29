@@ -1944,6 +1944,13 @@ export interface ApiPrivacyPolicyPrivacyPolicy
           localized: true;
         };
       }>;
+    hidden: Attribute.Boolean &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2310,6 +2317,7 @@ export interface ApiReturnAndRefundPolicyReturnAndRefundPolicy
     singularName: 'return-and-refund-policy';
     pluralName: 'return-and-refund-policies';
     displayName: 'Return and Refund Policy';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -2348,6 +2356,13 @@ export interface ApiReturnAndRefundPolicyReturnAndRefundPolicy
           localized: false;
         };
       }>;
+    hidden: Attribute.Boolean &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2549,6 +2564,13 @@ export interface ApiShippingPolicyShippingPolicy
           localized: true;
         };
       }>;
+    hidden: Attribute.Boolean &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2823,6 +2845,13 @@ export interface ApiTermsOfServiceTermsOfService
           localized: true;
         };
       }>;
+    hidden: Attribute.Boolean &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2945,6 +2974,13 @@ export interface ApiWarrantyTermWarrantyTerm
           localized: true;
         };
       }>;
+    hidden: Attribute.Boolean &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
