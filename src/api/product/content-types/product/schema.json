@@ -290,6 +290,26 @@
       },
       "type": "string",
       "unique": false
+    },
+    "edara_item_code": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "edara_can_change_price_and_stock_for_this_product": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "boolean",
+      "default": true,
+      "required": false
     }
   }
 }

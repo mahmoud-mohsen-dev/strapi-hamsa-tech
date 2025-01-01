@@ -2220,6 +2220,20 @@ export interface ApiProductProduct extends Schema.CollectionType {
           localized: false;
         };
       }>;
+    edara_item_code: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    edara_can_change_price_and_stock_for_this_product: Attribute.Boolean &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.DefaultTo<true>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

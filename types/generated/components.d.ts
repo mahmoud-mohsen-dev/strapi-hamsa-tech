@@ -200,6 +200,18 @@ export interface FeatureFeatures extends Schema.Component {
   };
 }
 
+export interface DetailsSpecification extends Schema.Component {
+  collectionName: 'components_details_specifications';
+  info: {
+    displayName: 'specification';
+    icon: 'layer';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    value: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface ContactUsContactUs extends Schema.Component {
   collectionName: 'components_contact_us_contact_uses';
   info: {
@@ -211,18 +223,6 @@ export interface ContactUsContactUs extends Schema.Component {
     heading: Attribute.Text & Attribute.Required;
     button_text: Attribute.String & Attribute.Required;
     button_url: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface DetailsSpecification extends Schema.Component {
-  collectionName: 'components_details_specifications';
-  info: {
-    displayName: 'specification';
-    icon: 'layer';
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    value: Attribute.String & Attribute.Required;
   };
 }
 
@@ -390,8 +390,8 @@ declare module '@strapi/types' {
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
-      'contact-us.contact-us': ContactUsContactUs;
       'details.specification': DetailsSpecification;
+      'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
