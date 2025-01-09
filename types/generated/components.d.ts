@@ -205,10 +205,11 @@ export interface DetailsSpecification extends Schema.Component {
   info: {
     displayName: 'specification';
     icon: 'layer';
+    description: '';
   };
   attributes: {
     name: Attribute.String & Attribute.Required;
-    value: Attribute.String & Attribute.Required;
+    value: Attribute.Text & Attribute.Required;
   };
 }
 

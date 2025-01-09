@@ -2,7 +2,8 @@
   "collectionName": "components_details_specifications",
   "info": {
     "displayName": "specification",
-    "icon": "layer"
+    "icon": "layer",
+    "description": ""
   },
   "options": {},
   "attributes": {
@@ -11,7 +12,7 @@
       "required": true
     },
     "value": {
-      "type": "string",
+      "type": "text",
       "required": true
     }
   }
