@@ -714,6 +714,9 @@ export default {
           }
         ];
 
+        // Generate the table HTML from updateStatus
+        const tableHTML = generateTable(updateStatus);
+
         // Store the update status inside the same collection entry
         await strapi.entityService.update(
           'api::update-prices-and-stock.update-prices-and-stock',
@@ -721,7 +724,8 @@ export default {
           {
             data: {
               update_status: updateStatus,
-              update_summary: updateSummary
+              update_summary: updateSummary,
+              update_status_table: tableHTML // This will store the HTML table as content
             }
           }
         );
@@ -729,29 +733,29 @@ export default {
         // Remove the temporary file after processing
         fs.unlinkSync(tempFilePath);
 
-        // console.log(
-        //   JSON.stringify(filteredSheet.map((row) => row['Item code']))
-        // );
-        // console.log(
-        //   `The total ${products.length} products number found in the system!`
-        // );
-        // console.log(
-        //   `The total ${filteredSheet.length} products number found in the file!`
-        // );
-        // console.log(
-        //   `✅ ${numberOfProductsUpdated} products updated successfully in the system!`
-        // );
-        // console.log(
-        //   `❌ ${
-        //     products.length > 0 &&
-        //     products.length >= numberOfProductsUpdated
-        //       ? products.length - numberOfProductsUpdated
-        //       : 0
-        //   } products failed to be updated in the system!`
-        // );
-        // console.log(
-        //   `❌ ${numberOfProductsFailedToUpdate} products failed to be updated from the file!`
-        // );
+        console.log(
+          JSON.stringify(filteredSheet.map((row) => row['Item code']))
+        );
+        console.log(
+          `The total ${products.length} products number found in the system!`
+        );
+        console.log(
+          `The total ${filteredSheet.length} products number found in the file!`
+        );
+        console.log(
+          `✅ ${numberOfProductsUpdated} products updated successfully in the system!`
+        );
+        console.log(
+          `❌ ${
+            products.length > 0 &&
+            products.length >= numberOfProductsUpdated
+              ? products.length - numberOfProductsUpdated
+              : 0
+          } products failed to be updated in the system!`
+        );
+        console.log(
+          `❌ ${numberOfProductsFailedToUpdate} products failed to be updated from the file!`
+        );
       } catch (error) {
         console.error('❌ Error processing uploaded file:', error);
       }
@@ -1066,6 +1070,77 @@ export default {
       return reviews.filter(
         (review) => review.rating >= 0 && review.hidden === false
       ).length;
+    }
+
+    function generateTable(updateStatus) {
+      const headerStyles = 'vertical-align:top; color:#166fd4;';
+      // Create table header
+      let tableHTML = `
+    <figure class="table" style="width:100%;">
+      <table class="ck-table-resized" style="border-color:hsl(0, 0%, 100%);">
+        <colgroup>
+          <col style="width:10.88%;">
+          <col style="width:8.87%;">
+          <col style="width:15.06%;">
+          <col style="width:14.4%;">
+          <col style="width:12.53%;">
+          <col style="width:13.62%;">
+          <col style="width:12.15%;">
+          <col style="width:12.49%;">
+        </colgroup>
+        <thead>
+          <tr>
+            <th style="${headerStyles}">Status</th>
+            <th style="${headerStyles}">Item Code</th>
+            <th style="${headerStyles}">Product Name (File)</th>
+            <th style="${headerStyles}">Product Name (System)</th>
+            <th style="${headerStyles}">Previous Price</th>
+            <th style="${headerStyles}">New Price</th>
+            <th style="${headerStyles}">Previous Stock</th>
+            <th style="${headerStyles}">New Stock</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      // Loop through the update_status data and generate table rows
+      updateStatus.forEach((item) => {
+        // Define the inline style based on the status
+        let colStyle = 'vertical-align:top;';
+        let statusTextColor = '';
+
+        if (item.status === 'Updated') {
+          statusTextColor = 'color: #388e3c;';
+        } else if (item.status === 'Not Found') {
+          statusTextColor = 'color: #d32f2f;';
+        } else if (item.status === 'Skipped') {
+          statusTextColor = 'color: #fbc02d;';
+        } else {
+          statusTextColor = 'color: white;';
+        }
+
+        tableHTML += `
+      <tr>
+        <td style="${colStyle} ${statusTextColor}">${
+          item.status || 'N/A'
+        }</td>
+        <td style="${colStyle}">${item.itemCode || 'N/A'}</td>
+        <td style="${colStyle}">${
+          item.productNameInTheFile || 'N/A'
+        }</td>
+        <td style="${colStyle}">${
+          item.productNameInTheSytem || 'N/A'
+        }</td>
+        <td style="${colStyle}">${item.previousPrice || 'N/A'}</td>
+        <td style="${colStyle}">${item.newPrice || 'N/A'}</td>
+        <td style="${colStyle}">${item.previousStock || 'N/A'}</td>
+        <td style="${colStyle}">${item.newStock || 'N/A'}</td>
+      </tr>`;
+      });
+
+      // Close table and figure tags
+      tableHTML += `</tbody></table></figure>`;
+
+      return tableHTML;
     }
   }
 };
