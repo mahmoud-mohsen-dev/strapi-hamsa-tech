@@ -1,4 +1,8 @@
 const { sanitize } = require('@strapi/utils');
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const xlsx = require('xlsx');
 
 export default {
   /**
@@ -523,6 +527,236 @@ export default {
    */
   // bootstrap(/*{ strapi }*/) {},
   async bootstrap({ strapi }) {
+    // Subscribe to lifecycle events for the "Update Prices And Stock" collection
+    strapi.db.lifecycles.subscribe({
+      models: [
+        'api::update-prices-and-stock.update-prices-and-stock'
+      ],
+
+      // After an XLSX file is uploaded and the entry is created or updated
+      afterCreate: async ({ result }) => {
+        await processUploadedFile(result);
+      },
+      afterUpdate: async ({ result }) => {
+        await processUploadedFile(result);
+      }
+    });
+
+    async function processUploadedFile(entry) {
+      console.log(entry);
+
+      if (
+        !entry?.xlsx_file_to_upload ||
+        !entry?.xlsx_file_to_upload?.url
+      ) {
+        console.warn('No file found in the entry.');
+        return;
+      }
+
+      try {
+        const fileUrl = entry.xlsx_file_to_upload.url;
+        console.log('Downloading file from:', fileUrl);
+
+        // Define a temporary local file path
+        const tempFilePath = path.join(__dirname, 'temp.xlsx');
+        //tempFilePath D:\Codes\Hamsa Tech\strapi-hamsa-tech\dist\src\temp.xlsx
+        console.log('Creating temporary file at', tempFilePath);
+
+        // Download the file from Cloudinary
+        const response = await axios({
+          method: 'GET',
+          url: fileUrl,
+          responseType: 'arraybuffer'
+        });
+
+        // console.log('response', response);
+
+        // Write the downloaded file to the local system
+        fs.writeFileSync(tempFilePath, response.data);
+        console.log('File downloaded successfully to', tempFilePath);
+
+        // Read the XLSX file
+        const workbook = xlsx.readFile(tempFilePath);
+        const sheetName = workbook.SheetNames[0];
+        const sheet =
+          xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]) ?? [];
+
+        const filteredSheet = sheet.filter(
+          (row) =>
+            typeof row['Item code'] === 'string' ||
+            row['Item code'] === 'number'
+        );
+
+        // console.log('filteredSheet length:', filteredSheet.length);
+
+        const products = await strapi.entityService.findMany(
+          'api::product.product'
+        );
+
+        let numberOfProductsUpdated = 0;
+        let numberOfProductsFailedToUpdate = 0;
+
+        const updateStatus = []; // Store status for each product
+        for (const row of filteredSheet) {
+          const itemName = row['Description'] ?? null;
+          const itemCode = row['Item code'] ?? null;
+          const salesPrice = row['Sales price'] ?? 0;
+          const totalStock = row['Total'] ?? 0;
+
+          // console.log(itemCode);
+          // console.log(salesPrice);
+          // console.log(totalStock);
+
+          console.log('Processing:', {
+            itemCode,
+            salesPrice,
+            totalStock
+          });
+
+          if (
+            !itemCode ||
+            salesPrice === undefined ||
+            totalStock === undefined
+          ) {
+            console.warn(`Skipping row due to missing data:`, row);
+            updateStatus.push({
+              status: 'Skipped',
+              itemCode,
+              productNameInTheFile: itemName,
+              productNameInTheSytem: null,
+              previousPrice: null,
+              newPrice: null,
+              previousStock: null,
+              newStock: null
+            });
+            continue;
+          }
+
+          // Find the product by item code
+          const product = await strapi.entityService.findMany(
+            'api::product.product',
+            {
+              filters: { edara_item_code: itemCode }
+            }
+          );
+
+          if (
+            product &&
+            product.length > 0 &&
+            `${product.price}` !== `${salesPrice}` &&
+            `${product.stock}` !== `${totalStock}` &&
+            product[0][
+              'edara_can_change_price_and_stock_for_this_product'
+            ]
+          ) {
+            const prevPrice = product[0].price;
+            const prevStock = product[0].stock;
+            // Update product price and stock
+            await strapi.entityService.update(
+              'api::product.product',
+              product[0].id,
+              {
+                data: {
+                  price: salesPrice,
+                  sale_price: 0,
+                  stock: totalStock
+                }
+              }
+            );
+            numberOfProductsUpdated += 1;
+            console.log(
+              `✅ Updated product Name: ${product[0]?.name}, product Edara Item Code ${itemCode}: Price = ${salesPrice}, Stock = ${totalStock}`
+            );
+
+            updateStatus.push({
+              status: 'Updated',
+              itemCode,
+              productNameInTheFile: itemName,
+              productNameInTheSytem: product[0].name,
+              previousPrice: prevPrice,
+              newPrice: salesPrice,
+              previousStock: prevStock,
+              newStock: totalStock
+            });
+          } else {
+            console.warn(
+              `⚠️ Product not found for item code in the system: ${itemCode}`
+            );
+
+            numberOfProductsFailedToUpdate += 1;
+
+            updateStatus.push({
+              status: 'Not Found',
+              itemCode,
+              productNameInTheFile: itemName,
+              productNameInTheSytem: null,
+              previousPrice: null,
+              newPrice: null,
+              previousStock: null,
+              newStock: null
+            });
+          }
+        }
+
+        const updateSummary = [
+          {
+            'Total products found in the system': products.length,
+            'Total products found in the file': filteredSheet.length,
+            '✅ Total products updated successfully in the system':
+              numberOfProductsUpdated,
+            '❌ Total products failed to be updated in the system':
+              products.length > 0 &&
+              products.length >= numberOfProductsUpdated
+                ? products.length - numberOfProductsUpdated
+                : 0,
+            '❌ Total products failed to be updated in the file':
+              numberOfProductsFailedToUpdate
+          }
+        ];
+
+        // Store the update status inside the same collection entry
+        await strapi.entityService.update(
+          'api::update-prices-and-stock.update-prices-and-stock',
+          entry.id,
+          {
+            data: {
+              update_status: updateStatus,
+              update_summary: updateSummary
+            }
+          }
+        );
+
+        // Remove the temporary file after processing
+        fs.unlinkSync(tempFilePath);
+
+        // console.log(
+        //   JSON.stringify(filteredSheet.map((row) => row['Item code']))
+        // );
+        // console.log(
+        //   `The total ${products.length} products number found in the system!`
+        // );
+        // console.log(
+        //   `The total ${filteredSheet.length} products number found in the file!`
+        // );
+        // console.log(
+        //   `✅ ${numberOfProductsUpdated} products updated successfully in the system!`
+        // );
+        // console.log(
+        //   `❌ ${
+        //     products.length > 0 &&
+        //     products.length >= numberOfProductsUpdated
+        //       ? products.length - numberOfProductsUpdated
+        //       : 0
+        //   } products failed to be updated in the system!`
+        // );
+        // console.log(
+        //   `❌ ${numberOfProductsFailedToUpdate} products failed to be updated from the file!`
+        // );
+      } catch (error) {
+        console.error('❌ Error processing uploaded file:', error);
+      }
+    }
+
     // Subscribe to lifecycle events for the product model
     strapi.db.lifecycles.subscribe({
       // Only listen to events for the product model

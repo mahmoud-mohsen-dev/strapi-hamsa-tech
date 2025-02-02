@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "update_prices_and_stocks",
+  "info": {
+    "singularName": "update-prices-and-stock",
+    "pluralName": "update-prices-and-stocks",
+    "displayName": "Update Prices And Stock",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "xlsx_file_to_upload": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "update_summary": {
+      "type": "json"
+    },
+    "update_status": {
+      "type": "json"
+    }
+  }
+}

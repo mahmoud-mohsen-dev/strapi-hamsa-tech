@@ -2890,6 +2890,40 @@ export interface ApiTermsOfServiceTermsOfService
   };
 }
 
+export interface ApiUpdatePricesAndStockUpdatePricesAndStock
+  extends Schema.CollectionType {
+  collectionName: 'update_prices_and_stocks';
+  info: {
+    singularName: 'update-prices-and-stock';
+    pluralName: 'update-prices-and-stocks';
+    displayName: 'Update Prices And Stock';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    xlsx_file_to_upload: Attribute.Media<'files'> &
+      Attribute.Required;
+    update_summary: Attribute.JSON;
+    update_status: Attribute.JSON;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::update-prices-and-stock.update-prices-and-stock',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::update-prices-and-stock.update-prices-and-stock',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiWarantyWaranty extends Schema.CollectionType {
   collectionName: 'waranties';
   info: {
@@ -3119,6 +3153,7 @@ declare module '@strapi/types' {
       'api::support-page.support-page': ApiSupportPageSupportPage;
       'api::tag.tag': ApiTagTag;
       'api::terms-of-service.terms-of-service': ApiTermsOfServiceTermsOfService;
+      'api::update-prices-and-stock.update-prices-and-stock': ApiUpdatePricesAndStockUpdatePricesAndStock;
       'api::waranty.waranty': ApiWarantyWaranty;
       'api::warranty-term.warranty-term': ApiWarrantyTermWarrantyTerm;
       'api::wishlist.wishlist': ApiWishlistWishlist;
