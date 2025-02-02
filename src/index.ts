@@ -603,6 +603,8 @@ export default {
           const salesPrice = row['Sales price'] ?? 0;
           const totalStock = row['Total'] ?? 0;
 
+          const maxStock = totalStock >= 10 ? 10 : totalStock;
+
           // console.log(itemCode);
           // console.log(salesPrice);
           // console.log(totalStock);
@@ -610,13 +612,13 @@ export default {
           console.log('Processing:', {
             itemCode,
             salesPrice,
-            totalStock
+            maxStock
           });
 
           if (
             !itemCode ||
             salesPrice === undefined ||
-            totalStock === undefined
+            maxStock === undefined
           ) {
             console.warn(`Skipping row due to missing data:`, row);
             updateStatus.push({
@@ -644,7 +646,7 @@ export default {
             product &&
             product.length > 0 &&
             `${product.price}` !== `${salesPrice}` &&
-            `${product.stock}` !== `${totalStock}` &&
+            `${product.stock}` !== `${maxStock}` &&
             product[0][
               'edara_can_change_price_and_stock_for_this_product'
             ]
@@ -659,13 +661,13 @@ export default {
                 data: {
                   price: salesPrice,
                   sale_price: 0,
-                  stock: totalStock
+                  stock: maxStock
                 }
               }
             );
             numberOfProductsUpdated += 1;
             console.log(
-              `✅ Updated product Name: ${product[0]?.name}, product Edara Item Code ${itemCode}: Price = ${salesPrice}, Stock = ${totalStock}`
+              `✅ Updated product Name: ${product[0]?.name}, product Edara Item Code ${itemCode}: Price = ${salesPrice}, Stock = ${maxStock}`
             );
 
             updateStatus.push({
@@ -676,7 +678,7 @@ export default {
               previousPrice: prevPrice,
               newPrice: salesPrice,
               previousStock: prevStock,
-              newStock: totalStock
+              newStock: maxStock
             });
           } else {
             console.warn(
