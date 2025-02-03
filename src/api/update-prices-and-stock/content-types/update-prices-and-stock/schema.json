@@ -25,13 +25,6 @@
     },
     "update_status": {
       "type": "json"
-    },
-    "update_status_table": {
-      "type": "customField",
-      "options": {
-        "preset": "default"
-      },
-      "customField": "plugin::ckeditor5.CKEditor"
     }
   }
 }

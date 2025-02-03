@@ -718,6 +718,7 @@ export default {
 
         // Generate the table HTML from updateStatus
         const tableHTML = generateTable(updateStatus);
+        console.log(JSON.stringify(tableHTML));
 
         // Store the update status inside the same collection entry
         await strapi.entityService.update(
@@ -726,8 +727,8 @@ export default {
           {
             data: {
               update_status: updateStatus,
-              update_summary: updateSummary,
-              update_status_table: tableHTML // This will store the HTML table as content
+              update_summary: updateSummary
+              // update_status_table: tableHTML // This will store the HTML table as content
             }
           }
         );
