@@ -533,6 +533,40 @@ export default {
         'api::update-prices-and-stock.update-prices-and-stock'
       ],
 
+      beforeUpdate: async ({ params }) => {
+        // console.log('params');
+        // console.log(JSON.stringify(params));
+        // console.log('state');
+        // console.log(JSON.stringify(state));
+        // Get the existing entry from the database before updating
+        const existingEntry = await strapi.entityService.findOne(
+          'api::update-prices-and-stock.update-prices-and-stock',
+          params.where.id,
+          {
+            populate: ['xlsx_file_to_upload']
+          }
+        );
+
+        console.log('existingEntry');
+        console.log(JSON.stringify(existingEntry));
+
+        // Check if the file is changing
+        if (
+          existingEntry &&
+          params.data.xlsx_file_to_upload &&
+          existingEntry.xlsx_file_to_upload?.id !==
+            params.data.xlsx_file_to_upload
+        ) {
+          // If a new file is uploaded, reset the processed field
+          params.data.processed = 'not started';
+
+          console.warn(
+            'params processed updated successfully',
+            params.data.processed
+          );
+        }
+      },
+
       // After an XLSX file is uploaded and the entry is created or updated
       afterCreate: async ({ result }) => {
         await processUploadedFile(result);
@@ -543,224 +577,242 @@ export default {
     });
 
     async function processUploadedFile(entry) {
-      console.log(entry);
-
-      if (
-        !entry?.xlsx_file_to_upload ||
-        !entry?.xlsx_file_to_upload?.url
-      ) {
-        console.warn('No file found in the entry.');
-        return;
-      }
-
       try {
-        const fileUrl = entry.xlsx_file_to_upload.url;
-        console.log('Downloading file from:', fileUrl);
+        console.log('*'.repeat(30));
+        console.log(entry);
+        console.log('*'.repeat(30));
 
-        // Define a temporary local file path
+        if (entry.processed === 'done') {
+          console.log(
+            '✅ File has already been processed. Skipping...'
+          );
+          return; // Exit early if already processed
+        }
+        if (entry.processed === 'error') {
+          console.log('⚠️ Error has occured. Skipping...');
+          return; // Exit early if already error happened
+        }
+
+        if (
+          !entry?.xlsx_file_to_upload?.ext ||
+          !entry?.xlsx_file_to_upload?.url
+        ) {
+          // console.log(entry);
+          console.warn('⚠️ No file found in the entry.');
+          throw new Error('⚠️ No file found in the entry.');
+        }
+        console.log(
+          entry?.xlsx_file_to_upload?.ext &&
+            (entry?.xlsx_file_to_upload?.ext !== '.xlsx' ||
+              entry?.xlsx_file_to_upload?.ext !== '.xls')
+        );
+        console.log(
+          entry?.xlsx_file_to_upload?.ext &&
+            entry?.xlsx_file_to_upload?.ext !== '.xlsx' &&
+            entry?.xlsx_file_to_upload?.ext !== '.xls'
+        );
+        if (
+          entry?.xlsx_file_to_upload?.ext &&
+          entry?.xlsx_file_to_upload?.ext !== '.xlsx' &&
+          entry?.xlsx_file_to_upload?.ext !== '.xls'
+        ) {
+          console.warn(
+            '⚠️ File type should be .xlsx or .xls to be correctly processed.',
+            entry?.xlsx_file_to_upload?.ext
+          );
+          throw new Error(
+            '⚠️ File type should be .xlsx or .xls to be correctly processed.'
+          );
+        }
+
+        const headers = {
+          itemName: 'Description',
+          edaraItemCodeName: 'Item code',
+          priceName: 'Sales price',
+          totalStockName: 'Total'
+        };
+
+        const fileUrl = entry.xlsx_file_to_upload.url;
+        console.log('📥 Downloading file from:', fileUrl);
+
         const tempFilePath = path.join(__dirname, 'temp.xlsx');
         //tempFilePath D:\Codes\Hamsa Tech\strapi-hamsa-tech\dist\src\temp.xlsx
-        console.log('Creating temporary file at', tempFilePath);
 
-        // Download the file from Cloudinary
-        const response = await axios({
-          method: 'GET',
-          url: fileUrl,
+        // Download file
+        const response = await axios.get(fileUrl, {
           responseType: 'arraybuffer'
         });
 
-        // console.log('response', response);
-
         // Write the downloaded file to the local system
         fs.writeFileSync(tempFilePath, response.data);
-        console.log('File downloaded successfully to', tempFilePath);
+        console.log('✅ File downloaded successfully.');
 
-        // Read the XLSX file
+        // Read XLSX file
         const workbook = xlsx.readFile(tempFilePath);
-        const sheetName = workbook.SheetNames[0];
         const sheet =
-          xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]) ?? [];
+          xlsx.utils.sheet_to_json(
+            workbook.Sheets[workbook.SheetNames[0]]
+          ) || [];
 
         const filteredSheet = sheet.filter(
           (row) =>
-            typeof row['Item code'] === 'string' ||
-            row['Item code'] === 'number'
+            typeof row[headers.edaraItemCodeName] === 'string' ||
+            typeof row[headers.edaraItemCodeName] === 'number'
         );
-
-        // console.log('filteredSheet length:', filteredSheet.length);
 
         const products = await strapi.entityService.findMany(
           'api::product.product'
         );
 
-        let numberOfProductsUpdated = 0;
-        let numberOfProductsFailedToUpdate = 0;
+        let updateCounters = {
+          updated: 0,
+          unchanged: 0,
+          notFoundInSystem: 0,
+          updateDisabled: 0,
+          notFoundInFile: 0,
+          skipped: 0
+        };
 
-        const updateStatus = []; // Store status for each product
+        let updateStatus = [];
+
         for (const row of filteredSheet) {
-          const itemName = row['Description'] ?? null;
-          const itemCode = row['Item code'] ?? null;
-          const salesPrice = row['Sales price'] ?? 0;
-          const totalStock = row['Total'] ?? 0;
+          const {
+            fileItemName,
+            fileEdaraItemCode,
+            filePrice,
+            fileTotalStock
+          } = extractRowData(row, headers);
 
-          const maxStock = totalStock >= 10 ? 10 : totalStock;
-
-          // console.log(itemCode);
-          // console.log(salesPrice);
-          // console.log(totalStock);
-
-          console.log('Processing:', {
-            itemCode,
-            salesPrice,
-            maxStock
+          console.log('🔄 Processing:', {
+            fileEdaraItemCode,
+            filePrice,
+            fileTotalStock
           });
 
           if (
-            !itemCode ||
-            salesPrice === undefined ||
-            maxStock === undefined
+            !fileEdaraItemCode ||
+            filePrice === undefined ||
+            fileTotalStock === undefined
           ) {
-            console.warn(`Skipping row due to missing data:`, row);
-            updateStatus.push({
-              status: 'Skipped',
-              itemCode,
-              productNameInTheFile: itemName,
-              productNameInTheSytem: null,
-              previousPrice: null,
-              newPrice: null,
-              previousStock: null,
-              newStock: null
-            });
+            logSkippedEntry(updateStatus, row, fileItemName);
+            updateCounters.skipped++;
             continue;
           }
 
-          // Find the product by item code
-          const product = await strapi.entityService.findMany(
-            'api::product.product',
-            {
-              filters: { edara_item_code: itemCode }
-            }
+          const product = await findProductByItemCode(
+            strapi,
+            fileEdaraItemCode
           );
+          if (!product) {
+            logNotFoundEntry(
+              updateStatus,
+              fileEdaraItemCode,
+              fileItemName
+            );
+            updateCounters.notFoundInSystem++;
+            continue;
+          }
+
+          const {
+            canUpdate,
+            prevPrice,
+            prevStock,
+            productNameSystem
+          } = extractProductDetails(product);
+
+          if (!canUpdate) {
+            logUpdateDisabledEntry(
+              updateStatus,
+              fileEdaraItemCode,
+              fileItemName,
+              productNameSystem,
+              prevPrice,
+              prevStock
+            );
+            updateCounters.updateDisabled++;
+            continue;
+          }
 
           if (
-            product &&
-            product.length > 0 &&
-            `${product.price}` !== `${salesPrice}` &&
-            `${product.stock}` !== `${maxStock}` &&
-            product[0][
-              'edara_can_change_price_and_stock_for_this_product'
-            ]
+            `${prevPrice}` !== `${filePrice}` ||
+            `${prevStock}` !== `${fileTotalStock}`
           ) {
-            const prevPrice = product[0].price;
-            const prevStock = product[0].stock;
-            // Update product price and stock
-            await strapi.entityService.update(
-              'api::product.product',
-              product[0].id,
-              {
-                data: {
-                  price: salesPrice,
-                  sale_price: 0,
-                  stock: maxStock
-                }
-              }
+            await updateProduct(
+              strapi,
+              product.id,
+              filePrice,
+              fileTotalStock
             );
-            numberOfProductsUpdated += 1;
-            console.log(
-              `✅ Updated product Name: ${product[0]?.name}, product Edara Item Code ${itemCode}: Price = ${salesPrice}, Stock = ${maxStock}`
+            logUpdatedEntry(
+              updateStatus,
+              fileEdaraItemCode,
+              fileItemName,
+              productNameSystem,
+              prevPrice,
+              filePrice,
+              prevStock,
+              fileTotalStock
             );
-
-            updateStatus.push({
-              status: 'Updated',
-              itemCode,
-              productNameInTheFile: itemName,
-              productNameInTheSytem: product[0].name,
-              previousPrice: prevPrice,
-              newPrice: salesPrice,
-              previousStock: prevStock,
-              newStock: maxStock
-            });
+            updateCounters.updated++;
           } else {
-            console.warn(
-              `⚠️ Product not found for item code in the system: ${itemCode}`
+            logUnchangedEntry(
+              updateStatus,
+              fileEdaraItemCode,
+              fileItemName,
+              productNameSystem,
+              prevPrice,
+              filePrice,
+              prevStock,
+              fileTotalStock
             );
-
-            numberOfProductsFailedToUpdate += 1;
-
-            updateStatus.push({
-              status: 'Not Found',
-              itemCode,
-              productNameInTheFile: itemName,
-              productNameInTheSytem: null,
-              previousPrice: null,
-              newPrice: null,
-              previousStock: null,
-              newStock: null
-            });
+            updateCounters.unchanged++;
           }
         }
 
-        const updateSummary = [
-          {
-            'Total products found in the system': products.length,
-            'Total products found in the file': filteredSheet.length,
-            '✅ Total products updated successfully in the system':
-              numberOfProductsUpdated,
-            '❌ Total products failed to be updated in the system':
-              products.length > 0 &&
-              products.length >= numberOfProductsUpdated
-                ? products.length - numberOfProductsUpdated
-                : 0,
-            '❌ Total products failed to be updated in the file':
-              numberOfProductsFailedToUpdate
-          }
-        ];
+        const productsNotFoundInFile = findProductsNotInFile(
+          products,
+          updateStatus
+        );
+        updateCounters.notFoundInFile = productsNotFoundInFile.length;
 
-        // Generate the table HTML from updateStatus
+        const updateSummary = generateSummary(
+          updateCounters,
+          products.length,
+          filteredSheet.length,
+          productsNotFoundInFile,
+          findUpdateDisabledProductsInFile(updateStatus)
+        );
+
+        // Generate and store the update status table
         const tableHTML = generateTable(updateStatus);
-        console.log(JSON.stringify(tableHTML));
-
-        // Store the update status inside the same collection entry
-        await strapi.entityService.update(
-          'api::update-prices-and-stock.update-prices-and-stock',
+        await storeUpdateStatus(
+          strapi,
           entry.id,
-          {
-            data: {
-              update_status: updateStatus,
-              update_summary: updateSummary
-              // update_status_table: tableHTML // This will store the HTML table as content
-            }
-          }
+          updateStatus,
+          updateSummary,
+          tableHTML,
+          'done'
         );
 
-        // Remove the temporary file after processing
+        // Clean up the temporary file
         fs.unlinkSync(tempFilePath);
-
-        console.log(
-          JSON.stringify(filteredSheet.map((row) => row['Item code']))
-        );
-        console.log(
-          `The total ${products.length} products number found in the system!`
-        );
-        console.log(
-          `The total ${filteredSheet.length} products number found in the file!`
-        );
-        console.log(
-          `✅ ${numberOfProductsUpdated} products updated successfully in the system!`
-        );
-        console.log(
-          `❌ ${
-            products.length > 0 &&
-            products.length >= numberOfProductsUpdated
-              ? products.length - numberOfProductsUpdated
-              : 0
-          } products failed to be updated in the system!`
-        );
-        console.log(
-          `❌ ${numberOfProductsFailedToUpdate} products failed to be updated from the file!`
-        );
+        console.log('🗑️ Temporary file removed.');
       } catch (error) {
         console.error('❌ Error processing uploaded file:', error);
+
+        await storeUpdateStatus(
+          strapi,
+          entry.id,
+          null,
+          [
+            {
+              '❌ Error has occured':
+                error?.message ?? JSON.stringify(error)
+            }
+          ],
+          null,
+          'error'
+        );
       }
     }
 
@@ -1113,10 +1165,14 @@ export default {
 
         if (item.status === 'Updated') {
           statusTextColor = 'color: #388e3c;';
-        } else if (item.status === 'Not Found') {
+        } else if (item.status === 'Not Found In System') {
           statusTextColor = 'color: #d32f2f;';
         } else if (item.status === 'Skipped') {
           statusTextColor = 'color: #fbc02d;';
+        } else if (item.status === 'Update Disabled') {
+          statusTextColor = 'color:rgb(251, 45, 76);';
+        } else if (item.status === 'Unchanged') {
+          statusTextColor = 'color: #166fd4;';
         } else {
           statusTextColor = 'color: white;';
         }
@@ -1126,12 +1182,12 @@ export default {
         <td style="${colStyle} ${statusTextColor}">${
           item.status || 'N/A'
         }</td>
-        <td style="${colStyle}">${item.itemCode || 'N/A'}</td>
+        <td style="${colStyle}">${item.edaraItemCode || 'N/A'}</td>
         <td style="${colStyle}">${
           item.productNameInTheFile || 'N/A'
         }</td>
         <td style="${colStyle}">${
-          item.productNameInTheSytem || 'N/A'
+          item.productNameInTheSystem || 'N/A'
         }</td>
         <td style="${colStyle}">${item.previousPrice || 'N/A'}</td>
         <td style="${colStyle}">${item.newPrice || 'N/A'}</td>
@@ -1144,6 +1200,265 @@ export default {
       tableHTML += `</tbody></table></figure>`;
 
       return tableHTML;
+    }
+    /**
+     * Extracts data from a row based on header mappings.
+     */
+    function extractRowData(row, headers) {
+      const maxStock =
+        row[headers.totalStockName] >= 10
+          ? 10
+          : row[headers.totalStockName] ?? 0;
+      return {
+        fileItemName: row[headers.itemName] ?? null,
+        fileEdaraItemCode: row[headers.edaraItemCodeName] ?? null,
+        filePrice: row[headers.priceName] ?? 0,
+        fileTotalStock: maxStock
+      };
+    }
+
+    /**
+     * Finds a product by Edara Item Code.
+     */
+    async function findProductByItemCode(strapi, edaraItemCode) {
+      const products = await strapi.entityService.findMany(
+        'api::product.product',
+        {
+          filters: { edara_item_code: edaraItemCode }
+        }
+      );
+      return products[0] || null;
+    }
+
+    /**
+     * Extracts relevant details from a product.
+     */
+    function extractProductDetails(product) {
+      return {
+        canUpdate:
+          product?.edara_can_change_price_and_stock_for_this_product ??
+          false,
+        prevPrice: product?.price ?? null,
+        prevStock: product?.stock ?? null,
+        productNameSystem: product.name ?? ''
+      };
+    }
+
+    /**
+     * Updates a product's price and stock.
+     */
+    async function updateProduct(strapi, productId, price, stock) {
+      await strapi.entityService.update(
+        'api::product.product',
+        productId,
+        {
+          data: { price, sale_price: 0, stock }
+        }
+      );
+    }
+
+    /**
+     * Logs skipped entries.
+     */
+    function logSkippedEntry(updateStatus, row, itemName) {
+      console.warn('⚠️ Skipping row due to missing data:', row);
+      updateStatus.push({
+        status: 'Skipped',
+        edaraItemCode: null,
+        productNameInTheFile: itemName,
+        productNameInTheSystem: null,
+        previousPrice: null,
+        newPrice: null,
+        previousStock: null,
+        newStock: null
+      });
+    }
+
+    /**
+     * Logs entries where the product is not found in the system.
+     */
+    function logNotFoundEntry(updateStatus, edaraItemCode, itemName) {
+      console.warn(
+        `⚠️ Product not found in system: ${edaraItemCode}`
+      );
+      updateStatus.push({
+        status: 'Not Found In System',
+        edaraItemCode,
+        productNameInTheFile: itemName,
+        productNameInTheSystem: null,
+        previousPrice: null,
+        newPrice: null,
+        previousStock: null,
+        newStock: null
+      });
+    }
+
+    /**
+     * Logs entries where updating is disabled.
+     */
+    function logUpdateDisabledEntry(
+      updateStatus,
+      edaraItemCode,
+      itemName,
+      productNameSystem,
+      prevPrice,
+      prevStock
+    ) {
+      updateStatus.push({
+        status: 'Update Disabled',
+        edaraItemCode,
+        productNameInTheFile: itemName,
+        productNameInTheSystem: productNameSystem,
+        previousPrice: prevPrice,
+        newPrice: prevPrice,
+        previousStock: prevStock,
+        newStock: prevStock
+      });
+    }
+
+    /**
+     * Logs successfully updated entries.
+     */
+    function logUpdatedEntry(
+      updateStatus,
+      edaraItemCode,
+      itemName,
+      productNameSystem,
+      prevPrice,
+      newPrice,
+      prevStock,
+      newStock
+    ) {
+      console.log(
+        `✅ Updated product ${productNameSystem}: Price = ${newPrice}, Stock = ${newStock}`
+      );
+      updateStatus.push({
+        status: 'Updated',
+        edaraItemCode,
+        productNameInTheFile: itemName,
+        productNameInTheSystem: productNameSystem,
+        previousPrice: prevPrice,
+        newPrice,
+        previousStock: prevStock,
+        newStock
+      });
+    }
+
+    /**
+     * Logs unchanged products.
+     */
+    function logUnchangedEntry(
+      updateStatus,
+      edaraItemCode,
+      itemName,
+      productNameSystem,
+      prevPrice,
+      newPrice,
+      prevStock,
+      newStock
+    ) {
+      updateStatus.push({
+        status: 'Unchanged',
+        edaraItemCode,
+        productNameInTheFile: itemName,
+        productNameInTheSystem: productNameSystem,
+        previousPrice: prevPrice,
+        newPrice,
+        previousStock: prevStock,
+        newStock
+      });
+    }
+
+    function findProductsNotInFile(products, updateStatus) {
+      return products
+        .filter((product) => {
+          // Check if the product exists in the updateStatus array
+          const foundProduct = updateStatus.find(
+            (item) =>
+              `${item.edaraItemCode}` ===
+              `${product['edara_item_code']}`
+          );
+          return !foundProduct;
+        })
+        .map((filteredProduct) => {
+          return {
+            status: 'Not Found in File',
+            edaraItemCode: filteredProduct['edara_item_code'] ?? null,
+            productNameInTheSytem: filteredProduct?.name ?? null,
+            price: filteredProduct?.price ?? null,
+            stock: filteredProduct?.stock ?? null
+          };
+        });
+    }
+    function findUpdateDisabledProductsInFile(updateStatus) {
+      return updateStatus && updateStatus.length > 0
+        ? updateStatus.filter((product) => {
+            return product.status === 'Update Disabled';
+          })
+        : null;
+    }
+
+    /**
+     * Generates an update summary.
+     */
+    function generateSummary(
+      updateCounters,
+      totalProductsSystem,
+      totalProductsInFile,
+      productsNotFoundInFile,
+      updateDisabledProductsInFile
+    ) {
+      return [
+        {
+          'Total system products': totalProductsSystem,
+          'Total file products': totalProductsInFile,
+          '⚠️ Total products in file not Found in System':
+            updateCounters.notFoundInSystem,
+          '⚠️ Total products in stystem not found in file':
+            updateCounters.notFoundInFile,
+
+          '✅ Updated': updateCounters.updated,
+          'Unchanged products': updateCounters.unchanged,
+          'Total number of disabled products to be updated':
+            updateCounters.updateDisabled,
+          'Total number of skipped products': updateCounters.skipped,
+          'Total of failed to update products':
+            updateCounters.skipped + updateCounters.notFoundInFile
+        },
+        {
+          'All products in the system not found in the file':
+            productsNotFoundInFile
+        },
+        {
+          'All products in the system that is disabled to be updated':
+            updateDisabledProductsInFile
+        }
+      ];
+    }
+
+    /**
+     * Stores update status in Strapi.
+     */
+    async function storeUpdateStatus(
+      strapi,
+      entryId,
+      updateStatus,
+      updateSummary,
+      tableHTML,
+      processed
+    ) {
+      await strapi.entityService.update(
+        'api::update-prices-and-stock.update-prices-and-stock',
+        entryId,
+        {
+          data: {
+            update_status: updateStatus,
+            update_summary: updateSummary,
+            update_status_table: tableHTML,
+            processed
+          }
+        }
+      );
     }
   }
 };

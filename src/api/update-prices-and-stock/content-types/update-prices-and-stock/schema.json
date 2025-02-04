@@ -25,6 +25,22 @@
     },
     "update_status": {
       "type": "json"
+    },
+    "update_status_table": {
+      "type": "customField",
+      "options": {
+        "preset": "default"
+      },
+      "customField": "plugin::ckeditor5.CKEditor"
+    },
+    "processed": {
+      "type": "enumeration",
+      "enum": [
+        "done",
+        "error",
+        "not started"
+      ],
+      "default": "not started"
     }
   }
 }
