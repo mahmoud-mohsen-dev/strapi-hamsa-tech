@@ -2907,13 +2907,6 @@ export interface ApiUpdatePricesAndStockUpdatePricesAndStock
       Attribute.Required;
     update_summary: Attribute.JSON;
     update_status: Attribute.JSON;
-    update_status_table: Attribute.RichText &
-      Attribute.CustomField<
-        'plugin::ckeditor5.CKEditor',
-        {
-          preset: 'default';
-        }
-      >;
     processed: Attribute.Enumeration<
       ['done', 'error', 'not started']
     > &

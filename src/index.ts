@@ -784,13 +784,13 @@ export default {
         );
 
         // Generate and store the update status table
-        const tableHTML = generateTable(updateStatus);
+        // const tableHTML = generateTable(updateStatus);
         await storeUpdateStatus(
           strapi,
           entry.id,
           updateStatus,
           updateSummary,
-          tableHTML,
+          // tableHTML,
           'done'
         );
 
@@ -810,7 +810,7 @@ export default {
                 error?.message ?? JSON.stringify(error)
             }
           ],
-          null,
+          // null,
           'error'
         );
       }
@@ -1444,7 +1444,7 @@ export default {
       entryId,
       updateStatus,
       updateSummary,
-      tableHTML,
+      // tableHTML,
       processed
     ) {
       await strapi.entityService.update(
@@ -1454,7 +1454,7 @@ export default {
           data: {
             update_status: updateStatus,
             update_summary: updateSummary,
-            update_status_table: tableHTML,
+            // update_status_table: tableHTML,
             processed
           }
         }
