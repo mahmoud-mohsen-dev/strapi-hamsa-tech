@@ -2911,6 +2911,7 @@ export interface ApiUpdatePricesAndStockUpdatePricesAndStock
       ['done', 'error', 'not started']
     > &
       Attribute.DefaultTo<'not started'>;
+    update_status_table: Attribute.RichText;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

@@ -784,13 +784,13 @@ export default {
         );
 
         // Generate and store the update status table
-        // const tableHTML = generateTable(updateStatus);
+        const tableHTML = generateTable(updateStatus);
         await storeUpdateStatus(
           strapi,
           entry.id,
           updateStatus,
           updateSummary,
-          // tableHTML,
+          tableHTML,
           'done'
         );
 
@@ -810,7 +810,7 @@ export default {
                 error?.message ?? JSON.stringify(error)
             }
           ],
-          // null,
+          null,
           'error'
         );
       }
@@ -1127,80 +1127,229 @@ export default {
       ).length;
     }
 
+    // function generateTable(updateStatus) {
+    //   const headerStyles = 'vertical-align:top; color:#166fd4;';
+    //   // Create table header
+    //   let tableHTML = `
+    // <figure class="table" style="width:100%;">
+    //   <table class="ck-table-resized" style="border-color:hsl(0, 0%, 100%);">
+    //     <colgroup>
+    //       <col style="width:10.88%;">
+    //       <col style="width:8.87%;">
+    //       <col style="width:15.06%;">
+    //       <col style="width:14.4%;">
+    //       <col style="width:12.53%;">
+    //       <col style="width:13.62%;">
+    //       <col style="width:12.15%;">
+    //       <col style="width:12.49%;">
+    //     </colgroup>
+    //     <thead>
+    //       <tr>
+    //         <th style="${headerStyles}">Status</th>
+    //         <th style="${headerStyles}">Item Code</th>
+    //         <th style="${headerStyles}">Product Name (File)</th>
+    //         <th style="${headerStyles}">Product Name (System)</th>
+    //         <th style="${headerStyles}">Previous Price</th>
+    //         <th style="${headerStyles}">New Price</th>
+    //         <th style="${headerStyles}">Previous Stock</th>
+    //         <th style="${headerStyles}">New Stock</th>
+    //       </tr>
+    //     </thead>
+    //     <tbody>`;
+
+    //   // Loop through the update_status data and generate table rows
+    //   updateStatus.forEach((item) => {
+    //     // Define the inline style based on the status
+    //     let colStyle = 'vertical-align:top;';
+    //     let statusTextColor = '';
+
+    //     if (item.status === 'Updated') {
+    //       statusTextColor = 'color: #388e3c;';
+    //     } else if (item.status === 'Not Found In System') {
+    //       statusTextColor = 'color: #d32f2f;';
+    //     } else if (item.status === 'Skipped') {
+    //       statusTextColor = 'color: #fbc02d;';
+    //     } else if (item.status === 'Update Disabled') {
+    //       statusTextColor = 'color:rgb(251, 45, 76);';
+    //     } else if (item.status === 'Unchanged') {
+    //       statusTextColor = 'color: #166fd4;';
+    //     } else {
+    //       statusTextColor = 'color: white;';
+    //     }
+
+    //     tableHTML += `
+    //   <tr>
+    //     <td style="${colStyle} ${statusTextColor}">${
+    //       item.status || 'N/A'
+    //     }</td>
+    //     <td style="${colStyle}">${item.edaraItemCode || 'N/A'}</td>
+    //     <td style="${colStyle}">${
+    //       item.productNameInTheFile || 'N/A'
+    //     }</td>
+    //     <td style="${colStyle}">${
+    //       item.productNameInTheSystem || 'N/A'
+    //     }</td>
+    //     <td style="${colStyle}">${item.previousPrice || 'N/A'}</td>
+    //     <td style="${colStyle}">${item.newPrice || 'N/A'}</td>
+    //     <td style="${colStyle}">${item.previousStock || 'N/A'}</td>
+    //     <td style="${colStyle}">${item.newStock || 'N/A'}</td>
+    //   </tr>`;
+    //   });
+
+    //   // Close table and figure tags
+    //   tableHTML += `</tbody></table></figure>`;
+
+    //   return tableHTML;
+    // }
+    // const generateTable = (rows, cols, data) => {
+    //   return {
+    //     type: 'table',
+    //     content: Array.from({ length: rows }, (_, rowIndex) => ({
+    //       type: 'tableRow',
+    //       content: Array.from({ length: cols }, (_, colIndex) => ({
+    //         type: 'tableCell',
+    //         content: data?.[rowIndex]?.[colIndex]
+    //           ? [
+    //               {
+    //                 type: 'paragraph',
+    //                 content: [
+    //                   { type: 'text', text: data[rowIndex][colIndex] }
+    //                 ]
+    //               }
+    //             ]
+    //           : [{ type: 'paragraph', content: [] }]
+    //       }))
+    //     }))
+    //   };
+    // };
+    // const generateTable = (updateStatus) => {
+    //   return {
+    //     type: 'table',
+    //     content: [
+    //       {
+    //         type: 'tableRow',
+    //         content: [
+    //           'Status',
+    //           'Item Code',
+    //           'Product Name (File)',
+    //           'Product Name (System)',
+    //           'Previous Price',
+    //           'New Price',
+    //           'Previous Stock',
+    //           'New Stock'
+    //         ].map((header) => ({
+    //           type: 'tableHeader',
+    //           content: [
+    //             {
+    //               type: 'paragraph',
+    //               content: [{ type: 'text', text: header }]
+    //             }
+    //           ]
+    //         }))
+    //       },
+    //       ...updateStatus.map((row) => ({
+    //         type: 'tableRow',
+    //         content: [
+    //           row.status,
+    //           row.edaraItemCode,
+    //           row.productNameInTheFile,
+    //           row.productNameInTheSystem,
+    //           row.previousPrice,
+    //           row.newPrice,
+    //           row.previousStock,
+    //           row.newStock
+    //         ].map((cell) => ({
+    //           type: 'tableCell',
+    //           content: [
+    //             {
+    //               type: 'paragraph',
+    //               content: [
+    //                 {
+    //                   type: 'text',
+    //                   text: cell ? cell.toString() : ''
+    //                 }
+    //               ]
+    //             }
+    //           ]
+    //         }))
+    //       }))
+    //     ]
+    //   };
+    // };
     function generateTable(updateStatus) {
-      const headerStyles = 'vertical-align:top; color:#166fd4;';
+      // Sort updateStatus alphabetically by the 'status' field
+      updateStatus.sort((a, b) => a.status.localeCompare(b.status));
+      console.log(updateStatus);
+      const headerStyles = 'color: #007bff;text-align: center;';
+
       // Create table header
       let tableHTML = `
-    <figure class="table" style="width:100%;">
-      <table class="ck-table-resized" style="border-color:hsl(0, 0%, 100%);">
-        <colgroup>
-          <col style="width:10.88%;">
-          <col style="width:8.87%;">
-          <col style="width:15.06%;">
-          <col style="width:14.4%;">
-          <col style="width:12.53%;">
-          <col style="width:13.62%;">
-          <col style="width:12.15%;">
-          <col style="width:12.49%;">
-        </colgroup>
-        <thead>
+      <table>
+        <tbody>
           <tr>
-            <th style="${headerStyles}">Status</th>
-            <th style="${headerStyles}">Item Code</th>
-            <th style="${headerStyles}">Product Name (File)</th>
-            <th style="${headerStyles}">Product Name (System)</th>
-            <th style="${headerStyles}">Previous Price</th>
-            <th style="${headerStyles}">New Price</th>
-            <th style="${headerStyles}">Previous Stock</th>
-            <th style="${headerStyles}">New Stock</th>
-          </tr>
-        </thead>
-        <tbody>`;
+            <td><p><span style="${headerStyles}">Status</span></p></td>
+            <td><p><span style="${headerStyles}">Item Code</span></p></td>
+            <td><p><span style="${headerStyles}">Product Name (File)</span></p></td>
+            <td><p><span style="${headerStyles}">Product Name (System)</span></p></td>
+            <td><p><span style="${headerStyles}">Previous Price</span></p></td>
+            <td><p><span style="${headerStyles}">New Price</span></p></td>
+            <td><p><span style="${headerStyles}">Previous Stock</span></p></td>
+            <td><p><span style="${headerStyles}">New Stock</span></p></td>
+          </tr>`;
 
       // Loop through the update_status data and generate table rows
       updateStatus.forEach((item) => {
-        // Define the inline style based on the status
-        let colStyle = 'vertical-align:top;';
-        let statusTextColor = '';
+        let statusColor = '';
+        const colStyles = 'text-align: center;';
 
         if (item.status === 'Updated') {
-          statusTextColor = 'color: #388e3c;';
+          statusColor = 'color: #388e3c;';
         } else if (item.status === 'Not Found In System') {
-          statusTextColor = 'color: #d32f2f;';
+          statusColor = 'color: #ff0000;';
         } else if (item.status === 'Skipped') {
-          statusTextColor = 'color: #fbc02d;';
+          statusColor = 'color: #fbc02d;';
         } else if (item.status === 'Update Disabled') {
-          statusTextColor = 'color:rgb(251, 45, 76);';
+          statusColor = 'color: rgb(251, 45, 76);';
         } else if (item.status === 'Unchanged') {
-          statusTextColor = 'color: #166fd4;';
+          statusColor = 'color: #166fd4;';
         } else {
-          statusTextColor = 'color: white;';
+          statusColor = 'color: white;';
         }
 
         tableHTML += `
-      <tr>
-        <td style="${colStyle} ${statusTextColor}">${
+          <tr>
+            <td><p style="${colStyles}"><span style="${statusColor}">${
           item.status || 'N/A'
-        }</td>
-        <td style="${colStyle}">${item.edaraItemCode || 'N/A'}</td>
-        <td style="${colStyle}">${
+        }</span></p></td>
+            <td><p style="${colStyles}">${
+          item.edaraItemCode || 'N/A'
+        }</p></td>
+            <td><p style="${colStyles}">${
           item.productNameInTheFile || 'N/A'
-        }</td>
-        <td style="${colStyle}">${
+        }</p></td>
+            <td><p style="${colStyles}">${
           item.productNameInTheSystem || 'N/A'
-        }</td>
-        <td style="${colStyle}">${item.previousPrice || 'N/A'}</td>
-        <td style="${colStyle}">${item.newPrice || 'N/A'}</td>
-        <td style="${colStyle}">${item.previousStock || 'N/A'}</td>
-        <td style="${colStyle}">${item.newStock || 'N/A'}</td>
-      </tr>`;
+        }</p></td>
+            <td><p style="${colStyles}">${
+          item.previousPrice || 'N/A'
+        }</p></td>
+            <td><p style="${colStyles}">${
+          item.newPrice || 'N/A'
+        }</p></td>
+            <td><p style="${colStyles}">${
+          item.previousStock || 'N/A'
+        }</p></td>
+            <td><p style="${colStyles}">${
+          item.newStock || 'N/A'
+        }</p></td>
+          </tr>`;
       });
 
-      // Close table and figure tags
-      tableHTML += `</tbody></table></figure>`;
+      tableHTML += `</tbody></table>`;
 
       return tableHTML;
     }
+
     /**
      * Extracts data from a row based on header mappings.
      */
@@ -1444,7 +1593,7 @@ export default {
       entryId,
       updateStatus,
       updateSummary,
-      // tableHTML,
+      tableHTML,
       processed
     ) {
       await strapi.entityService.update(
@@ -1454,7 +1603,7 @@ export default {
           data: {
             update_status: updateStatus,
             update_summary: updateSummary,
-            // update_status_table: tableHTML,
+            update_status_table: tableHTML,
             processed
           }
         }

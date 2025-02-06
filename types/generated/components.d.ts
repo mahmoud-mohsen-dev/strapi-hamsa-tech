@@ -12,6 +12,15 @@ export interface YoutubeVideo extends Schema.Component {
   };
 }
 
+export interface SocialButtonsSocialLink extends Schema.Component {
+  collectionName: 'components_social_buttons_social_links';
+  info: {
+    displayName: 'social-link';
+    icon: 'link';
+  };
+  attributes: {};
+}
+
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -56,15 +65,6 @@ export interface SharedMetaSocial extends Schema.Component {
       }>;
     image: Attribute.Media<'images' | 'files' | 'videos'>;
   };
-}
-
-export interface SocialButtonsSocialLink extends Schema.Component {
-  collectionName: 'components_social_buttons_social_links';
-  info: {
-    displayName: 'social-link';
-    icon: 'link';
-  };
-  attributes: {};
 }
 
 export interface ReportAbuseReportAbuse extends Schema.Component {
@@ -242,24 +242,6 @@ export interface CategoryCategories extends Schema.Component {
   };
 }
 
-export interface CategoriesSectionCategories
-  extends Schema.Component {
-  collectionName: 'components_categories_section_categories';
-  info: {
-    displayName: 'categories';
-    icon: 'grid';
-    description: '';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    description: Attribute.String & Attribute.Required;
-    category: Attribute.Component<'category.categories', true> &
-      Attribute.Required;
-  };
-}
-
 export interface CartProductQuantity extends Schema.Component {
   collectionName: 'components_cart_product_quantities';
   info: {
@@ -292,6 +274,24 @@ export interface CartProductQuantity extends Schema.Component {
       > &
       Attribute.DefaultTo<0>;
     description: Attribute.Text;
+  };
+}
+
+export interface CategoriesSectionCategories
+  extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'grid';
+    description: '';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
   };
 }
 
@@ -380,9 +380,9 @@ declare module '@strapi/types' {
   export module Shared {
     export interface Components {
       'youtube.video': YoutubeVideo;
+      'social-buttons.social-link': SocialButtonsSocialLink;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
-      'social-buttons.social-link': SocialButtonsSocialLink;
       'report-abuse.report-abuse': ReportAbuseReportAbuse;
       'phone.phone': PhonePhone;
       'link.social-links': LinkSocialLinks;
@@ -394,8 +394,8 @@ declare module '@strapi/types' {
       'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
-      'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
+      'categories-section.categories': CategoriesSectionCategories;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;

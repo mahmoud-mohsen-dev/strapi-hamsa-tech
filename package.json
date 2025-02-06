@@ -15,7 +15,6 @@
     "strapi": "strapi"
   },
   "dependencies": {
-    "@_sh/strapi-plugin-ckeditor": "^3.0.9",
     "@amicaldo/strapi-google-maps": "^1.1.5",
     "@bn-digital/strapi-plugin-field-uuid": "^1.2.12",
     "@strapi/plugin-cloud": "4.25.11",
@@ -31,6 +30,7 @@
     "react-dom": "^18.0.0",
     "react-router-dom": "5.3.4",
     "strapi-plugin-meilisearch": "0.12.0",
+    "strapi-tiptap-editor": "^0.9.13",
     "styled-components": "5.3.3",
     "xlsx": "^0.18.5"
   },
