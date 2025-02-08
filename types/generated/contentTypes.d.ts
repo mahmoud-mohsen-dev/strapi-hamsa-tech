@@ -1898,6 +1898,50 @@ export interface ApiPagePage extends Schema.CollectionType {
   };
 }
 
+export interface ApiPricesAndStockConfigPricesAndStockConfig
+  extends Schema.SingleType {
+  collectionName: 'prices_and_stock_configs';
+  info: {
+    singularName: 'prices-and-stock-config';
+    pluralName: 'prices-and-stock-configs';
+    displayName: 'Prices and Stock Config';
+    description: '';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    max_stock: Attribute.Integer &
+      Attribute.Required &
+      Attribute.DefaultTo<0>;
+    excel_header_for_item_name: Attribute.String & Attribute.Required;
+    excel_header_for_edara_item_code: Attribute.String &
+      Attribute.Required;
+    excel_header_to_update_product_price: Attribute.String &
+      Attribute.Required;
+    excel_header_to_update_product_sale_price: Attribute.String;
+    excel_header_to_update_product_stock: Attribute.String &
+      Attribute.Required;
+    enable_max_stock: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<true>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::prices-and-stock-config.prices-and-stock-config',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::prices-and-stock-config.prices-and-stock-config',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiPrivacyPolicyPrivacyPolicy
   extends Schema.SingleType {
   collectionName: 'privacy_policies';
@@ -3146,6 +3190,7 @@ declare module '@strapi/types' {
       'api::offer.offer': ApiOfferOffer;
       'api::order.order': ApiOrderOrder;
       'api::page.page': ApiPagePage;
+      'api::prices-and-stock-config.prices-and-stock-config': ApiPricesAndStockConfigPricesAndStockConfig;
       'api::privacy-policy.privacy-policy': ApiPrivacyPolicyPrivacyPolicy;
       'api::product.product': ApiProductProduct;
       'api::product-spotlight.product-spotlight': ApiProductSpotlightProductSpotlight;

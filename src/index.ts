@@ -588,6 +588,7 @@ export default {
           );
           return; // Exit early if already processed
         }
+
         if (entry.processed === 'error') {
           console.log('⚠️ Error has occured. Skipping...');
           return; // Exit early if already error happened
@@ -601,16 +602,7 @@ export default {
           console.warn('⚠️ No file found in the entry.');
           throw new Error('⚠️ No file found in the entry.');
         }
-        console.log(
-          entry?.xlsx_file_to_upload?.ext &&
-            (entry?.xlsx_file_to_upload?.ext !== '.xlsx' ||
-              entry?.xlsx_file_to_upload?.ext !== '.xls')
-        );
-        console.log(
-          entry?.xlsx_file_to_upload?.ext &&
-            entry?.xlsx_file_to_upload?.ext !== '.xlsx' &&
-            entry?.xlsx_file_to_upload?.ext !== '.xls'
-        );
+
         if (
           entry?.xlsx_file_to_upload?.ext &&
           entry?.xlsx_file_to_upload?.ext !== '.xlsx' &&
@@ -625,11 +617,41 @@ export default {
           );
         }
 
+        const pricesAndStockConfigEntry =
+          await strapi.entityService.findMany(
+            'api::prices-and-stock-config.prices-and-stock-config'
+          );
+
+        const {
+          max_stock,
+          excel_header_for_item_name,
+          excel_header_for_edara_item_code,
+          excel_header_to_update_product_price,
+          excel_header_to_update_product_sale_price,
+          excel_header_to_update_product_stock,
+          enable_max_stock
+        } = pricesAndStockConfigEntry;
+
+        // {
+        // "id":1,
+        // "max_stock":5,
+        // "createdAt":"2025-02-06T20:01:04.870Z",
+        // "updatedAt":"2025-02-06T20:07:40.423Z",
+        // "excel_header_for_item_name":"Description",
+        // "excel_header_for_edara_item_code":"Item code",
+        // "excel_header_to_update_product_price":"Sales price",
+        // "excel_header_to_update_product_sales_price":"Super dealer price",
+        // "excel_header_to_update_product_stock":"Total",
+        // "enable_max_stock":true
+        // }
+
         const headers = {
-          itemName: 'Description',
-          edaraItemCodeName: 'Item code',
-          priceName: 'Sales price',
-          totalStockName: 'Total'
+          itemName: excel_header_for_item_name ?? '',
+          edaraItemCodeName: excel_header_for_edara_item_code ?? '',
+          priceName: excel_header_to_update_product_price ?? '',
+          salePriceName:
+            excel_header_to_update_product_sale_price ?? '',
+          totalStockName: excel_header_to_update_product_stock ?? ''
         };
 
         const fileUrl = entry.xlsx_file_to_upload.url;
@@ -680,24 +702,45 @@ export default {
             fileItemName,
             fileEdaraItemCode,
             filePrice,
+            fileSalePrice,
             fileTotalStock
-          } = extractRowData(row, headers);
+          } = extractRowData(
+            row,
+            headers,
+            enable_max_stock,
+            max_stock
+          );
+
+          const salePriceEnabled = headers?.salePriceName
+            ? true
+            : false;
+          const fileSalePriceChecked =
+            salePriceEnabled && typeof fileSalePrice === 'number'
+              ? fileSalePrice
+              : 0;
 
           console.log('🔄 Processing:', {
             fileEdaraItemCode,
             filePrice,
+            fileSalePriceChecked,
             fileTotalStock
           });
 
           if (
             !fileEdaraItemCode ||
-            filePrice === undefined ||
-            fileTotalStock === undefined
+            typeof filePrice !== 'number' ||
+            typeof fileTotalStock !== 'number' ||
+            (salePriceEnabled && typeof fileSalePrice !== 'number')
           ) {
             logSkippedEntry(updateStatus, row, fileItemName);
             updateCounters.skipped++;
             continue;
           }
+
+          const filePriceChecked =
+            filePrice > 0 ? Math.round(filePrice) : 0;
+          const fileTotalStockChecked =
+            fileTotalStock > 0 ? fileTotalStock : 0;
 
           const product = await findProductByItemCode(
             strapi,
@@ -716,6 +759,7 @@ export default {
           const {
             canUpdate,
             prevPrice,
+            prevSalePrice,
             prevStock,
             productNameSystem
           } = extractProductDetails(product);
@@ -727,6 +771,7 @@ export default {
               fileItemName,
               productNameSystem,
               prevPrice,
+              prevSalePrice,
               prevStock
             );
             updateCounters.updateDisabled++;
@@ -734,14 +779,16 @@ export default {
           }
 
           if (
-            `${prevPrice}` !== `${filePrice}` ||
-            `${prevStock}` !== `${fileTotalStock}`
+            `${prevPrice}` !== `${filePriceChecked}` ||
+            `${prevStock}` !== `${fileTotalStockChecked}` ||
+            `${prevSalePrice}` !== `${fileSalePriceChecked}`
           ) {
             await updateProduct(
               strapi,
               product.id,
-              filePrice,
-              fileTotalStock
+              filePriceChecked,
+              fileSalePriceChecked,
+              fileTotalStockChecked
             );
             logUpdatedEntry(
               updateStatus,
@@ -749,9 +796,11 @@ export default {
               fileItemName,
               productNameSystem,
               prevPrice,
-              filePrice,
+              filePriceChecked,
+              prevSalePrice,
+              fileSalePriceChecked,
               prevStock,
-              fileTotalStock
+              fileTotalStockChecked
             );
             updateCounters.updated++;
           } else {
@@ -761,9 +810,11 @@ export default {
               fileItemName,
               productNameSystem,
               prevPrice,
-              filePrice,
+              filePriceChecked,
+              prevSalePrice,
+              fileSalePriceChecked,
               prevStock,
-              fileTotalStock
+              fileTotalStockChecked
             );
             updateCounters.unchanged++;
           }
@@ -1127,155 +1178,6 @@ export default {
       ).length;
     }
 
-    // function generateTable(updateStatus) {
-    //   const headerStyles = 'vertical-align:top; color:#166fd4;';
-    //   // Create table header
-    //   let tableHTML = `
-    // <figure class="table" style="width:100%;">
-    //   <table class="ck-table-resized" style="border-color:hsl(0, 0%, 100%);">
-    //     <colgroup>
-    //       <col style="width:10.88%;">
-    //       <col style="width:8.87%;">
-    //       <col style="width:15.06%;">
-    //       <col style="width:14.4%;">
-    //       <col style="width:12.53%;">
-    //       <col style="width:13.62%;">
-    //       <col style="width:12.15%;">
-    //       <col style="width:12.49%;">
-    //     </colgroup>
-    //     <thead>
-    //       <tr>
-    //         <th style="${headerStyles}">Status</th>
-    //         <th style="${headerStyles}">Item Code</th>
-    //         <th style="${headerStyles}">Product Name (File)</th>
-    //         <th style="${headerStyles}">Product Name (System)</th>
-    //         <th style="${headerStyles}">Previous Price</th>
-    //         <th style="${headerStyles}">New Price</th>
-    //         <th style="${headerStyles}">Previous Stock</th>
-    //         <th style="${headerStyles}">New Stock</th>
-    //       </tr>
-    //     </thead>
-    //     <tbody>`;
-
-    //   // Loop through the update_status data and generate table rows
-    //   updateStatus.forEach((item) => {
-    //     // Define the inline style based on the status
-    //     let colStyle = 'vertical-align:top;';
-    //     let statusTextColor = '';
-
-    //     if (item.status === 'Updated') {
-    //       statusTextColor = 'color: #388e3c;';
-    //     } else if (item.status === 'Not Found In System') {
-    //       statusTextColor = 'color: #d32f2f;';
-    //     } else if (item.status === 'Skipped') {
-    //       statusTextColor = 'color: #fbc02d;';
-    //     } else if (item.status === 'Update Disabled') {
-    //       statusTextColor = 'color:rgb(251, 45, 76);';
-    //     } else if (item.status === 'Unchanged') {
-    //       statusTextColor = 'color: #166fd4;';
-    //     } else {
-    //       statusTextColor = 'color: white;';
-    //     }
-
-    //     tableHTML += `
-    //   <tr>
-    //     <td style="${colStyle} ${statusTextColor}">${
-    //       item.status || 'N/A'
-    //     }</td>
-    //     <td style="${colStyle}">${item.edaraItemCode || 'N/A'}</td>
-    //     <td style="${colStyle}">${
-    //       item.productNameInTheFile || 'N/A'
-    //     }</td>
-    //     <td style="${colStyle}">${
-    //       item.productNameInTheSystem || 'N/A'
-    //     }</td>
-    //     <td style="${colStyle}">${item.previousPrice || 'N/A'}</td>
-    //     <td style="${colStyle}">${item.newPrice || 'N/A'}</td>
-    //     <td style="${colStyle}">${item.previousStock || 'N/A'}</td>
-    //     <td style="${colStyle}">${item.newStock || 'N/A'}</td>
-    //   </tr>`;
-    //   });
-
-    //   // Close table and figure tags
-    //   tableHTML += `</tbody></table></figure>`;
-
-    //   return tableHTML;
-    // }
-    // const generateTable = (rows, cols, data) => {
-    //   return {
-    //     type: 'table',
-    //     content: Array.from({ length: rows }, (_, rowIndex) => ({
-    //       type: 'tableRow',
-    //       content: Array.from({ length: cols }, (_, colIndex) => ({
-    //         type: 'tableCell',
-    //         content: data?.[rowIndex]?.[colIndex]
-    //           ? [
-    //               {
-    //                 type: 'paragraph',
-    //                 content: [
-    //                   { type: 'text', text: data[rowIndex][colIndex] }
-    //                 ]
-    //               }
-    //             ]
-    //           : [{ type: 'paragraph', content: [] }]
-    //       }))
-    //     }))
-    //   };
-    // };
-    // const generateTable = (updateStatus) => {
-    //   return {
-    //     type: 'table',
-    //     content: [
-    //       {
-    //         type: 'tableRow',
-    //         content: [
-    //           'Status',
-    //           'Item Code',
-    //           'Product Name (File)',
-    //           'Product Name (System)',
-    //           'Previous Price',
-    //           'New Price',
-    //           'Previous Stock',
-    //           'New Stock'
-    //         ].map((header) => ({
-    //           type: 'tableHeader',
-    //           content: [
-    //             {
-    //               type: 'paragraph',
-    //               content: [{ type: 'text', text: header }]
-    //             }
-    //           ]
-    //         }))
-    //       },
-    //       ...updateStatus.map((row) => ({
-    //         type: 'tableRow',
-    //         content: [
-    //           row.status,
-    //           row.edaraItemCode,
-    //           row.productNameInTheFile,
-    //           row.productNameInTheSystem,
-    //           row.previousPrice,
-    //           row.newPrice,
-    //           row.previousStock,
-    //           row.newStock
-    //         ].map((cell) => ({
-    //           type: 'tableCell',
-    //           content: [
-    //             {
-    //               type: 'paragraph',
-    //               content: [
-    //                 {
-    //                   type: 'text',
-    //                   text: cell ? cell.toString() : ''
-    //                 }
-    //               ]
-    //             }
-    //           ]
-    //         }))
-    //       }))
-    //     ]
-    //   };
-    // };
     function generateTable(updateStatus) {
       // Sort updateStatus alphabetically by the 'status' field
       updateStatus.sort((a, b) => a.status.localeCompare(b.status));
@@ -1293,6 +1195,8 @@ export default {
             <td><p><span style="${headerStyles}">Product Name (System)</span></p></td>
             <td><p><span style="${headerStyles}">Previous Price</span></p></td>
             <td><p><span style="${headerStyles}">New Price</span></p></td>
+            <td><p><span style="${headerStyles}">Previous Sale Price</span></p></td>
+            <td><p><span style="${headerStyles}">New Sale Price</span></p></td>
             <td><p><span style="${headerStyles}">Previous Stock</span></p></td>
             <td><p><span style="${headerStyles}">New Stock</span></p></td>
           </tr>`;
@@ -1330,18 +1234,40 @@ export default {
             <td><p style="${colStyles}">${
           item.productNameInTheSystem || 'N/A'
         }</p></td>
-            <td><p style="${colStyles}">${
-          item.previousPrice || 'N/A'
-        }</p></td>
-            <td><p style="${colStyles}">${
-          item.newPrice || 'N/A'
-        }</p></td>
-            <td><p style="${colStyles}">${
-          item.previousStock || 'N/A'
-        }</p></td>
-            <td><p style="${colStyles}">${
-          item.newStock || 'N/A'
-        }</p></td>
+            <td><p style="${colStyles}"><span style="color:#ff6a00;">${
+          typeof item.previousPrice === 'number' &&
+          item.previousPrice >= 0
+            ? item.previousPrice
+            : 'N/A'
+        }</span></p></td>
+            <td><p style="${colStyles}"><span style="color:#3ec045;">${
+          typeof item.newPrice === 'number' && item.newPrice >= 0
+            ? item.newPrice
+            : 'N/A'
+        }</span></p></td>
+            <td><p style="${colStyles}"><span style="color:#ff6a00;">${
+          typeof item.previousSalePrice === 'number' &&
+          item.previousSalePrice >= 0
+            ? item.previousSalePrice
+            : 'N/A'
+        }</span></p></td>
+            <td><p style="${colStyles}"><span style="color:#3ec045;">${
+          typeof item.newSalePrice === 'number' &&
+          item.newSalePrice >= 0
+            ? item.newSalePrice
+            : 'N/A'
+        }</span></p></td>
+            <td><p style="${colStyles}"><span style="color:#ff6a00;">${
+          typeof item.previousStock === 'number' &&
+          item.previousStock >= 0
+            ? item.previousStock
+            : 'N/A'
+        }</span></p></td>
+            <td><p style="${colStyles}"><span style="color:#3ec045;">${
+          typeof item.newStock === 'number' && item.newStock >= 0
+            ? item.newStock
+            : 'N/A'
+        }</span></p></td>
           </tr>`;
       });
 
@@ -1353,16 +1279,16 @@ export default {
     /**
      * Extracts data from a row based on header mappings.
      */
-    function extractRowData(row, headers) {
-      const maxStock =
-        row[headers.totalStockName] >= 10
-          ? 10
-          : row[headers.totalStockName] ?? 0;
+    function extractRowData(row, headers, enableMaxStock, maxStock) {
       return {
         fileItemName: row[headers.itemName] ?? null,
         fileEdaraItemCode: row[headers.edaraItemCodeName] ?? null,
         filePrice: row[headers.priceName] ?? 0,
-        fileTotalStock: maxStock
+        fileSalePrice: row[headers.salePriceName] ?? null,
+        fileTotalStock:
+          enableMaxStock && typeof maxStock === 'number'
+            ? maxStock
+            : row[headers.totalStockName]
       };
     }
 
@@ -1388,6 +1314,7 @@ export default {
           product?.edara_can_change_price_and_stock_for_this_product ??
           false,
         prevPrice: product?.price ?? null,
+        prevSalePrice: product?.sale_price ?? null,
         prevStock: product?.stock ?? null,
         productNameSystem: product.name ?? ''
       };
@@ -1396,12 +1323,18 @@ export default {
     /**
      * Updates a product's price and stock.
      */
-    async function updateProduct(strapi, productId, price, stock) {
+    async function updateProduct(
+      strapi,
+      productId,
+      price,
+      SalePrice,
+      stock
+    ) {
       await strapi.entityService.update(
         'api::product.product',
         productId,
         {
-          data: { price, sale_price: 0, stock }
+          data: { price, sale_price: SalePrice, stock }
         }
       );
     }
@@ -1418,6 +1351,8 @@ export default {
         productNameInTheSystem: null,
         previousPrice: null,
         newPrice: null,
+        previousSalePrice: null,
+        newSalePrice: null,
         previousStock: null,
         newStock: null
       });
@@ -1437,6 +1372,8 @@ export default {
         productNameInTheSystem: null,
         previousPrice: null,
         newPrice: null,
+        previousSalePrice: null,
+        newSalePrice: null,
         previousStock: null,
         newStock: null
       });
@@ -1451,6 +1388,7 @@ export default {
       itemName,
       productNameSystem,
       prevPrice,
+      prevSalePrice,
       prevStock
     ) {
       updateStatus.push({
@@ -1460,6 +1398,8 @@ export default {
         productNameInTheSystem: productNameSystem,
         previousPrice: prevPrice,
         newPrice: prevPrice,
+        previousSalePrice: prevSalePrice,
+        newSalePrice: prevSalePrice,
         previousStock: prevStock,
         newStock: prevStock
       });
@@ -1475,11 +1415,13 @@ export default {
       productNameSystem,
       prevPrice,
       newPrice,
+      prevSalePrice,
+      newSalePrice,
       prevStock,
       newStock
     ) {
       console.log(
-        `✅ Updated product ${productNameSystem}: Price = ${newPrice}, Stock = ${newStock}`
+        `✅ Updated product ${productNameSystem}: Price = ${newPrice}, Sale Price: ${newSalePrice}, Stock = ${newStock}`
       );
       updateStatus.push({
         status: 'Updated',
@@ -1488,6 +1430,8 @@ export default {
         productNameInTheSystem: productNameSystem,
         previousPrice: prevPrice,
         newPrice,
+        previousSalePrice: prevSalePrice,
+        newSalePrice: newSalePrice,
         previousStock: prevStock,
         newStock
       });
@@ -1503,6 +1447,8 @@ export default {
       productNameSystem,
       prevPrice,
       newPrice,
+      prevSalePrice,
+      newSalePrice,
       prevStock,
       newStock
     ) {
@@ -1513,6 +1459,8 @@ export default {
         productNameInTheSystem: productNameSystem,
         previousPrice: prevPrice,
         newPrice,
+        previousSalePrice: prevSalePrice,
+        newSalePrice: newSalePrice,
         previousStock: prevStock,
         newStock
       });
@@ -1535,10 +1483,12 @@ export default {
             edaraItemCode: filteredProduct['edara_item_code'] ?? null,
             productNameInTheSytem: filteredProduct?.name ?? null,
             price: filteredProduct?.price ?? null,
-            stock: filteredProduct?.stock ?? null
+            stock: filteredProduct?.stock ?? null,
+            salePrice: filteredProduct?.sale_price ?? null
           };
         });
     }
+
     function findUpdateDisabledProductsInFile(updateStatus) {
       return updateStatus && updateStatus.length > 0
         ? updateStatus.filter((product) => {
@@ -1559,27 +1509,27 @@ export default {
     ) {
       return [
         {
-          'Total system products': totalProductsSystem,
-          'Total file products': totalProductsInFile,
+          '📊 Total Products in System': totalProductsSystem,
+          '📂 Total Products in File': totalProductsInFile,
           '⚠️ Total products in file not Found in System':
             updateCounters.notFoundInSystem,
           '⚠️ Total products in stystem not found in file':
             updateCounters.notFoundInFile,
 
-          '✅ Updated': updateCounters.updated,
-          'Unchanged products': updateCounters.unchanged,
-          'Total number of disabled products to be updated':
+          '✅ Updated Products': updateCounters.updated,
+          '🔄 Unchanged Products': updateCounters.unchanged,
+          '🚫 Disabled Products (Not Updated)':
             updateCounters.updateDisabled,
-          'Total number of skipped products': updateCounters.skipped,
-          'Total of failed to update products':
+          '⏭️ Skipped Products': updateCounters.skipped,
+          '❌ Failed Updates (Skipped + Not Found in File)':
             updateCounters.skipped + updateCounters.notFoundInFile
         },
         {
-          'All products in the system not found in the file':
+          '📉 Products in System Not Found in File':
             productsNotFoundInFile
         },
         {
-          'All products in the system that is disabled to be updated':
+          '🛑 Disabled Products in System (Not Updated)':
             updateDisabledProductsInFile
         }
       ];

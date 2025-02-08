@@ -21,6 +21,29 @@ export interface SocialButtonsSocialLink extends Schema.Component {
   attributes: {};
 }
 
+export interface ReportAbuseReportAbuse extends Schema.Component {
+  collectionName: 'components_report_abuse_report_abuses';
+  info: {
+    displayName: 'report_abuse';
+    icon: 'discuss';
+    description: '';
+  };
+  attributes: {
+    resolved: Attribute.Boolean & Attribute.DefaultTo<false>;
+    resolved_comment___users_can_not_see_this_comment: Attribute.Text;
+    issue_type: Attribute.Enumeration<
+      ['off topic', 'inappropriate', 'fake', 'other']
+    > &
+      Attribute.Required &
+      Attribute.DefaultTo<'other'>;
+    user: Attribute.Relation<
+      'report-abuse.report-abuse',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -64,29 +87,6 @@ export interface SharedMetaSocial extends Schema.Component {
         maxLength: 65;
       }>;
     image: Attribute.Media<'images' | 'files' | 'videos'>;
-  };
-}
-
-export interface ReportAbuseReportAbuse extends Schema.Component {
-  collectionName: 'components_report_abuse_report_abuses';
-  info: {
-    displayName: 'report_abuse';
-    icon: 'discuss';
-    description: '';
-  };
-  attributes: {
-    resolved: Attribute.Boolean & Attribute.DefaultTo<false>;
-    resolved_comment___users_can_not_see_this_comment: Attribute.Text;
-    issue_type: Attribute.Enumeration<
-      ['off topic', 'inappropriate', 'fake', 'other']
-    > &
-      Attribute.Required &
-      Attribute.DefaultTo<'other'>;
-    user: Attribute.Relation<
-      'report-abuse.report-abuse',
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
   };
 }
 
@@ -200,16 +200,14 @@ export interface FeatureFeatures extends Schema.Component {
   };
 }
 
-export interface DetailsSpecification extends Schema.Component {
-  collectionName: 'components_details_specifications';
+export interface ExcelHeadersExcelHeaders extends Schema.Component {
+  collectionName: 'components_excel_headers_excel_headers';
   info: {
-    displayName: 'specification';
-    icon: 'layer';
-    description: '';
+    displayName: 'EXCEL_Headers';
+    icon: 'strikeThrough';
   };
   attributes: {
-    name: Attribute.String & Attribute.Required;
-    value: Attribute.Text & Attribute.Required;
+    header_name: Attribute.String & Attribute.Required;
   };
 }
 
@@ -224,6 +222,37 @@ export interface ContactUsContactUs extends Schema.Component {
     heading: Attribute.Text & Attribute.Required;
     button_text: Attribute.String & Attribute.Required;
     button_url: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface DetailsSpecification extends Schema.Component {
+  collectionName: 'components_details_specifications';
+  info: {
+    displayName: 'specification';
+    icon: 'layer';
+    description: '';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    value: Attribute.Text & Attribute.Required;
+  };
+}
+
+export interface CategoriesSectionCategories
+  extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'grid';
+    description: '';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
   };
 }
 
@@ -274,24 +303,6 @@ export interface CartProductQuantity extends Schema.Component {
       > &
       Attribute.DefaultTo<0>;
     description: Attribute.Text;
-  };
-}
-
-export interface CategoriesSectionCategories
-  extends Schema.Component {
-  collectionName: 'components_categories_section_categories';
-  info: {
-    displayName: 'categories';
-    icon: 'grid';
-    description: '';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    description: Attribute.String & Attribute.Required;
-    category: Attribute.Component<'category.categories', true> &
-      Attribute.Required;
   };
 }
 
@@ -381,9 +392,9 @@ declare module '@strapi/types' {
     export interface Components {
       'youtube.video': YoutubeVideo;
       'social-buttons.social-link': SocialButtonsSocialLink;
+      'report-abuse.report-abuse': ReportAbuseReportAbuse;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
-      'report-abuse.report-abuse': ReportAbuseReportAbuse;
       'phone.phone': PhonePhone;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
@@ -391,11 +402,12 @@ declare module '@strapi/types' {
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
-      'details.specification': DetailsSpecification;
+      'excel-headers.excel-headers': ExcelHeadersExcelHeaders;
       'contact-us.contact-us': ContactUsContactUs;
+      'details.specification': DetailsSpecification;
+      'categories-section.categories': CategoriesSectionCategories;
       'category.categories': CategoryCategories;
       'cart.product-quantity': CartProductQuantity;
-      'categories-section.categories': CategoriesSectionCategories;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;

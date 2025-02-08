@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_excel_headers_excel_headers",
+  "info": {
+    "displayName": "EXCEL_Headers",
+    "icon": "strikeThrough"
+  },
+  "options": {},
+  "attributes": {
+    "header_name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

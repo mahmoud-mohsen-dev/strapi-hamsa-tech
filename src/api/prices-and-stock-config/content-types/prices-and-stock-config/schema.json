@@ -1,0 +1,46 @@
+{
+  "kind": "singleType",
+  "collectionName": "prices_and_stock_configs",
+  "info": {
+    "singularName": "prices-and-stock-config",
+    "pluralName": "prices-and-stock-configs",
+    "displayName": "Prices and Stock Config",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "max_stock": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    },
+    "excel_header_for_item_name": {
+      "type": "string",
+      "required": true
+    },
+    "excel_header_for_edara_item_code": {
+      "type": "string",
+      "required": true
+    },
+    "excel_header_to_update_product_price": {
+      "type": "string",
+      "required": true
+    },
+    "excel_header_to_update_product_sale_price": {
+      "type": "string",
+      "required": false
+    },
+    "excel_header_to_update_product_stock": {
+      "type": "string",
+      "required": true
+    },
+    "enable_max_stock": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}
