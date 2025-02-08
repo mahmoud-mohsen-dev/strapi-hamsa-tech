@@ -1287,7 +1287,9 @@ export default {
         fileSalePrice: row[headers.salePriceName] ?? null,
         fileTotalStock:
           enableMaxStock && typeof maxStock === 'number'
-            ? maxStock
+            ? row[headers.totalStockName] >= maxStock
+              ? maxStock
+              : row[headers.totalStockName]
             : row[headers.totalStockName]
       };
     }
