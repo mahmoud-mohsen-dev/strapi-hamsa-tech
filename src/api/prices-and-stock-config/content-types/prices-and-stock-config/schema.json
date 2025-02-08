@@ -41,6 +41,18 @@
       "type": "boolean",
       "default": true,
       "required": true
+    },
+    "extra_price_addition": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "required": true
+    },
+    "extra_sale_price_addition": {
+      "type": "integer",
+      "min": 0,
+      "default": 0,
+      "required": true
     }
   }
 }

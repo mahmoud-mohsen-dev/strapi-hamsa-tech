@@ -1925,6 +1925,24 @@ export interface ApiPricesAndStockConfigPricesAndStockConfig
     enable_max_stock: Attribute.Boolean &
       Attribute.Required &
       Attribute.DefaultTo<true>;
+    extra_price_addition: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    extra_sale_price_addition: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

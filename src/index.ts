@@ -629,7 +629,9 @@ export default {
           excel_header_to_update_product_price,
           excel_header_to_update_product_sale_price,
           excel_header_to_update_product_stock,
-          enable_max_stock
+          enable_max_stock,
+          extra_price_addition,
+          extra_sale_price_addition
         } = pricesAndStockConfigEntry;
 
         // {
@@ -716,15 +718,10 @@ export default {
             : false;
           const fileSalePriceChecked =
             salePriceEnabled && typeof fileSalePrice === 'number'
-              ? fileSalePrice
+              ? extra_sale_price_addition > 0
+                ? fileSalePrice + extra_sale_price_addition
+                : fileSalePrice
               : 0;
-
-          console.log('🔄 Processing:', {
-            fileEdaraItemCode,
-            filePrice,
-            fileSalePriceChecked,
-            fileTotalStock
-          });
 
           if (
             !fileEdaraItemCode ||
@@ -738,9 +735,20 @@ export default {
           }
 
           const filePriceChecked =
-            filePrice > 0 ? Math.round(filePrice) : 0;
+            filePrice > 0
+              ? extra_price_addition > 0
+                ? Math.round(filePrice + extra_price_addition)
+                : Math.round(filePrice)
+              : 0;
           const fileTotalStockChecked =
             fileTotalStock > 0 ? fileTotalStock : 0;
+
+          console.log('🔄 Processing:', {
+            fileEdaraItemCode,
+            filePriceChecked,
+            fileSalePriceChecked,
+            fileTotalStock
+          });
 
           const product = await findProductByItemCode(
             strapi,
