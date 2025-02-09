@@ -716,13 +716,8 @@ export default {
           const salePriceEnabled = headers?.salePriceName
             ? true
             : false;
-          const fileSalePriceChecked =
-            salePriceEnabled && typeof fileSalePrice === 'number'
-              ? extra_sale_price_addition > 0
-                ? fileSalePrice + extra_sale_price_addition
-                : fileSalePrice
-              : 0;
 
+          // Check if any of the row columns is missing a value
           if (
             !fileEdaraItemCode ||
             typeof filePrice !== 'number' ||
@@ -740,6 +735,16 @@ export default {
                 ? Math.round(filePrice + extra_price_addition)
                 : Math.round(filePrice)
               : 0;
+
+          const fileSalePriceChecked =
+            salePriceEnabled && typeof fileSalePrice === 'number'
+              ? extra_sale_price_addition > 0
+                ? Math.round(
+                    fileSalePrice + extra_sale_price_addition
+                  )
+                : Math.round(fileSalePrice)
+              : 0;
+
           const fileTotalStockChecked =
             fileTotalStock > 0 ? fileTotalStock : 0;
 
@@ -1189,24 +1194,25 @@ export default {
     function generateTable(updateStatus) {
       // Sort updateStatus alphabetically by the 'status' field
       updateStatus.sort((a, b) => a.status.localeCompare(b.status));
-      console.log(updateStatus);
-      const headerStyles = 'color: #007bff;text-align: center;';
+      // console.log(updateStatus);
+      const headerPStyles = 'text-align: center;';
+      const headerSpanStyles = 'color: #007bff;';
 
       // Create table header
       let tableHTML = `
       <table>
         <tbody>
           <tr>
-            <td><p><span style="${headerStyles}">Status</span></p></td>
-            <td><p><span style="${headerStyles}">Item Code</span></p></td>
-            <td><p><span style="${headerStyles}">Product Name (File)</span></p></td>
-            <td><p><span style="${headerStyles}">Product Name (System)</span></p></td>
-            <td><p><span style="${headerStyles}">Previous Price</span></p></td>
-            <td><p><span style="${headerStyles}">New Price</span></p></td>
-            <td><p><span style="${headerStyles}">Previous Sale Price</span></p></td>
-            <td><p><span style="${headerStyles}">New Sale Price</span></p></td>
-            <td><p><span style="${headerStyles}">Previous Stock</span></p></td>
-            <td><p><span style="${headerStyles}">New Stock</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Status</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Item Code</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Product Name (File)</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Product Name (System)</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Previous Price</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">New Price</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Previous Sale Price</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">New Sale Price</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Previous Stock</span></p></td>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">New Stock</span></p></td>
           </tr>`;
 
       // Loop through the update_status data and generate table rows
@@ -1291,14 +1297,22 @@ export default {
       return {
         fileItemName: row[headers.itemName] ?? null,
         fileEdaraItemCode: row[headers.edaraItemCodeName] ?? null,
-        filePrice: row[headers.priceName] ?? 0,
-        fileSalePrice: row[headers.salePriceName] ?? null,
+        filePrice:
+          typeof row[headers.priceName] === 'number'
+            ? row[headers.priceName]
+            : null,
+        fileSalePrice:
+          typeof row[headers.salePriceName] === 'number'
+            ? row[headers.salePriceName]
+            : null,
         fileTotalStock:
-          enableMaxStock && typeof maxStock === 'number'
-            ? row[headers.totalStockName] >= maxStock
+          typeof row[headers.totalStockName] === 'number'
+            ? enableMaxStock &&
+              typeof maxStock === 'number' &&
+              row[headers.totalStockName] >= maxStock
               ? maxStock
               : row[headers.totalStockName]
-            : row[headers.totalStockName]
+            : null
       };
     }
 
