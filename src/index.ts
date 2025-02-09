@@ -685,8 +685,15 @@ export default {
         );
 
         const products = await strapi.entityService.findMany(
-          'api::product.product'
+          'api::product.product',
+          {
+            filters: {
+              publishedAt: { $notNull: true } // Only get published products
+            }
+          }
         );
+
+        console.log('��� Processing products...', products);
 
         let updateCounters = {
           updated: 0,
@@ -694,7 +701,8 @@ export default {
           notFoundInSystem: 0,
           updateDisabled: 0,
           notFoundInFile: 0,
-          skipped: 0
+          skipped: 0,
+          errorWhileUpdating: 0
         };
 
         let updateStatus = [];
@@ -724,7 +732,12 @@ export default {
             typeof fileTotalStock !== 'number' ||
             (salePriceEnabled && typeof fileSalePrice !== 'number')
           ) {
-            logSkippedEntry(updateStatus, row, fileItemName);
+            logSkippedEntry(
+              updateStatus,
+              row,
+              fileEdaraItemCode,
+              fileItemName
+            );
             updateCounters.skipped++;
             continue;
           }
@@ -799,12 +812,8 @@ export default {
             await updateProduct(
               strapi,
               product.id,
-              filePriceChecked,
-              fileSalePriceChecked,
-              fileTotalStockChecked
-            );
-            logUpdatedEntry(
               updateStatus,
+              updateCounters,
               fileEdaraItemCode,
               fileItemName,
               productNameSystem,
@@ -815,7 +824,6 @@ export default {
               prevStock,
               fileTotalStockChecked
             );
-            updateCounters.updated++;
           } else {
             logUnchangedEntry(
               updateStatus,
@@ -835,7 +843,8 @@ export default {
 
         const productsNotFoundInFile = findProductsNotInFile(
           products,
-          updateStatus
+          filteredSheet,
+          headers.edaraItemCodeName
         );
         updateCounters.notFoundInFile = productsNotFoundInFile.length;
 
@@ -844,7 +853,12 @@ export default {
           products.length,
           filteredSheet.length,
           productsNotFoundInFile,
-          findUpdateDisabledProductsInFile(updateStatus)
+          filterProductsByStatusText(updateStatus, 'Update Disabled'),
+          filterProductsByStatusText(
+            updateStatus,
+            'Error occurred during update (not updated)'
+          ),
+          filterProductsByStatusText(updateStatus, 'Skipped')
         );
 
         // Generate and store the update status table
@@ -1224,6 +1238,10 @@ export default {
           statusColor = 'color: #388e3c;';
         } else if (item.status === 'Not Found In System') {
           statusColor = 'color: #ff0000;';
+        } else if (
+          item.status === 'Error occurred during update (not updated)'
+        ) {
+          statusColor = 'color:#ff8000;';
         } else if (item.status === 'Skipped') {
           statusColor = 'color: #fbc02d;';
         } else if (item.status === 'Update Disabled') {
@@ -1326,6 +1344,13 @@ export default {
           filters: { edara_item_code: edaraItemCode }
         }
       );
+
+      if (!products.length) {
+        console.log(
+          `🚨 Product not found in system: ${edaraItemCode}`
+        );
+      }
+
       return products[0] || null;
     }
 
@@ -1350,27 +1375,71 @@ export default {
     async function updateProduct(
       strapi,
       productId,
-      price,
-      SalePrice,
-      stock
+      updateStatus,
+      updateCounters,
+      fileEdaraItemCode,
+      fileItemName,
+      productNameSystem,
+      prevPrice,
+      filePriceChecked,
+      prevSalePrice,
+      fileSalePriceChecked,
+      prevStock,
+      fileTotalStockChecked
     ) {
-      await strapi.entityService.update(
-        'api::product.product',
-        productId,
-        {
-          data: { price, sale_price: SalePrice, stock }
-        }
-      );
+      try {
+        await strapi.entityService.update(
+          'api::product.product',
+          productId,
+          {
+            data: {
+              price: filePriceChecked,
+              sale_price: fileSalePriceChecked,
+              stock: fileTotalStockChecked
+            }
+          }
+        );
+
+        logUpdatedEntry(
+          updateStatus,
+          fileEdaraItemCode,
+          fileItemName,
+          productNameSystem,
+          prevPrice,
+          filePriceChecked,
+          prevSalePrice,
+          fileSalePriceChecked,
+          prevStock,
+          fileTotalStockChecked
+        );
+        updateCounters.updated++;
+      } catch (error) {
+        logErrorWhileUpdatingEntry(
+          updateStatus,
+          fileEdaraItemCode,
+          fileItemName,
+          productNameSystem,
+          prevPrice,
+          prevSalePrice,
+          prevStock
+        );
+        updateCounters.errorWhileUpdating++;
+      }
     }
 
     /**
      * Logs skipped entries.
      */
-    function logSkippedEntry(updateStatus, row, itemName) {
+    function logSkippedEntry(
+      updateStatus,
+      row,
+      edaraItemCode,
+      itemName
+    ) {
       console.warn('⚠️ Skipping row due to missing data:', row);
       updateStatus.push({
         status: 'Skipped',
-        edaraItemCode: null,
+        edaraItemCode: edaraItemCode ?? null,
         productNameInTheFile: itemName,
         productNameInTheSystem: null,
         previousPrice: null,
@@ -1378,6 +1447,35 @@ export default {
         previousSalePrice: null,
         newSalePrice: null,
         previousStock: null,
+        newStock: null
+      });
+    }
+
+    /**
+     * Error while updating entries.
+     */
+    function logErrorWhileUpdatingEntry(
+      updateStatus,
+      edaraItemCode,
+      itemName,
+      productNameSystem,
+      prevPrice,
+      prevSalePrice,
+      prevStock
+    ) {
+      console.warn(
+        `⚠️ Product was not updated in system: ${edaraItemCode}`
+      );
+      updateStatus.push({
+        status: 'Error occurred during update (not updated)',
+        edaraItemCode: edaraItemCode,
+        productNameInTheFile: itemName,
+        productNameInTheSystem: productNameSystem,
+        previousPrice: prevPrice,
+        newPrice: null,
+        previousSalePrice: prevSalePrice,
+        newSalePrice: null,
+        previousStock: prevStock,
         newStock: null
       });
     }
@@ -1415,6 +1513,7 @@ export default {
       prevSalePrice,
       prevStock
     ) {
+      console.log(`🔒 Update disabled for product: ${edaraItemCode}`);
       updateStatus.push({
         status: 'Update Disabled',
         edaraItemCode,
@@ -1476,6 +1575,9 @@ export default {
       prevStock,
       newStock
     ) {
+      console.log(
+        `🟦 Unchanged product: ${edaraItemCode} (Price: ${prevPrice}, Stock: ${prevStock})`
+      );
       updateStatus.push({
         status: 'Unchanged',
         edaraItemCode,
@@ -1490,13 +1592,17 @@ export default {
       });
     }
 
-    function findProductsNotInFile(products, updateStatus) {
+    function findProductsNotInFile(
+      products,
+      filteredSheet,
+      edaraItemCodeName
+    ) {
       return products
         .filter((product) => {
-          // Check if the product exists in the updateStatus array
-          const foundProduct = updateStatus.find(
+          // Check if the product exists in the filteredSheet array
+          const foundProduct = filteredSheet.find(
             (item) =>
-              `${item.edaraItemCode}` ===
+              `${item[edaraItemCodeName]}` ===
               `${product['edara_item_code']}`
           );
           return !foundProduct;
@@ -1513,10 +1619,10 @@ export default {
         });
     }
 
-    function findUpdateDisabledProductsInFile(updateStatus) {
+    function filterProductsByStatusText(updateStatus, statusText) {
       return updateStatus && updateStatus.length > 0
         ? updateStatus.filter((product) => {
-            return product.status === 'Update Disabled';
+            return product.status === statusText;
           })
         : null;
     }
@@ -1529,32 +1635,47 @@ export default {
       totalProductsSystem,
       totalProductsInFile,
       productsNotFoundInFile,
-      updateDisabledProductsInFile
+      updateDisabledProductsInFile,
+      errorOccuredWhileUpdatingProducts,
+      SkippedProducts
     ) {
       return [
         {
-          '📊 Total Products in System': totalProductsSystem,
-          '📂 Total Products in File': totalProductsInFile,
-          '⚠️ Total products in file not Found in System':
-            updateCounters.notFoundInSystem,
-          '⚠️ Total products in stystem not found in file':
-            updateCounters.notFoundInFile,
-
-          '✅ Updated Products': updateCounters.updated,
-          '🔄 Unchanged Products': updateCounters.unchanged,
+          '📊 Products in System (Published)': totalProductsSystem,
+          '📂 Products in File': totalProductsInFile,
+          '⚠️ Products in file not Found in System':
+            updateCounters.notFoundInSystem, // 4
+          '⚠️ Products in stystem not found in file':
+            updateCounters.notFoundInFile, // 5
+          '✅ Updated Products': updateCounters.updated, // 2
+          '🔄 Unchanged Products': updateCounters.unchanged, // 1
           '🚫 Disabled Products (Not Updated)':
-            updateCounters.updateDisabled,
-          '⏭️ Skipped Products': updateCounters.skipped,
-          '❌ Failed Updates (Skipped + Not Found in File)':
-            updateCounters.skipped + updateCounters.notFoundInFile
+            updateCounters.updateDisabled, // 3
+          '⏭️ Skipped Products in file': updateCounters.skipped, // 6
+          '❌ Total of Failed products to be Updated':
+            // updateCounters.errorWhileUpdating +
+            // updateCounters.notFoundInFile,
+            totalProductsSystem -
+            (updateCounters.updated +
+              updateCounters.unchanged +
+              updateCounters.updateDisabled),
+          '❌ Error happened While updating products (Not Updated)':
+            updateCounters.errorWhileUpdating // 7
         },
         {
           '📉 Products in System Not Found in File':
             productsNotFoundInFile
         },
         {
+          '⏭️ Skipped Products in file': SkippedProducts
+        },
+        {
           '🛑 Disabled Products in System (Not Updated)':
             updateDisabledProductsInFile
+        },
+        {
+          '🚨 Error happened While updating products (Not Updated)':
+            errorOccuredWhileUpdatingProducts
         }
       ];
     }

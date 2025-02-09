@@ -169,6 +169,25 @@ export interface FeaturedProductsFeaturedProducts
   };
 }
 
+export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
+  collectionName: 'components_featured_blogs_featured_blogs';
+  info: {
+    displayName: 'featured-blogs';
+    icon: 'pencil';
+    description: '';
+  };
+  attributes: {
+    blogs: Attribute.Relation<
+      'featured-blogs.featured-blogs',
+      'oneToMany',
+      'api::blog.blog'
+    >;
+    slug: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface FeatureFeatures extends Schema.Component {
   collectionName: 'components_feature_features';
   info: {
@@ -205,22 +224,17 @@ export interface DetailsSpecification extends Schema.Component {
   };
 }
 
-export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
-  collectionName: 'components_featured_blogs_featured_blogs';
+export interface ContactUsContactUs extends Schema.Component {
+  collectionName: 'components_contact_us_contact_uses';
   info: {
-    displayName: 'featured-blogs';
-    icon: 'pencil';
-    description: '';
+    displayName: 'contact-us';
+    icon: 'phone';
   };
   attributes: {
-    blogs: Attribute.Relation<
-      'featured-blogs.featured-blogs',
-      'oneToMany',
-      'api::blog.blog'
-    >;
-    slug: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
+    section_name: Attribute.String & Attribute.Required;
+    heading: Attribute.Text & Attribute.Required;
+    button_text: Attribute.String & Attribute.Required;
+    button_url: Attribute.String & Attribute.Required;
   };
 }
 
@@ -254,20 +268,6 @@ export interface CategoriesSectionCategories
     description: Attribute.String & Attribute.Required;
     category: Attribute.Component<'category.categories', true> &
       Attribute.Required;
-  };
-}
-
-export interface ContactUsContactUs extends Schema.Component {
-  collectionName: 'components_contact_us_contact_uses';
-  info: {
-    displayName: 'contact-us';
-    icon: 'phone';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading: Attribute.Text & Attribute.Required;
-    button_text: Attribute.String & Attribute.Required;
-    button_url: Attribute.String & Attribute.Required;
   };
 }
 
@@ -400,13 +400,13 @@ declare module '@strapi/types' {
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
+      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
       'excel-headers.excel-headers': ExcelHeadersExcelHeaders;
       'details.specification': DetailsSpecification;
-      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
+      'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
-      'contact-us.contact-us': ContactUsContactUs;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
