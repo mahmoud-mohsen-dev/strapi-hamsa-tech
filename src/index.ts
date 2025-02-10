@@ -1,3 +1,5 @@
+import { stat } from 'fs';
+
 const { sanitize } = require('@strapi/utils');
 const fs = require('fs');
 const path = require('path');
@@ -547,8 +549,8 @@ export default {
           }
         );
 
-        console.log('existingEntry');
-        console.log(JSON.stringify(existingEntry));
+        // console.log('existingEntry');
+        // console.log(JSON.stringify(existingEntry));
 
         // Check if the file is changing
         if (
@@ -578,9 +580,9 @@ export default {
 
     async function processUploadedFile(entry) {
       try {
-        console.log('*'.repeat(30));
-        console.log(entry);
-        console.log('*'.repeat(30));
+        // console.log('*'.repeat(30));
+        // console.log(entry);
+        // console.log('*'.repeat(30));
 
         if (entry.processed === 'done') {
           console.log(
@@ -634,19 +636,6 @@ export default {
           extra_sale_price_addition
         } = pricesAndStockConfigEntry;
 
-        // {
-        // "id":1,
-        // "max_stock":5,
-        // "createdAt":"2025-02-06T20:01:04.870Z",
-        // "updatedAt":"2025-02-06T20:07:40.423Z",
-        // "excel_header_for_item_name":"Description",
-        // "excel_header_for_edara_item_code":"Item code",
-        // "excel_header_to_update_product_price":"Sales price",
-        // "excel_header_to_update_product_sales_price":"Super dealer price",
-        // "excel_header_to_update_product_stock":"Total",
-        // "enable_max_stock":true
-        // }
-
         const headers = {
           itemName: excel_header_for_item_name ?? '',
           edaraItemCodeName: excel_header_for_edara_item_code ?? '',
@@ -657,7 +646,7 @@ export default {
         };
 
         const fileUrl = entry.xlsx_file_to_upload.url;
-        console.log('📥 Downloading file from:', fileUrl);
+        // console.log('📥 Downloading file from:', fileUrl);
 
         const tempFilePath = path.join(__dirname, 'temp.xlsx');
         //tempFilePath D:\Codes\Hamsa Tech\strapi-hamsa-tech\dist\src\temp.xlsx
@@ -684,16 +673,148 @@ export default {
             typeof row[headers.edaraItemCodeName] === 'number'
         );
 
+        let duplicateFileItemCodes = new Set();
+        let duplicateSystemItemCodes = new Set();
+        let duplicateFileLog = [];
+        let duplicateSystemLog = [];
+
+        // Step 1: Identify duplicate item codes in the file
+        let itemFileCodeMap = new Map();
+        filteredSheet.forEach((row) => {
+          let itemCode = row[headers.edaraItemCodeName];
+          if (!itemCode) return;
+
+          if (itemFileCodeMap.has(itemCode)) {
+            duplicateFileItemCodes.add(itemCode);
+          } else {
+            itemFileCodeMap.set(itemCode, row);
+          }
+        });
+
+        console.log(
+          `Found ${duplicateFileItemCodes.size} duplicate item codes in file.`
+        );
+        if (duplicateFileItemCodes.size > 0) {
+          duplicateFileLog.push(
+            `${[...duplicateFileItemCodes].join(', ')}`
+          );
+        }
+
         const products = await strapi.entityService.findMany(
           'api::product.product',
           {
-            filters: {
-              publishedAt: { $notNull: true } // Only get published products
-            }
+            // filters: {
+            //   publishedAt: { $notNull: true } // Only get published products
+            // },
+            populate: ['localizations']
           }
         );
-
+        const publishedProducts = products.filter(
+          (product) => product.publishedAt
+        );
         console.log('��� Processing products...', products);
+        console.log('ℹ️ Published products...', publishedProducts);
+        //  canUpdate:
+        //   product?.edara_can_change_price_and_stock_for_this_product ??
+        //   false,
+        // prevPrice: product?.price ?? null,
+        // prevSalePrice: product?.sale_price ?? null,
+        // prevStock: product?.stock ?? null,
+        // productNameSystem: product.name ?? ''
+
+        //  ��� Processing products... [
+        //   {
+        //     id: 642,
+        //     name: 'CASH DRAWER/SEETHING',
+        //     price: 1500,
+        //     sale_price: 1300,
+        //     average_reviews: 0,
+        //     total_reviews: 0,
+        //     description: 's',
+        //     stock: 6,
+        //     connectivity: null,
+        //     modal_name: 'CASH DRAWER/SEETHING',
+        //     long_description: [[Object]],
+        //     spotlight_description: null,
+        //     final_product_price: 1300,
+        //     sort_by_order: null,
+        //     edara_item_code: '3111',
+        //     edara_can_change_price_and_stock_for_this_product: true,
+        //     createdAt: '2025-02-02T16:13:25.623Z',
+        //     updatedAt: '2025-02-10T18:02:24.808Z',
+        //     publishedAt: '2025-02-10T16:56:38.980Z',
+        //     locale: 'ar',
+        //     localizations: [[Object]]
+        //   },
+        //   {
+        //     id: 646,
+        //     name: 'nxc0',
+        //     price: 5000,
+        //     sale_price: 100,
+        //     average_reviews: 0,
+        //     total_reviews: 0,
+        //     description: 'mj',
+        //     stock: 3,
+        //     connectivity: null,
+        //     modal_name: 'k',
+        //     long_description: [[Object]],
+        //     spotlight_description: null,
+        //     final_product_price: 100,
+        //     sort_by_order: null,
+        //     edara_item_code: '10000',
+        //     edara_can_change_price_and_stock_for_this_product: true,
+        //     createdAt: '2025-02-03T17:00:21.459Z',
+        //     updatedAt: '2025-02-03T17:00:36.441Z',
+        //     publishedAt: '2025-02-03T17:00:36.430Z',
+        //     locale: 'ar',
+        //     localizations: []
+        //   },
+        //   {
+        //     id: 644,
+        //     name: 'SOLAR PANEL/EZVIZ/CS-CMT-SOLAR PANEL-E',
+        //     price: 500,
+        //     sale_price: 400,
+        //     average_reviews: 0,
+        //     total_reviews: 0,
+        //     description: '1',
+        //     stock: 6,
+        //     connectivity: null,
+        //     modal_name: '1',
+        //     long_description: [[Object]],
+        //     spotlight_description: null,
+        //     final_product_price: 400,
+        //     sort_by_order: null,
+        //     edara_item_code: '3109',
+        //     edara_can_change_price_and_stock_for_this_product: true,
+        //     createdAt: '2025-02-02T16:14:54.749Z',
+        //     updatedAt: '2025-02-10T18:02:37.584Z',
+        //     publishedAt: '2025-02-02T16:14:59.520Z',
+        //     locale: 'ar',
+        //     localizations: [[Object]]
+        //   }
+        // ];
+
+        // Step 3: Identify duplicate edara_item_code in the system
+        let itemSystemCodeMap = new Map();
+        products.forEach((product) => {
+          let edaraItemCode = product.edara_item_code;
+          if (!edaraItemCode) return;
+
+          if (itemSystemCodeMap.has(edaraItemCode)) {
+            duplicateSystemItemCodes.add(edaraItemCode);
+          } else {
+            itemSystemCodeMap.set(edaraItemCode, product);
+          }
+        });
+
+        console.log(
+          `Found ${duplicateSystemItemCodes.size} duplicate edara_item_codes in system.`
+        );
+        if (duplicateSystemItemCodes.size > 0) {
+          duplicateSystemLog.push(
+            `${[...duplicateSystemItemCodes].join(', ')}`
+          );
+        }
 
         let updateCounters = {
           updated: 0,
@@ -702,7 +823,10 @@ export default {
           updateDisabled: 0,
           notFoundInFile: 0,
           skipped: 0,
-          errorWhileUpdating: 0
+          errorWhileUpdating: 0,
+          duplicateProductsInFile: duplicateFileItemCodes.size,
+          duplicateProductsInSystem: duplicateSystemItemCodes.size,
+          matched: 0
         };
 
         let updateStatus = [];
@@ -742,6 +866,32 @@ export default {
             continue;
           }
 
+          const product = await findProductByItemCode(
+            publishedProducts,
+            fileEdaraItemCode
+          );
+          if (!product) {
+            logNotFoundEntry(
+              updateStatus,
+              fileEdaraItemCode,
+              fileItemName
+            );
+            updateCounters.notFoundInSystem++;
+            continue;
+          }
+
+          updateCounters.matched++;
+
+          if (duplicateFileItemCodes.has(fileEdaraItemCode)) {
+            // updateCounters.duplicateProductsInFile++;
+            continue;
+          }
+
+          if (duplicateSystemItemCodes.has(fileEdaraItemCode)) {
+            // updateCounters.duplicateProductsInSystem++;
+            continue;
+          }
+
           const filePriceChecked =
             filePrice > 0
               ? extra_price_addition > 0
@@ -761,26 +911,12 @@ export default {
           const fileTotalStockChecked =
             fileTotalStock > 0 ? fileTotalStock : 0;
 
-          console.log('🔄 Processing:', {
-            fileEdaraItemCode,
-            filePriceChecked,
-            fileSalePriceChecked,
-            fileTotalStock
-          });
-
-          const product = await findProductByItemCode(
-            strapi,
-            fileEdaraItemCode
-          );
-          if (!product) {
-            logNotFoundEntry(
-              updateStatus,
-              fileEdaraItemCode,
-              fileItemName
-            );
-            updateCounters.notFoundInSystem++;
-            continue;
-          }
+          // console.log('🔄 Processing:', {
+          //   fileEdaraItemCode,
+          //   filePriceChecked,
+          //   fileSalePriceChecked,
+          //   fileTotalStock
+          // });
 
           const {
             canUpdate,
@@ -810,8 +946,8 @@ export default {
             `${prevSalePrice}` !== `${fileSalePriceChecked}`
           ) {
             await updateProduct(
-              strapi,
-              product.id,
+              // strapi,
+              product,
               updateStatus,
               updateCounters,
               fileEdaraItemCode,
@@ -842,15 +978,19 @@ export default {
         }
 
         const productsNotFoundInFile = findProductsNotInFile(
-          products,
+          publishedProducts,
           filteredSheet,
           headers.edaraItemCodeName
         );
         updateCounters.notFoundInFile = productsNotFoundInFile.length;
 
+        updateStatus.map((statusObj, i) => (statusObj.index = i + 1));
+
+        // console.log(JSON.stringify(updateCounters));
+
         const updateSummary = generateSummary(
           updateCounters,
-          products.length,
+          publishedProducts.length,
           filteredSheet.length,
           productsNotFoundInFile,
           filterProductsByStatusText(updateStatus, 'Update Disabled'),
@@ -858,7 +998,9 @@ export default {
             updateStatus,
             'Error occurred during update (not updated)'
           ),
-          filterProductsByStatusText(updateStatus, 'Skipped')
+          filterProductsByStatusText(updateStatus, 'Skipped'),
+          duplicateFileLog,
+          duplicateSystemLog
         );
 
         // Generate and store the update status table
@@ -1217,6 +1359,7 @@ export default {
       <table>
         <tbody>
           <tr>
+            <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Index</span></p></td>
             <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Status</span></p></td>
             <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Item Code</span></p></td>
             <td><p style="${headerPStyles}"><span style="${headerSpanStyles}">Product Name (File)</span></p></td>
@@ -1254,6 +1397,9 @@ export default {
 
         tableHTML += `
           <tr>
+            <td><p style="${colStyles}"><span style="${statusColor}">${
+          item.index || 'N/A'
+        }</span></p></td>
             <td><p style="${colStyles}"><span style="${statusColor}">${
           item.status || 'N/A'
         }</span></p></td>
@@ -1337,21 +1483,35 @@ export default {
     /**
      * Finds a product by Edara Item Code.
      */
-    async function findProductByItemCode(strapi, edaraItemCode) {
-      const products = await strapi.entityService.findMany(
-        'api::product.product',
-        {
-          filters: { edara_item_code: edaraItemCode }
-        }
-      );
+    async function findProductByItemCode(
+      products,
+      fileEdaraItemCode
+    ) {
+      // const product = await strapi.entityService.find(
+      //   'api::product.product',
+      //   {
+      //     filters: { id: productId }
+      //   }
+      // );
 
-      if (!products.length) {
-        console.log(
-          `🚨 Product not found in system: ${edaraItemCode}`
-        );
+      if (!products || products.length <= 0) {
+        return null;
       }
 
-      return products[0] || null;
+      const product = products.find(
+        (product) =>
+          `${product.edara_item_code}` === `${fileEdaraItemCode}`
+      );
+
+      console.log(product || null);
+
+      // if (!products.length) {
+      //   // console.log(
+      //   //   `🚨 Product not found in system: ${edaraItemCode}`
+      //   // );
+      // }
+
+      return product || null;
     }
 
     /**
@@ -1373,8 +1533,8 @@ export default {
      * Updates a product's price and stock.
      */
     async function updateProduct(
-      strapi,
-      productId,
+      // strapi,
+      productData,
       updateStatus,
       updateCounters,
       fileEdaraItemCode,
@@ -1388,17 +1548,68 @@ export default {
       fileTotalStockChecked
     ) {
       try {
+        // // Fetch the product with its localizations
+        // const existingProduct = await strapi.entityService.findOne(
+        //   'api::product.product',
+        //   productId,
+        //   {
+        //     populate: ['localizations']
+        //   }
+        // );
+
+        // console.log(JSON.stringify(productData));
+
+        if (!productData) {
+          throw new Error(
+            `Product with ID ${productData.id} not found`
+          );
+        }
+
+        // Data to update (stock, price, and sale_price)
+        let updateData = {
+          price: filePriceChecked,
+          sale_price: fileSalePriceChecked,
+          stock: fileTotalStockChecked
+        };
+
+        // Update the main product (default locale)
         await strapi.entityService.update(
           'api::product.product',
-          productId,
+          productData.id,
           {
-            data: {
-              price: filePriceChecked,
-              sale_price: fileSalePriceChecked,
-              stock: fileTotalStockChecked
-            }
+            data: updateData
           }
         );
+
+        // Filter only published localizations
+        if (
+          productData.localizations &&
+          productData.localizations.length > 0
+        ) {
+          for (const localeProduct of productData.localizations) {
+            if (localeProduct.publishedAt) {
+              // Only update if it's published
+              await strapi.entityService.update(
+                'api::product.product',
+                localeProduct.id,
+                {
+                  data: updateData
+                }
+              );
+            }
+          }
+        }
+        // await strapi.entityService.update(
+        //   'api::product.product',
+        //   productId,
+        //   {
+        //     data: {
+        //       price: filePriceChecked,
+        //       sale_price: fileSalePriceChecked,
+        //       stock: fileTotalStockChecked
+        //     }
+        //   }
+        // );
 
         logUpdatedEntry(
           updateStatus,
@@ -1484,9 +1695,9 @@ export default {
      * Logs entries where the product is not found in the system.
      */
     function logNotFoundEntry(updateStatus, edaraItemCode, itemName) {
-      console.warn(
-        `⚠️ Product not found in system: ${edaraItemCode}`
-      );
+      // console.warn(
+      //   `⚠️ Product not found in system: ${edaraItemCode}`
+      // );
       updateStatus.push({
         status: 'Not Found In System',
         edaraItemCode,
@@ -1543,9 +1754,9 @@ export default {
       prevStock,
       newStock
     ) {
-      console.log(
-        `✅ Updated product ${productNameSystem}: Price = ${newPrice}, Sale Price: ${newSalePrice}, Stock = ${newStock}`
-      );
+      // console.log(
+      //   `✅ Updated product ${productNameSystem}: Price = ${newPrice}, Sale Price: ${newSalePrice}, Stock = ${newStock}`
+      // );
       updateStatus.push({
         status: 'Updated',
         edaraItemCode,
@@ -1637,8 +1848,14 @@ export default {
       productsNotFoundInFile,
       updateDisabledProductsInFile,
       errorOccuredWhileUpdatingProducts,
-      SkippedProducts
+      SkippedProducts,
+      duplicateFileLog,
+      duplicateSystemLog
     ) {
+      console.warn(`Duplicate Products In File:
+            ${updateCounters.duplicateProductsInFile},
+          'Duplicate Products In System':
+            ${updateCounters.duplicateProductsInSystem}`);
       return [
         {
           '📊 Products in System (Published)': totalProductsSystem,
@@ -1660,7 +1877,12 @@ export default {
               updateCounters.unchanged +
               updateCounters.updateDisabled),
           '❌ Error happened While updating products (Not Updated)':
-            updateCounters.errorWhileUpdating // 7
+            updateCounters.errorWhileUpdating,
+          '🗐 Duplicate Products In File':
+            updateCounters.duplicateProductsInFile,
+          '🗐 Duplicate Products In System (published + unpublished)':
+            updateCounters.duplicateProductsInSystem,
+          '🟰 Matched Products': updateCounters.matched
         },
         {
           '📉 Products in System Not Found in File':
@@ -1676,6 +1898,12 @@ export default {
         {
           '🚨 Error happened While updating products (Not Updated)':
             errorOccuredWhileUpdatingProducts
+        },
+        {
+          'Duplicate item codes in file': duplicateFileLog
+        },
+        {
+          'Duplicate edara_item_codes in system': duplicateSystemLog
         }
       ];
     }

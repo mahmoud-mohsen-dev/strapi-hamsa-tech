@@ -149,26 +149,6 @@ export interface FooterFooter extends Schema.Component {
   };
 }
 
-export interface FeaturedProductsFeaturedProducts
-  extends Schema.Component {
-  collectionName: 'components_featured_products_featured_products';
-  info: {
-    displayName: 'featured_products';
-    icon: 'command';
-    description: '';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    products: Attribute.Relation<
-      'featured-products.featured-products',
-      'oneToMany',
-      'api::product.product'
-    >;
-  };
-}
-
 export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
   collectionName: 'components_featured_blogs_featured_blogs';
   info: {
@@ -200,6 +180,26 @@ export interface FeatureFeatures extends Schema.Component {
   };
 }
 
+export interface FeaturedProductsFeaturedProducts
+  extends Schema.Component {
+  collectionName: 'components_featured_products_featured_products';
+  info: {
+    displayName: 'featured_products';
+    icon: 'command';
+    description: '';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    products: Attribute.Relation<
+      'featured-products.featured-products',
+      'oneToMany',
+      'api::product.product'
+    >;
+  };
+}
+
 export interface ExcelHeadersExcelHeaders extends Schema.Component {
   collectionName: 'components_excel_headers_excel_headers';
   info: {
@@ -208,19 +208,6 @@ export interface ExcelHeadersExcelHeaders extends Schema.Component {
   };
   attributes: {
     header_name: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface DetailsSpecification extends Schema.Component {
-  collectionName: 'components_details_specifications';
-  info: {
-    displayName: 'specification';
-    icon: 'layer';
-    description: '';
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    value: Attribute.Text & Attribute.Required;
   };
 }
 
@@ -235,6 +222,19 @@ export interface ContactUsContactUs extends Schema.Component {
     heading: Attribute.Text & Attribute.Required;
     button_text: Attribute.String & Attribute.Required;
     button_url: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface DetailsSpecification extends Schema.Component {
+  collectionName: 'components_details_specifications';
+  info: {
+    displayName: 'specification';
+    icon: 'layer';
+    description: '';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    value: Attribute.Text & Attribute.Required;
   };
 }
 
@@ -399,12 +399,12 @@ declare module '@strapi/types' {
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
-      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
+      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'excel-headers.excel-headers': ExcelHeadersExcelHeaders;
-      'details.specification': DetailsSpecification;
       'contact-us.contact-us': ContactUsContactUs;
+      'details.specification': DetailsSpecification;
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
