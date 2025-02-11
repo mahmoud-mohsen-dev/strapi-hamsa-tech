@@ -1925,7 +1925,7 @@ export interface ApiPricesAndStockConfigPricesAndStockConfig
     enable_max_stock: Attribute.Boolean &
       Attribute.Required &
       Attribute.DefaultTo<true>;
-    extra_price_addition: Attribute.Integer &
+    extra_price_addition_by_percentage: Attribute.Integer &
       Attribute.Required &
       Attribute.SetMinMax<
         {
@@ -1934,7 +1934,7 @@ export interface ApiPricesAndStockConfigPricesAndStockConfig
         number
       > &
       Attribute.DefaultTo<0>;
-    extra_sale_price_addition: Attribute.Integer &
+    extra_sale_price_addition_by_percentage: Attribute.Integer &
       Attribute.Required &
       Attribute.SetMinMax<
         {

@@ -632,8 +632,8 @@ export default {
           excel_header_to_update_product_sale_price,
           excel_header_to_update_product_stock,
           enable_max_stock,
-          extra_price_addition,
-          extra_sale_price_addition
+          extra_price_addition_by_percentage,
+          extra_sale_price_addition_by_percentage
         } = pricesAndStockConfigEntry;
 
         const headers = {
@@ -892,21 +892,66 @@ export default {
             continue;
           }
 
-          const filePriceChecked =
-            filePrice > 0
-              ? extra_price_addition > 0
-                ? Math.round(filePrice + extra_price_addition)
-                : Math.round(filePrice)
-              : 0;
+          // const filePriceChecked =
+          //   filePrice > 0
+          //     ? extra_price_addition_by_percentage > 0
+          //       ? Math.round(
+          //           // filePrice + extra_price_addition_by_percentage
+          //           filePrice +
+          //             (filePrice *
+          //               extra_price_addition_by_percentage) /
+          //               100
+          //         )
+          //       : Math.round(filePrice)
+          //     : 0;
 
-          const fileSalePriceChecked =
-            salePriceEnabled && typeof fileSalePrice === 'number'
-              ? extra_sale_price_addition > 0
-                ? Math.round(
-                    fileSalePrice + extra_sale_price_addition
-                  )
-                : Math.round(fileSalePrice)
-              : 0;
+          let filePriceChecked = 0;
+
+          if (filePrice > 0) {
+            if (extra_price_addition_by_percentage > 0) {
+              const updateExtraPriceAdditionPercentageAmount =
+                (filePrice * extra_price_addition_by_percentage) /
+                100;
+              filePriceChecked = Math.round(
+                filePrice + updateExtraPriceAdditionPercentageAmount
+              );
+            } else {
+              filePriceChecked = Math.round(filePrice);
+            }
+          } else {
+            filePriceChecked = 0;
+          }
+
+          // const fileSalePriceChecked =
+          //   salePriceEnabled && typeof fileSalePrice === 'number'
+          //     ? extra_sale_price_addition_by_percentage > 0
+          //       ? Math.round(
+          //           // fileSalePrice + extra_sale_price_addition
+          //           (fileSalePrice *
+          //             extra_sale_price_addition_by_percentage) /
+          //             100
+          //         )
+          //       : Math.round(fileSalePrice)
+          //     : 0;
+
+          let fileSalePriceChecked = 0;
+
+          if (salePriceEnabled && typeof fileSalePrice === 'number') {
+            if (extra_sale_price_addition_by_percentage > 0) {
+              const updateExtraSalePriceAdditionPercentageAmount =
+                (fileSalePrice *
+                  extra_sale_price_addition_by_percentage) /
+                100;
+              fileSalePriceChecked = Math.round(
+                fileSalePrice +
+                  updateExtraSalePriceAdditionPercentageAmount
+              );
+            } else {
+              fileSalePriceChecked = Math.round(fileSalePrice);
+            }
+          } else {
+            fileSalePriceChecked = 0;
+          }
 
           const fileTotalStockChecked =
             fileTotalStock > 0 ? fileTotalStock : 0;
@@ -1503,7 +1548,7 @@ export default {
           `${product.edara_item_code}` === `${fileEdaraItemCode}`
       );
 
-      console.log(product || null);
+      // console.log(product || null);
 
       // if (!products.length) {
       //   // console.log(

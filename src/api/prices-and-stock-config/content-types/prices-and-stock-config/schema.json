@@ -42,13 +42,13 @@
       "default": true,
       "required": true
     },
-    "extra_price_addition": {
+    "extra_price_addition_by_percentage": {
       "type": "integer",
       "default": 0,
       "min": 0,
       "required": true
     },
-    "extra_sale_price_addition": {
+    "extra_sale_price_addition_by_percentage": {
       "type": "integer",
       "min": 0,
       "default": 0,

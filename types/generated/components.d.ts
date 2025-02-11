@@ -149,6 +149,26 @@ export interface FooterFooter extends Schema.Component {
   };
 }
 
+export interface FeaturedProductsFeaturedProducts
+  extends Schema.Component {
+  collectionName: 'components_featured_products_featured_products';
+  info: {
+    displayName: 'featured_products';
+    icon: 'command';
+    description: '';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    products: Attribute.Relation<
+      'featured-products.featured-products',
+      'oneToMany',
+      'api::product.product'
+    >;
+  };
+}
+
 export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
   collectionName: 'components_featured_blogs_featured_blogs';
   info: {
@@ -180,26 +200,6 @@ export interface FeatureFeatures extends Schema.Component {
   };
 }
 
-export interface FeaturedProductsFeaturedProducts
-  extends Schema.Component {
-  collectionName: 'components_featured_products_featured_products';
-  info: {
-    displayName: 'featured_products';
-    icon: 'command';
-    description: '';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    products: Attribute.Relation<
-      'featured-products.featured-products',
-      'oneToMany',
-      'api::product.product'
-    >;
-  };
-}
-
 export interface ExcelHeadersExcelHeaders extends Schema.Component {
   collectionName: 'components_excel_headers_excel_headers';
   info: {
@@ -208,6 +208,19 @@ export interface ExcelHeadersExcelHeaders extends Schema.Component {
   };
   attributes: {
     header_name: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface DetailsSpecification extends Schema.Component {
+  collectionName: 'components_details_specifications';
+  info: {
+    displayName: 'specification';
+    icon: 'layer';
+    description: '';
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required;
+    value: Attribute.Text & Attribute.Required;
   };
 }
 
@@ -222,19 +235,6 @@ export interface ContactUsContactUs extends Schema.Component {
     heading: Attribute.Text & Attribute.Required;
     button_text: Attribute.String & Attribute.Required;
     button_url: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface DetailsSpecification extends Schema.Component {
-  collectionName: 'components_details_specifications';
-  info: {
-    displayName: 'specification';
-    icon: 'layer';
-    description: '';
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required;
-    value: Attribute.Text & Attribute.Required;
   };
 }
 
@@ -354,6 +354,22 @@ export interface BrandsBrands extends Schema.Component {
   };
 }
 
+export interface AboutUsSectionAboutUs extends Schema.Component {
+  collectionName: 'components_about_us_section_about_uses';
+  info: {
+    displayName: 'about_us';
+    icon: 'question';
+    description: '';
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    description: Attribute.Text & Attribute.Required;
+    button_text: Attribute.String & Attribute.Required;
+    image: Attribute.Media<'images'> & Attribute.Required;
+    section_name: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface BranchInfoBranch extends Schema.Component {
   collectionName: 'components_branch_info_branches';
   info: {
@@ -371,22 +387,6 @@ export interface BranchInfoBranch extends Schema.Component {
   };
 }
 
-export interface AboutUsSectionAboutUs extends Schema.Component {
-  collectionName: 'components_about_us_section_about_uses';
-  info: {
-    displayName: 'about_us';
-    icon: 'question';
-    description: '';
-  };
-  attributes: {
-    title: Attribute.String & Attribute.Required;
-    description: Attribute.Text & Attribute.Required;
-    button_text: Attribute.String & Attribute.Required;
-    image: Attribute.Media<'images'> & Attribute.Required;
-    section_name: Attribute.String & Attribute.Required;
-  };
-}
-
 declare module '@strapi/types' {
   export module Shared {
     export interface Components {
@@ -399,20 +399,20 @@ declare module '@strapi/types' {
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
+      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
-      'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'excel-headers.excel-headers': ExcelHeadersExcelHeaders;
-      'contact-us.contact-us': ContactUsContactUs;
       'details.specification': DetailsSpecification;
+      'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;
       'button-link.button-link': ButtonLinkButtonLink;
       'brands.brands': BrandsBrands;
-      'branch-info.branch': BranchInfoBranch;
       'about-us-section.about-us': AboutUsSectionAboutUs;
+      'branch-info.branch': BranchInfoBranch;
     }
   }
 }
