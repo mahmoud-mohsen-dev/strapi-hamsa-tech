@@ -11,7 +11,9 @@ export default [
           'script-src': [
             "'self'",
             'unsafe-inline',
-            'https://maps.googleapis.com'
+            'https://maps.googleapis.com',
+            // leaflet
+            'https://*.basemaps.cartocdn.com'
           ],
           'img-src': [
             "'self'",
@@ -39,7 +41,11 @@ export default [
             'khms3.google.com',
             'khms3.googleapis.com',
             'streetviewpixels-pa.googleapis.com',
-            'market-assets.strapi.io'
+            // 'market-assets.strapi.io'
+            // Leaflet
+            'https://*.basemaps.cartocdn.com',
+            'market-assets.strapi.io',
+            'https://tile.openstreetmap.org'
           ],
           'media-src': [
             "'self'",

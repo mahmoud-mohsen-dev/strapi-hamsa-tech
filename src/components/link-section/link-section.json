@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_link_section_link_sections",
+  "info": {
+    "displayName": "Link Section",
+    "icon": "exit",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "system": {
+      "type": "string",
+      "required": true
+    },
+    "applicable_model": {
+      "type": "text",
+      "required": false
+    },
+    "file_link": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

@@ -910,6 +910,61 @@ export interface PluginUsersPermissionsUser
   };
 }
 
+export interface PluginStrapiLeafletGeomanConfig
+  extends Schema.SingleType {
+  collectionName: 'strapi_leaflet_geoman_config';
+  info: {
+    singularName: 'config';
+    pluralName: 'configs';
+    displayName: 'Strapi Leaflet Geoman Config';
+  };
+  options: {
+    populateCreatorFields: false;
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    defaultLatitude: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.DefaultTo<42>;
+    defaultLongitude: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.DefaultTo<42>;
+    defaultZoom: Attribute.Integer &
+      Attribute.Required &
+      Attribute.DefaultTo<6>;
+    defaultTileURL: Attribute.String &
+      Attribute.Required &
+      Attribute.DefaultTo<'https://tile.openstreetmap.org/{z}/{x}/{y}.png'>;
+    defaultTileAttribution: Attribute.String &
+      Attribute.Required &
+      Attribute.DefaultTo<"Map data \u00A9 <a href='https://www.openstreetmap.org'>OpenStreetMap</a> contributors">;
+    defaultTileAccessToken: Attribute.String &
+      Attribute.DefaultTo<''>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'plugin::strapi-leaflet-geoman.config',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'plugin::strapi-leaflet-geoman.config',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiAboutUsAboutUs extends Schema.SingleType {
   collectionName: 'about_uses';
   info: {
@@ -1483,6 +1538,53 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
       'api::category.category',
       'oneToMany',
       'api::category.category'
+    >;
+    locale: Attribute.String;
+  };
+}
+
+export interface ApiDownloadPageDownloadPage
+  extends Schema.SingleType {
+  collectionName: 'download_pages';
+  info: {
+    singularName: 'download-page';
+    pluralName: 'download-pages';
+    displayName: 'Download Page';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    related_products: Attribute.Relation<
+      'api::download-page.download-page',
+      'oneToMany',
+      'api::product.product'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::download-page.download-page',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::download-page.download-page',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::download-page.download-page',
+      'oneToMany',
+      'api::download-page.download-page'
     >;
     locale: Attribute.String;
   };
@@ -2296,6 +2398,18 @@ export interface ApiProductProduct extends Schema.CollectionType {
         };
       }> &
       Attribute.DefaultTo<true>;
+    new_datasheet: Attribute.Component<'link-section.datasheets-download'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    driver: Attribute.Component<'link-section.link-section'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -3195,6 +3309,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'plugin::strapi-leaflet-geoman.config': PluginStrapiLeafletGeomanConfig;
       'api::about-us.about-us': ApiAboutUsAboutUs;
       'api::address.address': ApiAddressAddress;
       'api::author.author': ApiAuthorAuthor;
@@ -3203,6 +3318,7 @@ declare module '@strapi/types' {
       'api::brand.brand': ApiBrandBrand;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
+      'api::download-page.download-page': ApiDownloadPageDownloadPage;
       'api::free-shipping.free-shipping': ApiFreeShippingFreeShipping;
       'api::guest-user.guest-user': ApiGuestUserGuestUser;
       'api::offer.offer': ApiOfferOffer;

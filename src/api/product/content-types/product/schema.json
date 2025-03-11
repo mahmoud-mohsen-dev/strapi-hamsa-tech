@@ -310,6 +310,26 @@
       "type": "boolean",
       "default": true,
       "required": false
+    },
+    "new_datasheet": {
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "link-section.datasheets-download"
+    },
+    "driver": {
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "link-section.link-section"
     }
   }
 }

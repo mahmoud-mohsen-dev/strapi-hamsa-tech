@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_link_section_datasheets_downloads",
+  "info": {
+    "displayName": "datasheets_download",
+    "icon": "database",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "applicable_model": {
+      "type": "text",
+      "required": false
+    },
+    "datasheet": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "files"
+      ]
+    }
+  }
+}

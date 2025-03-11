@@ -1,0 +1,25 @@
+{
+  "kind": "singleType",
+  "collectionName": "download_pages",
+  "info": {
+    "singularName": "download-page",
+    "pluralName": "download-pages",
+    "displayName": "Download Page",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "related_products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
+    }
+  }
+}

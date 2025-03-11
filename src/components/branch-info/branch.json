@@ -2,7 +2,8 @@
   "collectionName": "components_branch_info_branches",
   "info": {
     "displayName": "branch",
-    "icon": "manyToOne"
+    "icon": "manyToOne",
+    "description": ""
   },
   "options": {},
   "attributes": {
@@ -25,6 +26,13 @@
     "name": {
       "type": "string",
       "required": true
+    },
+    "leaflet_map": {
+      "type": "customField",
+      "optionsLatitude": "30.045724",
+      "optionsLongitude": "31.238835",
+      "optionsZoom": 6,
+      "customField": "plugin::strapi-leaflet-geoman.geojson"
     }
   }
 }
