@@ -13,7 +13,7 @@
     },
     "applicable_model": {
       "type": "text",
-      "required": false
+      "required": true
     },
     "datasheet": {
       "type": "media",

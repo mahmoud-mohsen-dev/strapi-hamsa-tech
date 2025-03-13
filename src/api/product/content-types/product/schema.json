@@ -319,11 +319,12 @@
           "localized": true
         }
       },
-      "component": "link-section.datasheets-download"
+      "component": "link-section.datasheets-download",
+      "required": false
     },
     "driver": {
       "type": "component",
-      "repeatable": false,
+      "repeatable": true,
       "pluginOptions": {
         "i18n": {
           "localized": true

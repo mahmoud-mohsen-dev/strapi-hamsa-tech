@@ -21,29 +21,6 @@ export interface SocialButtonsSocialLink extends Schema.Component {
   attributes: {};
 }
 
-export interface ReportAbuseReportAbuse extends Schema.Component {
-  collectionName: 'components_report_abuse_report_abuses';
-  info: {
-    displayName: 'report_abuse';
-    icon: 'discuss';
-    description: '';
-  };
-  attributes: {
-    resolved: Attribute.Boolean & Attribute.DefaultTo<false>;
-    resolved_comment___users_can_not_see_this_comment: Attribute.Text;
-    issue_type: Attribute.Enumeration<
-      ['off topic', 'inappropriate', 'fake', 'other']
-    > &
-      Attribute.Required &
-      Attribute.DefaultTo<'other'>;
-    user: Attribute.Relation<
-      'report-abuse.report-abuse',
-      'oneToOne',
-      'plugin::users-permissions.user'
-    >;
-  };
-}
-
 export interface SharedSeo extends Schema.Component {
   collectionName: 'components_shared_seos';
   info: {
@@ -90,6 +67,29 @@ export interface SharedMetaSocial extends Schema.Component {
   };
 }
 
+export interface ReportAbuseReportAbuse extends Schema.Component {
+  collectionName: 'components_report_abuse_report_abuses';
+  info: {
+    displayName: 'report_abuse';
+    icon: 'discuss';
+    description: '';
+  };
+  attributes: {
+    resolved: Attribute.Boolean & Attribute.DefaultTo<false>;
+    resolved_comment___users_can_not_see_this_comment: Attribute.Text;
+    issue_type: Attribute.Enumeration<
+      ['off topic', 'inappropriate', 'fake', 'other']
+    > &
+      Attribute.Required &
+      Attribute.DefaultTo<'other'>;
+    user: Attribute.Relation<
+      'report-abuse.report-abuse',
+      'oneToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface PhonePhone extends Schema.Component {
   collectionName: 'components_phone_phones';
   info: {
@@ -112,7 +112,7 @@ export interface LinkSectionLinkSection extends Schema.Component {
   attributes: {
     title: Attribute.String & Attribute.Required;
     system: Attribute.String & Attribute.Required;
-    applicable_model: Attribute.Text;
+    applicable_model: Attribute.Text & Attribute.Required;
     file_link: Attribute.Text & Attribute.Required;
   };
 }
@@ -127,7 +127,7 @@ export interface LinkSectionDatasheetsDownload
   };
   attributes: {
     title: Attribute.String & Attribute.Required;
-    applicable_model: Attribute.Text;
+    applicable_model: Attribute.Text & Attribute.Required;
     datasheet: Attribute.Media<'files'> & Attribute.Required;
   };
 }
@@ -179,25 +179,6 @@ export interface FooterFooter extends Schema.Component {
   };
 }
 
-export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
-  collectionName: 'components_featured_blogs_featured_blogs';
-  info: {
-    displayName: 'featured-blogs';
-    icon: 'pencil';
-    description: '';
-  };
-  attributes: {
-    blogs: Attribute.Relation<
-      'featured-blogs.featured-blogs',
-      'oneToMany',
-      'api::blog.blog'
-    >;
-    slug: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-  };
-}
-
 export interface FeaturedProductsFeaturedProducts
   extends Schema.Component {
   collectionName: 'components_featured_products_featured_products';
@@ -215,6 +196,25 @@ export interface FeaturedProductsFeaturedProducts
       'oneToMany',
       'api::product.product'
     >;
+  };
+}
+
+export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
+  collectionName: 'components_featured_blogs_featured_blogs';
+  info: {
+    displayName: 'featured-blogs';
+    icon: 'pencil';
+    description: '';
+  };
+  attributes: {
+    blogs: Attribute.Relation<
+      'featured-blogs.featured-blogs',
+      'oneToMany',
+      'api::blog.blog'
+    >;
+    slug: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
   };
 }
 
@@ -254,6 +254,20 @@ export interface DetailsSpecification extends Schema.Component {
   };
 }
 
+export interface ContactUsContactUs extends Schema.Component {
+  collectionName: 'components_contact_us_contact_uses';
+  info: {
+    displayName: 'contact-us';
+    icon: 'phone';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading: Attribute.Text & Attribute.Required;
+    button_text: Attribute.String & Attribute.Required;
+    button_url: Attribute.String & Attribute.Required;
+  };
+}
+
 export interface CategoryCategories extends Schema.Component {
   collectionName: 'components_category_categories';
   info: {
@@ -266,20 +280,6 @@ export interface CategoryCategories extends Schema.Component {
     description: Attribute.String & Attribute.Required;
     image: Attribute.Media<'images'> & Attribute.Required;
     slug: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface ContactUsContactUs extends Schema.Component {
-  collectionName: 'components_contact_us_contact_uses';
-  info: {
-    displayName: 'contact-us';
-    icon: 'phone';
-  };
-  attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading: Attribute.Text & Attribute.Required;
-    button_text: Attribute.String & Attribute.Required;
-    button_url: Attribute.String & Attribute.Required;
   };
 }
 
@@ -425,22 +425,22 @@ declare module '@strapi/types' {
     export interface Components {
       'youtube.video': YoutubeVideo;
       'social-buttons.social-link': SocialButtonsSocialLink;
-      'report-abuse.report-abuse': ReportAbuseReportAbuse;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
+      'report-abuse.report-abuse': ReportAbuseReportAbuse;
       'phone.phone': PhonePhone;
       'link-section.link-section': LinkSectionLinkSection;
       'link-section.datasheets-download': LinkSectionDatasheetsDownload;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
-      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
+      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
       'excel-headers.excel-headers': ExcelHeadersExcelHeaders;
       'details.specification': DetailsSpecification;
-      'category.categories': CategoryCategories;
       'contact-us.contact-us': ContactUsContactUs;
+      'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;
       'cart.product-quantity': CartProductQuantity;
       'carousel.hero-section': CarouselHeroSection;

@@ -2404,7 +2404,7 @@ export interface ApiProductProduct extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    driver: Attribute.Component<'link-section.link-section'> &
+    driver: Attribute.Component<'link-section.link-section', true> &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
