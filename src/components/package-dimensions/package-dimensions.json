@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_package_dimensions_package_dimensions",
+  "info": {
+    "displayName": "package_dimensions",
+    "icon": "television",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "length_in_cm": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "width_in_cm": {
+      "type": "decimal",
+      "min": 0,
+      "required": true,
+      "default": 0
+    },
+    "height_in_cm": {
+      "type": "decimal",
+      "required": true,
+      "default": 0,
+      "min": 0
+    }
+  }
+}

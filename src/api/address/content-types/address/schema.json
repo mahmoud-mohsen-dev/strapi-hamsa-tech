@@ -40,11 +40,6 @@
       "target": "api::guest-user.guest-user",
       "inversedBy": "addresses"
     },
-    "shipping_cost": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::shipping-cost.shipping-cost"
-    },
     "first_name": {
       "type": "string",
       "required": false
@@ -76,6 +71,11 @@
     "default": {
       "type": "boolean",
       "default": false
+    },
+    "delivery_zone": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shipping-delivery-zone.shipping-delivery-zone"
     }
   }
 }

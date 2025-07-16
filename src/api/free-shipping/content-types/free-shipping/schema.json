@@ -13,7 +13,9 @@
   "pluginOptions": {},
   "attributes": {
     "apply_free_shipping_if_total_cart_cost_equals": {
-      "type": "integer"
+      "type": "integer",
+      "min": 0,
+      "required": true
     },
     "enable": {
       "type": "boolean",

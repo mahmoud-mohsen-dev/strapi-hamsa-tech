@@ -1,0 +1,93 @@
+{
+  "kind": "collectionType",
+  "collectionName": "shipping_companies",
+  "info": {
+    "singularName": "shipping-company",
+    "pluralName": "shipping-companies",
+    "displayName": "Shipping Company",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "delivery_zones": {
+      "displayName": "delivery_zone",
+      "type": "component",
+      "repeatable": true,
+      "pluginOptions": {},
+      "component": "delivery-zone.delivery-zone",
+      "required": true
+    },
+    "cash_on_delivery_cost": {
+      "pluginOptions": {},
+      "type": "decimal",
+      "min": 0,
+      "required": true,
+      "default": 0
+    },
+    "include_cash_on_delivery_in_total_shipping_cost": {
+      "pluginOptions": {},
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "bank_fees_for_each_transfer": {
+      "displayName": "fees",
+      "type": "component",
+      "repeatable": true,
+      "pluginOptions": {},
+      "component": "fees.fees",
+      "required": false
+    },
+    "extra_shipping_company_fees_for_cash_on_delivery": {
+      "type": "component",
+      "repeatable": true,
+      "pluginOptions": {},
+      "component": "fees.fees",
+      "required": false
+    },
+    "pickup": {
+      "displayName": "pickup",
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {},
+      "component": "pickup.pickup",
+      "required": true
+    },
+    "flyers": {
+      "displayName": "flyers",
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {},
+      "component": "flyers.flyers",
+      "required": true
+    },
+    "weight": {
+      "displayName": "weight",
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {},
+      "component": "weight.weight",
+      "required": true
+    },
+    "shipping_company_name": {
+      "pluginOptions": {},
+      "type": "string",
+      "required": true
+    },
+    "other_compnay_fees": {
+      "type": "component",
+      "repeatable": true,
+      "pluginOptions": {},
+      "component": "fees.fees"
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "shipping_company"
+    }
+  }
+}

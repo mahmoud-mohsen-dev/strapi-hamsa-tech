@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_pickup_pickups",
+  "info": {
+    "displayName": "pickup",
+    "icon": "cup",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "pickup_cost": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "pickup_start_time": {
+      "type": "time",
+      "default": "11:00",
+      "required": false
+    },
+    "pickup_end_time": {
+      "type": "time",
+      "default": "22:00"
+    },
+    "include_pickup_cost_in_shipping_total_cost": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    }
+  }
+}

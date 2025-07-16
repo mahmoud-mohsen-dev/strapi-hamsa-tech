@@ -1,0 +1,48 @@
+{
+  "collectionName": "components_delivery_zone_delivery_zones",
+  "info": {
+    "displayName": "delivery_zone",
+    "icon": "train",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "zone_name_in_arabic": {
+      "type": "string",
+      "required": true
+    },
+    "delivery_cost": {
+      "type": "decimal",
+      "required": true,
+      "default": 0,
+      "min": 0
+    },
+    "minimum_delivery_duration_in_days": {
+      "type": "decimal",
+      "required": true,
+      "default": 0,
+      "min": 0
+    },
+    "maximum_delivery_duration_in_days": {
+      "type": "decimal",
+      "min": 1,
+      "required": true,
+      "default": 0
+    },
+    "VAT": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "zone_name_in_english": {
+      "type": "string",
+      "required": true
+    },
+    "calculated_delivery_cost": {
+      "type": "decimal",
+      "default": 0,
+      "min": 0
+    }
+  }
+}

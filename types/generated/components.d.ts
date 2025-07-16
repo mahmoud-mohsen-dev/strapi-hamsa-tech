@@ -12,6 +12,71 @@ export interface YoutubeVideo extends Schema.Component {
   };
 }
 
+export interface WeightWeight extends Schema.Component {
+  collectionName: 'components_weight_weights';
+  info: {
+    displayName: 'weight';
+    icon: 'archive';
+    description: '';
+  };
+  attributes: {
+    enable_maximum_weight_fee_for_standard_shipping_in_grams: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    maximum_weight_for_standard_shipping_in_grams: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    volumetric_weight_applied_if_needed: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    volumetric_weight_applied_if_needed_in_grams: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    fixed_extra_fee_per_increment: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    weight_increment_for_fixed_fee_in_grams: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    VAT: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    apply_difference_based_fee: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<true>;
+  };
+}
+
 export interface SocialButtonsSocialLink extends Schema.Component {
   collectionName: 'components_social_buttons_social_links';
   info: {
@@ -19,6 +84,38 @@ export interface SocialButtonsSocialLink extends Schema.Component {
     icon: 'link';
   };
   attributes: {};
+}
+
+export interface ShippingDeliveryZoneShippingDeliveryZone
+  extends Schema.Component {
+  collectionName: 'components_shipping_delivery_zone_shipping_delivery_zones';
+  info: {
+    displayName: 'shipping-delivery-zone';
+    icon: 'car';
+    description: '';
+  };
+  attributes: {
+    zone_name_in_arabic: Attribute.String & Attribute.Required;
+    zone_name_in_english: Attribute.String & Attribute.Required;
+    minimum_delivery_duration_in_days: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    maximum_delivery_duration_in_days: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+  };
 }
 
 export interface SharedSeo extends Schema.Component {
@@ -90,6 +187,31 @@ export interface ReportAbuseReportAbuse extends Schema.Component {
   };
 }
 
+export interface PickupPickup extends Schema.Component {
+  collectionName: 'components_pickup_pickups';
+  info: {
+    displayName: 'pickup';
+    icon: 'cup';
+    description: '';
+  };
+  attributes: {
+    pickup_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    pickup_start_time: Attribute.Time & Attribute.DefaultTo<'11:00'>;
+    pickup_end_time: Attribute.Time & Attribute.DefaultTo<'22:00'>;
+    include_pickup_cost_in_shipping_total_cost: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+  };
+}
+
 export interface PhonePhone extends Schema.Component {
   collectionName: 'components_phone_phones';
   info: {
@@ -99,6 +221,45 @@ export interface PhonePhone extends Schema.Component {
   };
   attributes: {
     phone_number: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface PackageDimensionsPackageDimensions
+  extends Schema.Component {
+  collectionName: 'components_package_dimensions_package_dimensions';
+  info: {
+    displayName: 'package_dimensions';
+    icon: 'television';
+    description: '';
+  };
+  attributes: {
+    length_in_cm: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    width_in_cm: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    height_in_cm: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
   };
 }
 
@@ -179,6 +340,113 @@ export interface FooterFooter extends Schema.Component {
   };
 }
 
+export interface FlyersFlyers extends Schema.Component {
+  collectionName: 'components_flyers_flyers';
+  info: {
+    displayName: 'flyers';
+    icon: 'cube';
+    description: '';
+  };
+  attributes: {
+    include_flyer_cost_in_total_shipping_cost: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    total_flyers_free_every_month: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    average_cost_per_flyer: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+  };
+}
+
+export interface FeesFees extends Schema.Component {
+  collectionName: 'components_fees_fees';
+  info: {
+    displayName: 'fees';
+    icon: 'chartPie';
+    description: '';
+  };
+  attributes: {
+    include_the_fee_in_total_shipping_cost: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    minimum_total_order_price_to_apply_fee: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    fixed_fee_amount: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    percentage_based_fee: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    comment: Attribute.String;
+    money_increment_amount: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    VAT: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    fixed_extra_fee_per_increment: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    add_base_fees_to_total_increment_fee: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    apply_difference_based_fee: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<true>;
+  };
+}
+
 export interface FeaturedProductsFeaturedProducts
   extends Schema.Component {
   collectionName: 'components_featured_products_featured_products';
@@ -251,6 +519,63 @@ export interface DetailsSpecification extends Schema.Component {
   attributes: {
     name: Attribute.String & Attribute.Required;
     value: Attribute.Text & Attribute.Required;
+  };
+}
+
+export interface DeliveryZoneDeliveryZone extends Schema.Component {
+  collectionName: 'components_delivery_zone_delivery_zones';
+  info: {
+    displayName: 'delivery_zone';
+    icon: 'train';
+    description: '';
+  };
+  attributes: {
+    zone_name_in_arabic: Attribute.String & Attribute.Required;
+    delivery_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    minimum_delivery_duration_in_days: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    maximum_delivery_duration_in_days: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    VAT: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    zone_name_in_english: Attribute.String & Attribute.Required;
+    calculated_delivery_cost: Attribute.Decimal &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
   };
 }
 
@@ -424,21 +749,28 @@ declare module '@strapi/types' {
   export module Shared {
     export interface Components {
       'youtube.video': YoutubeVideo;
+      'weight.weight': WeightWeight;
       'social-buttons.social-link': SocialButtonsSocialLink;
+      'shipping-delivery-zone.shipping-delivery-zone': ShippingDeliveryZoneShippingDeliveryZone;
       'shared.seo': SharedSeo;
       'shared.meta-social': SharedMetaSocial;
       'report-abuse.report-abuse': ReportAbuseReportAbuse;
+      'pickup.pickup': PickupPickup;
       'phone.phone': PhonePhone;
+      'package-dimensions.package-dimensions': PackageDimensionsPackageDimensions;
       'link-section.link-section': LinkSectionLinkSection;
       'link-section.datasheets-download': LinkSectionDatasheetsDownload;
       'link.social-links': LinkSocialLinks;
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
+      'flyers.flyers': FlyersFlyers;
+      'fees.fees': FeesFees;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
       'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'feature.features': FeatureFeatures;
       'excel-headers.excel-headers': ExcelHeadersExcelHeaders;
       'details.specification': DetailsSpecification;
+      'delivery-zone.delivery-zone': DeliveryZoneDeliveryZone;
       'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
       'categories-section.categories': CategoriesSectionCategories;

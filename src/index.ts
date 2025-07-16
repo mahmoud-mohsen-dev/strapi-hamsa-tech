@@ -535,15 +535,22 @@ export default {
         'api::update-prices-and-stock.update-prices-and-stock'
       ],
 
-      beforeUpdate: async ({ params }) => {
-        // console.log('params');
-        // console.log(JSON.stringify(params));
+      beforeUpdate: async ({ result }) => {
+        console.log('result');
+        console.log(JSON.stringify(result));
         // console.log('state');
+
+        if (!result?.where?.id) {
+          console.warn(
+            'error result.where.id @beforeUpdate update-prices-and-stock  was not found'
+          );
+          return;
+        }
         // console.log(JSON.stringify(state));
         // Get the existing entry from the database before updating
         const existingEntry = await strapi.entityService.findOne(
           'api::update-prices-and-stock.update-prices-and-stock',
-          params.where.id,
+          result.where.id,
           {
             populate: ['xlsx_file_to_upload']
           }
@@ -555,16 +562,16 @@ export default {
         // Check if the file is changing
         if (
           existingEntry &&
-          params.data.xlsx_file_to_upload &&
+          result.data.xlsx_file_to_upload &&
           existingEntry.xlsx_file_to_upload?.id !==
-            params.data.xlsx_file_to_upload
+            result.data.xlsx_file_to_upload
         ) {
           // If a new file is uploaded, reset the processed field
-          params.data.processed = 'not started';
+          result.data.processed = 'not started';
 
           console.warn(
-            'params processed updated successfully',
-            params.data.processed
+            'result processed updated successfully',
+            result.data.processed
           );
         }
       },
@@ -626,15 +633,20 @@ export default {
 
         const {
           max_stock,
+          min_stock,
           excel_header_for_item_name,
           excel_header_for_edara_item_code,
           excel_header_to_update_product_price,
           excel_header_to_update_product_sale_price,
           excel_header_to_update_product_stock,
+          enable_min_stock,
           enable_max_stock,
           extra_price_addition_by_percentage,
           extra_sale_price_addition_by_percentage
         } = pricesAndStockConfigEntry;
+
+        console.log('min_stock', min_stock);
+        console.log('enable_min_stock', enable_min_stock);
 
         const headers = {
           itemName: excel_header_for_item_name ?? '',
@@ -837,12 +849,15 @@ export default {
             fileEdaraItemCode,
             filePrice,
             fileSalePrice,
+            fileFinalPrice,
             fileTotalStock
           } = extractRowData(
             row,
             headers,
             enable_max_stock,
-            max_stock
+            max_stock,
+            enable_min_stock,
+            min_stock
           );
 
           const salePriceEnabled = headers?.salePriceName
@@ -854,6 +869,7 @@ export default {
             !fileEdaraItemCode ||
             typeof filePrice !== 'number' ||
             typeof fileTotalStock !== 'number' ||
+            typeof fileFinalPrice !== 'number' ||
             (salePriceEnabled && typeof fileSalePrice !== 'number')
           ) {
             logSkippedEntry(
@@ -967,6 +983,7 @@ export default {
             canUpdate,
             prevPrice,
             prevSalePrice,
+            prevFinalPrice,
             prevStock,
             productNameSystem
           } = extractProductDetails(product);
@@ -988,6 +1005,7 @@ export default {
           if (
             `${prevPrice}` !== `${filePriceChecked}` ||
             `${prevStock}` !== `${fileTotalStockChecked}` ||
+            `${prevFinalPrice}` !== `${fileFinalPrice}` ||
             `${prevSalePrice}` !== `${fileSalePriceChecked}`
           ) {
             await updateProduct(
@@ -1088,116 +1106,420 @@ export default {
 
       // After creating a new product
       afterCreate: async ({ result }) => {
-        console.log('After create event triggered:', result);
+        try {
+          console.log('After create event triggered:', result);
 
-        // Calculate final price
-        const finalPrice = calculateFinalPrice(
-          result.price,
-          result.sale_price
-        );
+          // Calculate final price
+          const finalPrice = calculateFinalPrice(
+            result.price,
+            result.sale_price
+          );
 
-        // Update the product with final_product_price only if it differs
-        if (finalPrice !== result.final_product_price) {
-          await strapi.entityService.update(
-            'api::product.product',
-            result.id,
-            {
-              data: { final_product_price: finalPrice }
-            }
-          );
-          console.log(
-            'Product created and final price set:',
-            finalPrice
-          );
-        } else {
-          console.log(
-            'Final price is already set correctly:',
-            finalPrice
-          );
+          // Update the product with final_product_price only if it differs
+          if (finalPrice !== result.final_product_price) {
+            await strapi.entityService.update(
+              'api::product.product',
+              result.id,
+              {
+                data: { final_product_price: finalPrice }
+              }
+            );
+            console.log(
+              'Product created and final price set:',
+              finalPrice
+            );
+          } else {
+            console.log(
+              'Final price is already set correctly:',
+              finalPrice
+            );
+          }
+        } catch (error) {
+          console.warn(error);
         }
       },
+      beforeUpdate: async ({
+        // result,
+        params: { data, where }
+      }) => {
+        console.log('Before update event triggered');
+        const ctx = strapi.requestContext.get();
+        const ctxBody = ctx?.request?.body ?? null;
 
-      // After updating a product
-      afterUpdate: async ({ result }) => {
-        console.log('After update event triggered:', result);
+        if (!where.id) return;
 
-        // Calculate final price
-        const finalPrice = calculateFinalPrice(
-          result.price,
-          result.sale_price
+        const product = await strapi.entityService.findOne(
+          'api::product.product',
+          where.id,
+          {
+            populate: {
+              reviews: {
+                populate: ['rating'] // Populate relevant fields
+              },
+              localizations: {
+                populate: ['id', 'locale']
+              }
+            }
+          }
         );
 
-        const productCustomFieldsPopulated =
-          await strapi.entityService.findOne(
-            'api::product.product',
-            result.id,
-            {
-              populate: {
-                reviews: {
-                  populate: ['rating'] // Populate relevant fields
+        if (
+          typeof data?.price !== 'number' ||
+          typeof data?.sale_price !== 'number'
+        ) {
+          console.log('Invalid price or sale_price:', {
+            price: data?.price,
+            sale_price: data?.sale_price
+          });
+          return;
+        }
+        // Calculate final price
+        const finalPrice = calculateFinalPrice(
+          data.price,
+          data.sale_price
+        );
+
+        const averageReviews = calculateAverageReviews(
+          product?.reviews ?? []
+        );
+        const totalReviews = calculateTotalReviews(
+          product?.reviews ?? []
+        );
+
+        const shippingConfig = await strapi.entityService.findMany(
+          'api::shipping-config.shipping-config',
+          {
+            populate: {
+              default_package_weight: true,
+              default_package_dimensions: {
+                populate: [
+                  'width_in_cm',
+                  'height_in_cm',
+                  'length_in_cm'
+                ]
+              },
+              default_shipping_company: {
+                populate: {
+                  weight: {
+                    populate: [
+                      'volumetric_weight_applied_if_needed',
+                      'volumetric_weight_applied_if_needed_in_grams'
+                    ]
+                  }
                 }
               }
             }
-          );
-
-        console.log('product', productCustomFieldsPopulated);
-
-        const averageReviews = calculateAverageReviews(
-          productCustomFieldsPopulated?.reviews ?? []
+          }
         );
-        console.log('Average reviews:', averageReviews);
 
-        const totalReviews = calculateTotalReviews(
-          productCustomFieldsPopulated?.reviews ?? []
-        );
-        console.log('Total reviews:', totalReviews);
+        const finalPackageWeight = calculateFinalPackageWeight({
+          productWidth:
+            ctxBody?.package_dimensions?.width_in_cm ?? null,
+          productHeight:
+            ctxBody?.package_dimensions?.height_in_cm ?? null,
+          productLength:
+            ctxBody?.package_dimensions?.length_in_cm ?? null,
+          productWeight: ctxBody?.package_weight_in_grams ?? null,
+          volumetricDivisor:
+            shippingConfig?.default_shipping_company?.weight
+              ?.volumetric_weight_applied_if_needed_in_grams ?? null,
+          applyVolumetricInput:
+            shippingConfig?.default_shipping_company?.weight
+              ?.volumetric_weight_applied_if_needed ?? null,
+          defaultPackageWidth:
+            shippingConfig?.default_package_dimensions?.width_in_cm ??
+            null,
+          defaultPackageHeight:
+            shippingConfig?.default_package_dimensions
+              ?.height_in_cm ?? null,
+          defaultPackageLength:
+            shippingConfig?.default_package_dimensions
+              ?.length_in_cm ?? null,
+          defaultPackageWeight:
+            shippingConfig?.default_package_weight ?? null
+        });
+
+        console.warn('finalPackageWeight', finalPackageWeight);
 
         // Update the product with final_product_price only if it differs
         // Update the product with totla_reviews only if it differs
         // Update the product with average_reviews only if it differs
+        // Update the product with final_package_weight_in_grams only if it differs
         if (
-          finalPrice !== result.final_product_price ||
-          totalReviews !== result.total_reviews ||
-          averageReviews !== result.average_reviews
+          finalPrice !== product.final_product_price ||
+          totalReviews !== product.total_reviews ||
+          averageReviews !== product.average_reviews ||
+          finalPackageWeight !== product.final_package_weight_in_grams
         ) {
-          await strapi.entityService.update(
-            'api::product.product',
-            result.id,
-            {
-              data: {
-                final_product_price: finalPrice,
-                average_reviews: averageReviews,
-                total_reviews: totalReviews
+          data.final_product_price = finalPrice;
+          data.average_reviews = averageReviews;
+          data.total_reviews = totalReviews;
+          data.final_package_weight_in_grams = finalPackageWeight;
+        }
+
+        const strapiProductIds = {
+          arId: null,
+          enId: null
+        };
+
+        if (product?.locale === 'ar' && product?.id) {
+          strapiProductIds.arId = product.id;
+        }
+        if (
+          product?.localizations?.at(0)?.locale === 'en' &&
+          product?.localizations?.at(0)?.id
+        ) {
+          strapiProductIds.enId = product.localizations[0].id;
+        }
+
+        if (product?.locale === 'en' && product?.id) {
+          strapiProductIds.enId = product.id;
+        }
+        if (
+          product?.localizations?.at(0)?.locale === 'ar' &&
+          product?.localizations?.at(0)?.id
+        ) {
+          strapiProductIds.arId = product.id;
+        }
+        // console.log(JSON.stringify(strapiProductIds));
+        // console.log(typeof strapiProductIds.arId);
+
+        // Update the frontend
+        const frontendURL = process.env.FRONTEND_URL;
+        const frontendToken = process.env.FRONTEND_API_TOKEN;
+
+        console.log(`${frontendURL}/api/products/${product.id}`);
+
+        // try {
+        const frontendResponse = await fetch(
+          `${frontendURL}/api/products/${product.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${frontendToken}`
+            },
+            body: JSON.stringify(strapiProductIds)
+          }
+        );
+        // console.log('response', response);
+
+        const frontendResponseData =
+          (await frontendResponse.json()) as {
+            data: { message: string };
+            error: string;
+          };
+        if (!frontendResponse.ok) {
+          console.warn(
+            frontendResponseData?.error || 'Request failed'
+          );
+          return;
+        }
+        // console.log(data);
+
+        if (
+          frontendResponseData?.data?.message ===
+          `Product paths has been updated successfully`
+        ) {
+          console.log(
+            `Product paths {arId: ${strapiProductIds.arId}, enId: ${strapiProductIds.enId}} has been updated successfully`
+          );
+        }
+
+        // try {
+        const rawCarts = await strapi.entityService.findMany(
+          'api::cart.cart',
+          {
+            filters: {
+              product_details: {
+                $or: [
+                  { product: strapiProductIds?.arId ?? 0 },
+                  { product: strapiProductIds?.enId ?? 0 }
+                ]
+              }
+            },
+            populate: {
+              product_details: {
+                populate: ['product'] // 👈 populate the product inside the component
+              }
+            }
+          }
+        );
+
+        // const data = response.json();
+        const filteredCarts: {
+          id: number;
+          total_cart_cost: number;
+          product_details: {
+            quantity: number;
+            total_cost: number;
+            description: string;
+            product: number;
+            final_product_price: number;
+            productStock: number;
+          }[];
+        }[] = rawCarts
+          .map(
+            (cart: {
+              id: number | null;
+              total_cart_cost: number | null;
+              product_details: {
+                quantity: number | null;
+                total_cost: number | null;
+                description: string | null;
+                product: {
+                  id: number | null;
+                  final_product_price: number | null;
+                  stock: number | null;
+                };
+              }[];
+            }) => ({
+              id: cart?.id ?? null,
+              total_cart_cost: cart?.total_cart_cost ?? 0,
+              product_details: cart.product_details.map((detail) => ({
+                quantity: detail?.quantity ?? 0,
+                total_cost: detail?.total_cost ?? 0,
+                description: detail?.description ?? null,
+                product: detail?.product?.id ?? null,
+                final_product_price:
+                  (detail?.product?.id &&
+                    detail?.product?.id === strapiProductIds?.arId) ||
+                  (detail?.product?.id &&
+                    detail?.product?.id === strapiProductIds?.enId)
+                    ? (finalPrice as number | null | undefined) ?? 0
+                    : detail?.product?.final_product_price ?? 0,
+                productStock:
+                  (detail?.product?.id &&
+                    detail?.product?.id === strapiProductIds?.arId) ||
+                  (detail?.product?.id &&
+                    detail?.product?.id === strapiProductIds?.enId)
+                    ? (data?.stock as number | null | undefined) ?? 0
+                    : (detail?.product?.stock as
+                        | number
+                        | null
+                        | undefined) ?? 0
+              }))
+            })
+          )
+          .filter(
+            (cart: {
+              id: number | null;
+              total_cart_cost: number;
+              product_details: {
+                quantity: number;
+                total_cost: number;
+                description: string | null;
+                product: number | null;
+                final_product_price: number;
+                productStock: number;
+              }[];
+            }) => {
+              if (
+                cart?.id !== null &&
+                cart?.total_cart_cost !== null
+              ) {
+                return true;
+              } else {
+                false;
               }
             }
           );
-          console.log(
-            'Product updated and final price set:',
-            finalPrice
+
+        // console.log(JSON.stringify(filteredCarts));
+
+        const updatedCarts =
+          filteredCarts.length > 0
+            ? filteredCarts.map((cart) => {
+                if (cart?.product_details.length > 0) {
+                  const filteredProductsDetails =
+                    cart.product_details.filter((productDetail) => {
+                      return productDetail.productStock > 0
+                        ? true
+                        : false;
+                    });
+                  const totalCartCost =
+                    filteredProductsDetails.reduce(
+                      (acc, productDetail) => {
+                        productDetail.quantity =
+                          productDetail.quantity <=
+                          productDetail.productStock
+                            ? productDetail.quantity
+                            : productDetail.productStock;
+
+                        // console.log(productDetail.quantity);
+
+                        productDetail.total_cost =
+                          productDetail.quantity *
+                          productDetail.final_product_price;
+
+                        return (acc += productDetail.total_cost);
+                      },
+                      0
+                    );
+                  // console.log(totalCartCost);
+                  cart.total_cart_cost = totalCartCost;
+
+                  return {
+                    id: cart.id,
+                    total_cart_cost: cart.total_cart_cost,
+                    product_details:
+                      filteredProductsDetails.length > 0
+                        ? filteredProductsDetails.map(
+                            (productDetail) => ({
+                              quantity: productDetail.quantity,
+                              total_cost: productDetail.total_cost,
+                              description: productDetail.description,
+                              product: productDetail.product
+                            })
+                          )
+                        : []
+                    // quantity:
+                    //   cart?.product_details.quantity ?? null,
+                    // total_cost: cart.total_cost,
+                    // description: detail?.description ?? null,
+                    // product: detail?.product?.id ?? null
+                    // final_product_price: finalPrice
+                  };
+                } else {
+                  return {
+                    id: cart.id,
+                    total_cart_cost: 0,
+                    product_details: []
+                  };
+                }
+              })
+            : null;
+
+        // console.log(JSON.stringify(updatedCarts));
+        console.log('updatedCarts', updatedCarts);
+
+        if (updatedCarts && updatedCarts.length > 0) {
+          const responseResult = await Promise.all(
+            updatedCarts.map((cart) =>
+              strapi.entityService.update('api::cart.cart', cart.id, {
+                data: {
+                  product_details: cart.product_details,
+                  total_cart_cost: cart.total_cart_cost
+                }
+              })
+            )
           );
-          console.log(
-            'Product updated and total reviews set:',
-            totalReviews
-          );
-          console.log(
-            'Product updated and average reviews set:',
-            averageReviews
-          );
-        } else {
-          console.log(
-            'Final price is already set correctly:',
-            finalPrice
-          );
-          console.log(
-            'Total reviews is already set correctly:',
-            totalReviews
-          );
-          console.log(
-            'Average reviews is already set correctly:',
-            averageReviews
-          );
+          // console.log(responseResult);
         }
+
+        // console.log('data', data);
+        // return data;
       }
+
+      // // After updating a product
+      // afterUpdate: async ({ result }) => {
+      //   // try {
+      //   console.log('After update event triggered result:', result);
+      //   // console.log('After update event triggered');
+      //   // } catch (error) {
+      //   //   console.warn(error);
+      //   // }
+      // }
     });
 
     let productsOfDeletedReview = null; // Temporary storage for associated products during deletion
@@ -1271,6 +1593,501 @@ export default {
         }
 
         productsOfDeletedReview = null;
+      }
+    });
+    strapi.db.lifecycles.subscribe({
+      models: ['api::order.order'],
+
+      // After creating a new order
+      afterCreate: async ({ result, params: { data } }) => {
+        try {
+          console.log(
+            'After order create event triggered result:',
+            result
+          );
+          console.log(
+            'After order create event triggered data:',
+            data
+          );
+
+          if (!result?.id) {
+            console.warn('id was not found for the new order.');
+          }
+
+          const orderCustomFieldsPopulated =
+            await strapi.entityService.findOne(
+              'api::order.order',
+              result.id,
+              {
+                populate: {
+                  cart: {
+                    populate: ['product'] // Populate relevant fields
+                  }
+                }
+              }
+            );
+
+          console.log(JSON.stringify(orderCustomFieldsPopulated));
+          const cart = orderCustomFieldsPopulated?.cart ?? null;
+
+          if (!Array.isArray(cart) || cart.length === 0) {
+            console.warn(
+              'No products was found in the new order, and no update was made'
+            );
+            return;
+          }
+
+          console.log('cart:', JSON.stringify(cart));
+          const products = cart
+            .map((cartItem) => {
+              return typeof cartItem?.product?.id === 'number' &&
+                cartItem.quantity > 0 &&
+                cartItem?.product?.stock > 0 &&
+                cartItem?.product?.stock >= cartItem.quantity
+                ? {
+                    id: cartItem.product.id,
+                    newQuantity:
+                      cartItem.product.stock - cartItem.quantity
+                  }
+                : null;
+            })
+            .filter((cartItem) => cartItem !== null);
+          console.log('products:', JSON.stringify(products));
+
+          if (!Array.isArray(products) || products.length === 0) {
+            console.warn(
+              'No products was found in the new order, and no update was made'
+            );
+            return;
+          }
+
+          for (const product of products) {
+            const response = await strapi.entityService.update(
+              'api::product.product',
+              product.id,
+              {
+                data: { stock: product.newQuantity }
+              }
+            );
+
+            console.log(response);
+          }
+        } catch (error) {
+          console.warn(error);
+        }
+      }
+    });
+    strapi.db.lifecycles.subscribe({
+      models: ['api::shipping-company.shipping-company'],
+      // beforeUpdate: async ({
+      //   // result,
+      //   params: { data, where }
+      // }) => {
+      //   console.log(
+      //     'Before update event triggered for shipping company'
+      //   );
+      //   const ctx = strapi.requestContext.get();
+      //   const ctxBody = ctx?.request?.body ?? null;
+
+      //   console.log('ctxBody', ctxBody);
+      //   console.log('where', where);
+      //   console.log('data', data);
+
+      //   if (!where?.id) {
+      //     return;
+      //   }
+      //   if (
+      //     !Array.isArray(ctxBody?.delivery_zones) ||
+      //     ctxBody.delivery_zones.length === 0
+      //   ) {
+      //     return;
+      //   }
+
+      //   // const deliveryZonesIds = data?.delivery_zones
+      //   //   .map((zone) => zone?.id ?? null)
+      //   //   .filter((id) => id);
+
+      //   const cashOnDeliveryCost =
+      //     ctxBody?.include_cash_on_delivery_in_total_shipping_cost
+      //       ? ctxBody?.cash_on_delivery_cost ?? 0
+      //       : 0;
+
+      //   console.log(
+      //     'ctxBody.delivery_zones Before',
+      //     ctxBody.delivery_zones
+      //   );
+
+      //   const updatedDeliveryZones = ctxBody.delivery_zones.map(
+      //     (zone, i) => {
+      //       const deliveryCost = zone?.delivery_cost ?? 0;
+      //       const vatCost = zone?.VAT ?? 0;
+      //       const zoneCost =
+      //         (vatCost / 100) * deliveryCost + deliveryCost;
+
+      //       console.log('zone', zone);
+      //       return {
+      //         id: zone.id ?? i + 1,
+      //         // __temp_key__: zone.__temp_key__,
+      //         delivery_cost: zone.delivery_cost,
+      //         minimum_delivery_duration_in_days:
+      //           zone.minimum_delivery_duration_in_days,
+      //         maximum_delivery_duration_in_days:
+      //           zone.maximum_delivery_duration_in_days,
+      //         VAT: zone.VAT,
+      //         zone_name_in_arabic: zone.zone_name_in_arabic,
+      //         zone_name_in_english: zone.zone_name_in_english,
+      //         calculated_delivery_cost:
+      //           Math.round((zoneCost + cashOnDeliveryCost) * 100) /
+      //           100
+      //       };
+      //     }
+      //   );
+
+      //   data.delivery_zones = [...updatedDeliveryZones];
+
+      //   console.log('updatedDeliveryZones', updatedDeliveryZones);
+      //   console.log('data.delivery_zones', data.delivery_zones);
+
+      //   //CtxBody
+
+      //   // {
+      //   //   id: 1,
+      //   //   createdAt: '2025-05-08T14:54:43.350Z',
+      //   //   updatedAt: '2025-05-14T16:46:10.804Z',
+      //   //   publishedAt: '2025-05-08T16:07:16.842Z',
+      //   //   cash_on_delivery_cost: 0,
+      //   //   include_cash_on_delivery_in_total_shipping_cost: false,
+      //   //   shipping_company_name: 'ABS',
+      //   //   delivery_zones: [
+      //   //     {
+      //   //       id: 6,
+      //   //       delivery_cost: 80,
+      //   //       minimum_delivery_duration_in_days: 3,
+      //   //       maximum_delivery_duration_in_days: 5,
+      //   //       VAT: 0,
+      //   //       zone_name_in_arabic: 'القاهرة',
+      //   //       zone_name_in_english: 'Cairo',
+      //   //       calculated_delivery_cost: null,
+      //   //       __temp_key__: 0
+      //   //     },
+      //   //     {
+      //   //       id: 7,
+      //   //       delivery_cost: 50,
+      //   //       minimum_delivery_duration_in_days: 4,
+      //   //       maximum_delivery_duration_in_days: 6,
+      //   //       VAT: 0,
+      //   //       zone_name_in_arabic: 'سوهاج',
+      //   //       zone_name_in_english: 'Sohag',
+      //   //       calculated_delivery_cost: null,
+      //   //       __temp_key__: 1
+      //   //     }
+      //   //   ],
+      //   //   bank_fees_for_each_transfer: [
+      //   //     {
+      //   //       id: 13,
+      //   //       include_the_fee_in_total_shipping_cost: true,
+      //   //       minimum_total_order_price_to_apply_fee: 2000,
+      //   //       fixed_fee_amount: 15,
+      //   //       percentage_based_fee: 0,
+      //   //       comment: 'مصاريف بنكيه لكل تحويله',
+      //   //       money_increment_for_fixed_fee: 0,
+      //   //       VAT: 0,
+      //   //       __temp_key__: 0
+      //   //     }
+      //   //   ],
+      //   //   extra_shipping_company_fees_for_cash_on_delivery: [
+      //   //     {
+      //   //       id: 14,
+      //   //       include_the_fee_in_total_shipping_cost: true,
+      //   //       minimum_total_order_price_to_apply_fee: 2000,
+      //   //       fixed_fee_amount: 10,
+      //   //       percentage_based_fee: 0,
+      //   //       comment: 'الاسعار شامله التوصيل والتحصيل وضريبه البريد وضريبه القيمه المضافه لحد 2000ج لو المبلغ اكثر بيتم اضافه 10 جنيه علي كل 1000ج زياده',
+      //   //       money_increment_for_fixed_fee: 1000,
+      //   //       VAT: 0,
+      //   //       __temp_key__: 0
+      //   //     }
+      //   //   ],
+      //   //   pickup: {
+      //   //     id: 7,
+      //   //     pickup_cost: 50,
+      //   //     pickup_start_time: '12:00:00',
+      //   //     pickup_end_time: '14:00:00',
+      //   //     include_pickup_cost_in_shipping_total_cost: false,
+      //   //     __temp_key__: 0
+      //   //   },
+      //   //   flyers: {
+      //   //     id: 7,
+      //   //     include_flyer_cost_in_total_shipping_cost: true,
+      //   //     total_flyers_free_every_month: 100,
+      //   //     average_cost_per_flyer: 5,
+      //   //     __temp_key__: 0
+      //   //   },
+      //   //   weight: {
+      //   //     id: 7,
+      //   //     enable_maximum_weight_for_standard_shipping_in_grams: true,
+      //   //     maximum_weight_for_standard_shipping_in_grams: 1000,
+      //   //     volumetric_weight_applied_if_needed: true,
+      //   //     volumetric_weight_applied_if_needed_in_grams: 5000,
+      //   //     fixed_fee_amount_for_exceeding_weight: 5,
+      //   //     weight_increment_for_fixed_fee_in_grams: 1000,
+      //   //     __temp_key__: 0
+      //   //   },
+      //   //   other_compnay_fees: [
+      //   //     {
+      //   //       include_the_fee_in_total_shipping_cost: false,
+      //   //       minimum_total_order_price_to_apply_fee: 0,
+      //   //       fixed_fee_amount: 0,
+      //   //       percentage_based_fee: 0,
+      //   //       money_increment_for_fixed_fee: 0,
+      //   //       VAT: 0,
+      //   //       __temp_key__: 0
+      //   //     }
+      //   //   ]
+      //   // }
+      // }
+      // beforeUpdate: async ({ result, params }) => {
+      //   console.log(
+      //     'Before update event triggered for shipping company'
+      //   );
+      //   const { where, data } = params;
+      //   const ctx = strapi.requestContext.get();
+      //   const ctxBody = ctx?.request?.body ?? null;
+
+      //   console.log('params', JSON.stringify(params));
+      //   console.log('result', result);
+      //   console.log('ctxBody', ctxBody);
+      //   console.log('where', where);
+      //   console.log('data', data);
+
+      //   if (!where?.id) {
+      //     return;
+      //   }
+      //   if (
+      //     !Array.isArray(ctxBody?.delivery_zones) ||
+      //     ctxBody.delivery_zones.length === 0
+      //   ) {
+      //     return;
+      //   }
+
+      //   // const deliveryZonesIds = data?.delivery_zones
+      //   //   .map((zone) => zone?.id ?? null)
+      //   //   .filter((id) => id);
+
+      //   const cashOnDeliveryCost =
+      //     ctxBody?.include_cash_on_delivery_in_total_shipping_cost
+      //       ? ctxBody?.cash_on_delivery_cost ?? 0
+      //       : 0;
+
+      // console.log(
+      //   'ctxBody.delivery_zones Before',
+      //   ctxBody.delivery_zones
+      // );
+
+      // const updatedDeliveryZones = ctxBody.delivery_zones.map(
+      //   (zone, i) => {
+      //     const deliveryCost = zone?.delivery_cost ?? 0;
+      //     const vatCost = zone?.VAT ?? 0;
+      //     const zoneCost =
+      //       (vatCost / 100) * deliveryCost + deliveryCost;
+
+      //     console.log('zone', zone);
+      //     return {
+      //       id: zone.id ?? i + 1,
+      //       // __temp_key__: zone.__temp_key__,
+      //       delivery_cost: zone.delivery_cost,
+      //       minimum_delivery_duration_in_days:
+      //         zone.minimum_delivery_duration_in_days,
+      //       maximum_delivery_duration_in_days:
+      //         zone.maximum_delivery_duration_in_days,
+      //       VAT: zone.VAT,
+      //       zone_name_in_arabic: zone.zone_name_in_arabic,
+      //       zone_name_in_english: zone.zone_name_in_english,
+      //       calculated_delivery_cost:
+      //         Math.round((zoneCost + cashOnDeliveryCost) * 100) /
+      //         100
+      //     };
+      //   }
+      // );
+
+      // data.delivery_zones = [...updatedDeliveryZones];
+
+      // console.log('updatedDeliveryZones', updatedDeliveryZones);
+      // console.log('data.delivery_zones', data.delivery_zones);
+
+      //CtxBody
+
+      // {
+      //   id: 1,
+      //   createdAt: '2025-05-08T14:54:43.350Z',
+      //   updatedAt: '2025-05-14T16:46:10.804Z',
+      //   publishedAt: '2025-05-08T16:07:16.842Z',
+      //   cash_on_delivery_cost: 0,
+      //   include_cash_on_delivery_in_total_shipping_cost: false,
+      //   shipping_company_name: 'ABS',
+      //   delivery_zones: [
+      //     {
+      //       id: 6,
+      //       delivery_cost: 80,
+      //       minimum_delivery_duration_in_days: 3,
+      //       maximum_delivery_duration_in_days: 5,
+      //       VAT: 0,
+      //       zone_name_in_arabic: 'القاهرة',
+      //       zone_name_in_english: 'Cairo',
+      //       calculated_delivery_cost: null,
+      //       __temp_key__: 0
+      //     },
+      //     {
+      //       id: 7,
+      //       delivery_cost: 50,
+      //       minimum_delivery_duration_in_days: 4,
+      //       maximum_delivery_duration_in_days: 6,
+      //       VAT: 0,
+      //       zone_name_in_arabic: 'سوهاج',
+      //       zone_name_in_english: 'Sohag',
+      //       calculated_delivery_cost: null,
+      //       __temp_key__: 1
+      //     }
+      //   ],
+      //   bank_fees_for_each_transfer: [
+      //     {
+      //       id: 13,
+      //       include_the_fee_in_total_shipping_cost: true,
+      //       minimum_total_order_price_to_apply_fee: 2000,
+      //       fixed_fee_amount: 15,
+      //       percentage_based_fee: 0,
+      //       comment: 'مصاريف بنكيه لكل تحويله',
+      //       money_increment_for_fixed_fee: 0,
+      //       VAT: 0,
+      //       __temp_key__: 0
+      //     }
+      //   ],
+      //   extra_shipping_company_fees_for_cash_on_delivery: [
+      //     {
+      //       id: 14,
+      //       include_the_fee_in_total_shipping_cost: true,
+      //       minimum_total_order_price_to_apply_fee: 2000,
+      //       fixed_fee_amount: 10,
+      //       percentage_based_fee: 0,
+      //       comment: 'الاسعار شامله التوصيل والتحصيل وضريبه البريد وضريبه القيمه المضافه لحد 2000ج لو المبلغ اكثر بيتم اضافه 10 جنيه علي كل 1000ج زياده',
+      //       money_increment_for_fixed_fee: 1000,
+      //       VAT: 0,
+      //       __temp_key__: 0
+      //     }
+      //   ],
+      //   pickup: {
+      //     id: 7,
+      //     pickup_cost: 50,
+      //     pickup_start_time: '12:00:00',
+      //     pickup_end_time: '14:00:00',
+      //     include_pickup_cost_in_shipping_total_cost: false,
+      //     __temp_key__: 0
+      //   },
+      //   flyers: {
+      //     id: 7,
+      //     include_flyer_cost_in_total_shipping_cost: true,
+      //     total_flyers_free_every_month: 100,
+      //     average_cost_per_flyer: 5,
+      //     __temp_key__: 0
+      //   },
+      //   weight: {
+      //     id: 7,
+      //     enable_maximum_weight_for_standard_shipping_in_grams: true,
+      //     maximum_weight_for_standard_shipping_in_grams: 1000,
+      //     volumetric_weight_applied_if_needed: true,
+      //     volumetric_weight_applied_if_needed_in_grams: 5000,
+      //     fixed_fee_amount_for_exceeding_weight: 5,
+      //     weight_increment_for_fixed_fee_in_grams: 1000,
+      //     __temp_key__: 0
+      //   },
+      //   other_compnay_fees: [
+      //     {
+      //       include_the_fee_in_total_shipping_cost: false,
+      //       minimum_total_order_price_to_apply_fee: 0,
+      //       fixed_fee_amount: 0,
+      //       percentage_based_fee: 0,
+      //       money_increment_for_fixed_fee: 0,
+      //       VAT: 0,
+      //       __temp_key__: 0
+      //     }
+      //   ]
+      // }
+      // }
+      afterUpdate: async ({ result }) => {
+        const shippingCompanyId = result.id;
+
+        const includeCashOnDelivery =
+          result?.include_cash_on_delivery_in_total_shipping_cost ??
+          false;
+        const cashOnDeliveryCost = includeCashOnDelivery
+          ? result?.cash_on_delivery_cost || 0
+          : 0;
+
+        const includePickupCost =
+          result?.pickup
+            ?.include_pickup_cost_in_shipping_total_cost ?? false;
+        const pickupCost = includePickupCost
+          ? result?.pickup?.pickup_cost || 0
+          : 0;
+
+        // const includeFlyersCost =
+        //   result?.flyers?.include_flyer_cost_in_total_shipping_cost ??
+        //   false;
+        // const flyerCost = includeFlyersCost
+        //   ? result?.flyers.average_cost_per_flyer || 0
+        //   : 0;
+
+        // console.log('result', result);
+
+        if (
+          !Array.isArray(result.delivery_zones) ||
+          !result?.delivery_zones ||
+          result.delivery_zones.length === 0 ||
+          !result.id
+        ) {
+          console.warn(
+            'error result.delivery_zones or result.id @afterUpdate shipping_company was not found'
+          );
+          return;
+        }
+
+        // const updatedZones = await Promise.all(
+        const calculatedUpdatedZones = result.delivery_zones.map(
+          (zone) => {
+            const deliveryCost = zone.delivery_cost || 0;
+            const vat = zone.VAT || 0;
+            const baseCost =
+              deliveryCost + (vat / 100) * deliveryCost;
+            const calculatedDeliveryCost =
+              Math.round(
+                (baseCost + cashOnDeliveryCost + pickupCost) * 100
+              ) / 100;
+
+            // Update the individual component (delivery zone)
+            return {
+              ...zone,
+              calculated_delivery_cost: calculatedDeliveryCost
+            };
+          }
+        );
+        // );
+        console.log('calculatedUpdatedZones', calculatedUpdatedZones);
+
+        const updatedZones = await strapi.entityService.update(
+          'api::shipping-company.shipping-company', // Replace with correct UID if needed
+          result.id,
+          {
+            data: {
+              delivery_zones: [...calculatedUpdatedZones]
+            }
+          }
+        );
+
+        console.log('updatedZones', updatedZones);
+
+        console.log(
+          `Updated delivery_zones with calculated_delivery_cost for shipping company #${shippingCompanyId}`
+        );
       }
     });
 
@@ -1357,10 +2174,188 @@ export default {
 
     // Function to calculate the final price
     function calculateFinalPrice(price, salePrice) {
-      if (!salePrice || salePrice === 0) {
+      // console.log(price, salePrice);
+      if (typeof price !== 'number') return 0;
+
+      if (typeof salePrice !== 'number' || salePrice === 0) {
         return price; // If sale price is not defined or invalid, use price
       }
+
+      if (salePrice > price) {
+        // console.warn('Sale price should be less than price.');
+        console.warn(
+          `price: ${price}, sale_price: ${salePrice} and final_product_price: error.`
+        );
+        // return 0;
+        throw new Error('Sale price should be less than price.');
+      }
       return salePrice; // Use sale price if valid
+    }
+
+    function calculateFinalPackageWeight({
+      productWidth,
+      productHeight,
+      productLength,
+      productWeight,
+      volumetricDivisor,
+      applyVolumetricInput,
+      defaultPackageWidth,
+      defaultPackageHeight,
+      defaultPackageLength,
+      defaultPackageWeight
+    }: {
+      productWidth: number | null;
+      productHeight: number | null;
+      productLength: number | null;
+      productWeight: number | null;
+      volumetricDivisor: number | null;
+      applyVolumetricInput: boolean | null;
+      defaultPackageWidth: number | null;
+      defaultPackageHeight: number | null;
+      defaultPackageLength: number | null;
+      defaultPackageWeight: number | null;
+    }) {
+      const productHasValidWeight =
+        typeof productWeight === 'number' && productWeight > 0;
+      const hasValidVolumetricDivisor =
+        typeof volumetricDivisor === 'number' &&
+        volumetricDivisor > 0;
+      const applyVolumetric = applyVolumetricInput === true;
+
+      const productHasValidDimensions =
+        typeof productWidth === 'number' &&
+        productWidth > 0 &&
+        typeof productHeight === 'number' &&
+        productHeight > 0 &&
+        typeof productLength === 'number' &&
+        productLength > 0;
+
+      const defaultPackageHasValidDimensions =
+        typeof defaultPackageWidth === 'number' &&
+        defaultPackageWidth > 0 &&
+        typeof defaultPackageHeight === 'number' &&
+        defaultPackageHeight > 0 &&
+        typeof defaultPackageLength === 'number' &&
+        defaultPackageLength > 0;
+      const defaultPackageHasValidWeight =
+        typeof defaultPackageWeight === 'number' &&
+        defaultPackageWeight > 0;
+
+      console.log(
+        JSON.stringify({
+          productWidth,
+          productHeight,
+          productLength,
+          productWeight,
+          volumetricDivisor,
+          applyVolumetricInput,
+          defaultPackageWidth,
+          defaultPackageHeight,
+          defaultPackageLength,
+          defaultPackageWeight
+        })
+      );
+
+      console.log('======= Start =======');
+      console.log('productHasValidWeight', productHasValidWeight);
+      console.log(
+        'hasValidVolumetricDivisor',
+        hasValidVolumetricDivisor
+      );
+      console.log('applyVolumetric', applyVolumetric);
+      console.log(
+        'productHasValidDimensions',
+        productHasValidDimensions
+      );
+      console.log('productHasValidWeight', productHasValidWeight);
+      console.log(
+        'defaultPackageHasValidDimensions',
+        defaultPackageHasValidDimensions
+      );
+      console.log(
+        'defaultPackageHasValidWeight',
+        defaultPackageHasValidWeight
+      );
+      console.log('======= End =======');
+
+      if (
+        applyVolumetric &&
+        productHasValidDimensions &&
+        hasValidVolumetricDivisor
+      ) {
+        const volume = productWidth * productHeight * productLength;
+        const volumetricWeight = volume / volumetricDivisor;
+        const volumetricWeightInGramsTemp = volumetricWeight * 1000;
+        const volumetricWeightInGrams = Number(
+          volumetricWeightInGramsTemp.toFixed(0)
+        );
+
+        console.log(
+          'volumetricWeightInGrams',
+          volumetricWeightInGrams
+        );
+
+        if (productHasValidWeight) {
+          const finalWeightGrams = Math.max(
+            volumetricWeightInGrams,
+            productWeight
+          );
+          return finalWeightGrams; // grams
+        }
+
+        if (defaultPackageHasValidWeight) {
+          const finalWeightGrams = Math.max(
+            volumetricWeightInGrams,
+            defaultPackageWeight
+          );
+          return finalWeightGrams; // grams
+        }
+        return 0; // grams
+      }
+
+      if (
+        applyVolumetric &&
+        defaultPackageHasValidDimensions &&
+        hasValidVolumetricDivisor
+      ) {
+        const volume =
+          defaultPackageWidth *
+          defaultPackageHeight *
+          defaultPackageLength;
+        const defaultVolumetricWeight = volume / volumetricDivisor;
+        const defaultVolumetricWeightInGramsTemp =
+          defaultVolumetricWeight * 1000;
+        const defaultVolumetricWeightInGrams = Number(
+          defaultVolumetricWeightInGramsTemp.toFixed(0)
+        );
+
+        if (productHasValidWeight) {
+          const finalWeightGrams = Math.max(
+            defaultVolumetricWeightInGrams,
+            productWeight
+          );
+          return finalWeightGrams; // grams
+        }
+
+        if (defaultPackageHasValidWeight) {
+          const finalWeightGrams = Math.max(
+            defaultVolumetricWeightInGrams,
+            defaultPackageWeight
+          );
+          return finalWeightGrams; // grams
+        }
+        return 0; // grams
+      }
+
+      if (productHasValidWeight) {
+        return productWeight; // grams
+      }
+
+      if (defaultPackageHasValidWeight) {
+        return defaultPackageHasValidWeight; // grams
+      }
+
+      return 0;
     }
 
     // Calculate average reviews
@@ -1502,7 +2497,44 @@ export default {
     /**
      * Extracts data from a row based on header mappings.
      */
-    function extractRowData(row, headers, enableMaxStock, maxStock) {
+    function extractRowData(
+      row,
+      headers,
+      enableMaxStock,
+      maxStock,
+      enableMinStock,
+      minStock
+    ) {
+      const totalStock = row[headers.totalStockName];
+      let fileTotalStock = null;
+
+      if (typeof totalStock === 'number') {
+        if (
+          enableMinStock &&
+          typeof minStock === 'number' &&
+          totalStock < minStock
+        ) {
+          fileTotalStock = 0;
+        } else if (
+          enableMaxStock &&
+          typeof maxStock === 'number' &&
+          totalStock >= maxStock
+        ) {
+          fileTotalStock = maxStock;
+        } else {
+          fileTotalStock = totalStock;
+        }
+      }
+
+      console.log(
+        calculateFinalPrice(
+          headers?.priceName ? row[headers.priceName] ?? null : null,
+          headers?.salePriceName
+            ? row[headers.salePriceName] ?? null
+            : null
+        )
+      );
+
       return {
         fileItemName: row[headers.itemName] ?? null,
         fileEdaraItemCode: row[headers.edaraItemCodeName] ?? null,
@@ -1514,14 +2546,13 @@ export default {
           typeof row[headers.salePriceName] === 'number'
             ? row[headers.salePriceName]
             : null,
-        fileTotalStock:
-          typeof row[headers.totalStockName] === 'number'
-            ? enableMaxStock &&
-              typeof maxStock === 'number' &&
-              row[headers.totalStockName] >= maxStock
-              ? maxStock
-              : row[headers.totalStockName]
+        fileFinalPrice: calculateFinalPrice(
+          headers?.priceName ? row[headers.priceName] ?? null : null,
+          headers?.salePriceName
+            ? row[headers.salePriceName] ?? null
             : null
+        ),
+        fileTotalStock
       };
     }
 
@@ -1570,7 +2601,8 @@ export default {
         prevPrice: product?.price ?? null,
         prevSalePrice: product?.sale_price ?? null,
         prevStock: product?.stock ?? null,
-        productNameSystem: product.name ?? ''
+        productNameSystem: product?.name ?? '',
+        prevFinalPrice: product?.final_product_price ?? null
       };
     }
 

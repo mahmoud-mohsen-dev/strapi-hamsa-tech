@@ -1060,11 +1060,6 @@ export interface ApiAddressAddress extends Schema.CollectionType {
       'manyToOne',
       'api::guest-user.guest-user'
     >;
-    shipping_cost: Attribute.Relation<
-      'api::address.address',
-      'oneToOne',
-      'api::shipping-cost.shipping-cost'
-    >;
     first_name: Attribute.String;
     last_name: Attribute.String;
     delivery_phone: Attribute.String;
@@ -1080,6 +1075,7 @@ export interface ApiAddressAddress extends Schema.CollectionType {
       >;
     address_name: Attribute.String;
     default: Attribute.Boolean & Attribute.DefaultTo<false>;
+    delivery_zone: Attribute.Component<'shipping-delivery-zone.shipping-delivery-zone'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1543,6 +1539,102 @@ export interface ApiCategoryCategory extends Schema.CollectionType {
   };
 }
 
+export interface ApiCouponCoupon extends Schema.CollectionType {
+  collectionName: 'coupons';
+  info: {
+    singularName: 'coupon';
+    pluralName: 'coupons';
+    displayName: 'Coupon';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    image: Attribute.Media<'images'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    expiration_date: Attribute.Date &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    coupon_code: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    start_date: Attribute.Date &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    deduction_value: Attribute.Decimal &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    deduction_value_by_percent: Attribute.Decimal &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
+    orders: Attribute.Relation<
+      'api::coupon.coupon',
+      'oneToMany',
+      'api::order.order'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::coupon.coupon',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::coupon.coupon',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    localizations: Attribute.Relation<
+      'api::coupon.coupon',
+      'oneToMany',
+      'api::coupon.coupon'
+    >;
+    locale: Attribute.String;
+  };
+}
+
 export interface ApiDownloadPageDownloadPage
   extends Schema.SingleType {
   collectionName: 'download_pages';
@@ -1603,7 +1695,14 @@ export interface ApiFreeShippingFreeShipping
     draftAndPublish: true;
   };
   attributes: {
-    apply_free_shipping_if_total_cart_cost_equals: Attribute.Integer;
+    apply_free_shipping_if_total_cart_cost_equals: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      >;
     enable: Attribute.Boolean &
       Attribute.Required &
       Attribute.DefaultTo<true>;
@@ -1702,13 +1801,6 @@ export interface ApiOfferOffer extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    coupon_code: Attribute.String &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }>;
     expiration_date: Attribute.Date &
       Attribute.Required &
       Attribute.SetPluginOptions<{
@@ -1723,29 +1815,21 @@ export interface ApiOfferOffer extends Schema.CollectionType {
           localized: false;
         };
       }>;
-    deduction_value: Attribute.Decimal &
+    offer_link: Attribute.Text &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    hide_this_offer: Attribute.Boolean &
+      Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: false;
         };
       }> &
-      Attribute.SetMinMax<
-        {
-          min: 0;
-        },
-        number
-      >;
-    deduction_value_by_percent: Attribute.Decimal &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }>;
-    orders: Attribute.Relation<
-      'api::offer.offer',
-      'oneToMany',
-      'api::order.order'
-    >;
+      Attribute.DefaultTo<false>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1829,11 +1913,6 @@ export interface ApiOrderOrder extends Schema.CollectionType {
       'oneToOne',
       'api::address.address'
     >;
-    coupon: Attribute.Relation<
-      'api::order.order',
-      'manyToOne',
-      'api::offer.offer'
-    >;
     payment_status: Attribute.Enumeration<
       [
         'pending',
@@ -1873,6 +1952,16 @@ export interface ApiOrderOrder extends Schema.CollectionType {
         number
       >;
     invoice: Attribute.Media<'files'>;
+    shipping_company: Attribute.Relation<
+      'api::order.order',
+      'manyToOne',
+      'api::shipping-company.shipping-company'
+    >;
+    coupon_applied: Attribute.Relation<
+      'api::order.order',
+      'manyToOne',
+      'api::coupon.coupon'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2015,6 +2104,12 @@ export interface ApiPricesAndStockConfigPricesAndStockConfig
   attributes: {
     max_stock: Attribute.Integer &
       Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
       Attribute.DefaultTo<0>;
     excel_header_for_item_name: Attribute.String & Attribute.Required;
     excel_header_for_edara_item_code: Attribute.String &
@@ -2045,6 +2140,18 @@ export interface ApiPricesAndStockConfigPricesAndStockConfig
         number
       > &
       Attribute.DefaultTo<0>;
+    min_stock: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    enable_min_stock: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<true>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -2410,6 +2517,38 @@ export interface ApiProductProduct extends Schema.CollectionType {
           localized: true;
         };
       }>;
+    package_weight_in_grams: Attribute.Integer &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    package_dimensions: Attribute.Component<'package-dimensions.package-dimensions'> &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    final_package_weight_in_grams: Attribute.Integer &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }> &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -2639,73 +2778,137 @@ export interface ApiReviewReview extends Schema.CollectionType {
   };
 }
 
-export interface ApiShippingCostShippingCost
+export interface ApiShippingCompanyShippingCompany
   extends Schema.CollectionType {
-  collectionName: 'shipping_costs';
+  collectionName: 'shipping_companies';
   info: {
-    singularName: 'shipping-cost';
-    pluralName: 'shipping-costs';
-    displayName: 'Shipping Cost';
+    singularName: 'shipping-company';
+    pluralName: 'shipping-companies';
+    displayName: 'Shipping Company';
     description: '';
   };
   options: {
     draftAndPublish: true;
   };
-  pluginOptions: {
-    i18n: {
-      localized: true;
-    };
-  };
   attributes: {
-    governorate: Attribute.String &
+    delivery_zones: Attribute.Component<
+      'delivery-zone.delivery-zone',
+      true
+    > &
+      Attribute.Required;
+    cash_on_delivery_cost: Attribute.Decimal &
       Attribute.Required &
-      Attribute.Unique &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    delivery_cost: Attribute.Decimal &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }> &
       Attribute.SetMinMax<
         {
           min: 0;
         },
         number
-      >;
-    delivery_duration_in_days: Attribute.Decimal &
+      > &
+      Attribute.DefaultTo<0>;
+    include_cash_on_delivery_in_total_shipping_cost: Attribute.Boolean &
       Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }>;
+      Attribute.DefaultTo<false>;
+    bank_fees_for_each_transfer: Attribute.Component<
+      'fees.fees',
+      true
+    >;
+    extra_shipping_company_fees_for_cash_on_delivery: Attribute.Component<
+      'fees.fees',
+      true
+    >;
+    pickup: Attribute.Component<'pickup.pickup'> & Attribute.Required;
+    flyers: Attribute.Component<'flyers.flyers'> & Attribute.Required;
+    weight: Attribute.Component<'weight.weight'> & Attribute.Required;
+    shipping_company_name: Attribute.String & Attribute.Required;
+    other_compnay_fees: Attribute.Component<'fees.fees', true>;
+    orders: Attribute.Relation<
+      'api::shipping-company.shipping-company',
+      'oneToMany',
+      'api::order.order'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
-      'api::shipping-cost.shipping-cost',
+      'api::shipping-company.shipping-company',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
     updatedBy: Attribute.Relation<
-      'api::shipping-cost.shipping-cost',
+      'api::shipping-company.shipping-company',
       'oneToOne',
       'admin::user'
     > &
       Attribute.Private;
-    localizations: Attribute.Relation<
-      'api::shipping-cost.shipping-cost',
-      'oneToMany',
-      'api::shipping-cost.shipping-cost'
+  };
+}
+
+export interface ApiShippingConfigShippingConfig
+  extends Schema.SingleType {
+  collectionName: 'shipping_configs';
+  info: {
+    singularName: 'shipping-config';
+    pluralName: 'shipping-configs';
+    displayName: 'Shipping Config';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    default_shipping_company: Attribute.Relation<
+      'api::shipping-config.shipping-config',
+      'oneToOne',
+      'api::shipping-company.shipping-company'
     >;
-    locale: Attribute.String;
+    add_to_total_shipping_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    deduct_from_total_shipping_cost: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    default_package_dimensions: Attribute.Component<'package-dimensions.package-dimensions'> &
+      Attribute.Required;
+    default_package_weight: Attribute.Integer &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    enable_checkout: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::shipping-config.shipping-config',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::shipping-config.shipping-config',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
   };
 }
 
@@ -3318,6 +3521,7 @@ declare module '@strapi/types' {
       'api::brand.brand': ApiBrandBrand;
       'api::cart.cart': ApiCartCart;
       'api::category.category': ApiCategoryCategory;
+      'api::coupon.coupon': ApiCouponCoupon;
       'api::download-page.download-page': ApiDownloadPageDownloadPage;
       'api::free-shipping.free-shipping': ApiFreeShippingFreeShipping;
       'api::guest-user.guest-user': ApiGuestUserGuestUser;
@@ -3330,7 +3534,8 @@ declare module '@strapi/types' {
       'api::product-spotlight.product-spotlight': ApiProductSpotlightProductSpotlight;
       'api::return-and-refund-policy.return-and-refund-policy': ApiReturnAndRefundPolicyReturnAndRefundPolicy;
       'api::review.review': ApiReviewReview;
-      'api::shipping-cost.shipping-cost': ApiShippingCostShippingCost;
+      'api::shipping-company.shipping-company': ApiShippingCompanyShippingCompany;
+      'api::shipping-config.shipping-config': ApiShippingConfigShippingConfig;
       'api::shipping-policy.shipping-policy': ApiShippingPolicyShippingPolicy;
       'api::sub-category.sub-category': ApiSubCategorySubCategory;
       'api::support.support': ApiSupportSupport;

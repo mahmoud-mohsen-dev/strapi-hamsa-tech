@@ -331,6 +331,39 @@
         }
       },
       "component": "link-section.link-section"
+    },
+    "package_weight_in_grams": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "integer",
+      "required": false,
+      "min": 0,
+      "default": 0
+    },
+    "package_dimensions": {
+      "displayName": "package_dimensions",
+      "type": "component",
+      "repeatable": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "component": "package-dimensions.package-dimensions",
+      "required": false
+    },
+    "final_package_weight_in_grams": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "integer",
+      "min": 0,
+      "default": 0
     }
   }
 }

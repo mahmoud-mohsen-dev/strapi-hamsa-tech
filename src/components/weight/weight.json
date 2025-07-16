@@ -1,0 +1,56 @@
+{
+  "collectionName": "components_weight_weights",
+  "info": {
+    "displayName": "weight",
+    "icon": "archive",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "enable_maximum_weight_fee_for_standard_shipping_in_grams": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "maximum_weight_for_standard_shipping_in_grams": {
+      "type": "integer",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "volumetric_weight_applied_if_needed": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "volumetric_weight_applied_if_needed_in_grams": {
+      "type": "integer",
+      "min": 0,
+      "default": 0,
+      "required": true
+    },
+    "fixed_extra_fee_per_increment": {
+      "type": "decimal",
+      "min": 0,
+      "required": true,
+      "default": 0
+    },
+    "weight_increment_for_fixed_fee_in_grams": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "VAT": {
+      "type": "decimal",
+      "required": true,
+      "default": 0,
+      "min": 0
+    },
+    "apply_difference_based_fee": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}

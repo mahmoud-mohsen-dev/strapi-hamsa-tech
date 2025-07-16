@@ -1,0 +1,65 @@
+{
+  "collectionName": "components_fees_fees",
+  "info": {
+    "displayName": "fees",
+    "icon": "chartPie",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "include_the_fee_in_total_shipping_cost": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "minimum_total_order_price_to_apply_fee": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "fixed_fee_amount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "percentage_based_fee": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0,
+      "required": true
+    },
+    "comment": {
+      "type": "string"
+    },
+    "money_increment_amount": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "VAT": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "fixed_extra_fee_per_increment": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "add_base_fees_to_total_increment_fee": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "apply_difference_based_fee": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}

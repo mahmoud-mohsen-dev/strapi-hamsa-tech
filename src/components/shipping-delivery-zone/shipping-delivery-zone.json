@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_shipping_delivery_zone_shipping_delivery_zones",
+  "info": {
+    "displayName": "shipping-delivery-zone",
+    "icon": "car",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "zone_name_in_arabic": {
+      "type": "string",
+      "required": true
+    },
+    "zone_name_in_english": {
+      "type": "string",
+      "required": true
+    },
+    "minimum_delivery_duration_in_days": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "maximum_delivery_duration_in_days": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    }
+  }
+}

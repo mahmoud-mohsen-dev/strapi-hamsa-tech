@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_flyers_flyers",
+  "info": {
+    "displayName": "flyers",
+    "icon": "cube",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "include_flyer_cost_in_total_shipping_cost": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "total_flyers_free_every_month": {
+      "type": "decimal",
+      "min": 0,
+      "required": true,
+      "default": 0
+    },
+    "average_cost_per_flyer": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    }
+  }
+}

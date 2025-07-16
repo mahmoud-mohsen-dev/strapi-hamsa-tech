@@ -63,12 +63,6 @@
       "relation": "oneToOne",
       "target": "api::address.address"
     },
-    "coupon": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::offer.offer",
-      "inversedBy": "orders"
-    },
     "payment_status": {
       "type": "enumeration",
       "enum": [
@@ -110,6 +104,18 @@
       "allowedTypes": [
         "files"
       ]
+    },
+    "shipping_company": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::shipping-company.shipping-company",
+      "inversedBy": "orders"
+    },
+    "coupon_applied": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::coupon.coupon",
+      "inversedBy": "orders"
     }
   }
 }
