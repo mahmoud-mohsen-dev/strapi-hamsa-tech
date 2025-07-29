@@ -2485,12 +2485,6 @@ export interface ApiProductProduct extends Schema.CollectionType {
       'oneToMany',
       'api::product.product'
     >;
-    sort_by_order: Attribute.String &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false;
-        };
-      }>;
     edara_item_code: Attribute.String &
       Attribute.Required &
       Attribute.SetPluginOptions<{
@@ -2549,6 +2543,12 @@ export interface ApiProductProduct extends Schema.CollectionType {
         number
       > &
       Attribute.DefaultTo<0>;
+    sort_by_order: Attribute.Integer &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

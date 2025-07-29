@@ -282,15 +282,6 @@
       "relation": "oneToMany",
       "target": "api::product.product"
     },
-    "sort_by_order": {
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      },
-      "type": "string",
-      "unique": false
-    },
     "edara_item_code": {
       "pluginOptions": {
         "i18n": {
@@ -364,6 +355,15 @@
       "type": "integer",
       "min": 0,
       "default": 0
+    },
+    "sort_by_order": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
+      "type": "integer",
+      "unique": false
     }
   }
 }
