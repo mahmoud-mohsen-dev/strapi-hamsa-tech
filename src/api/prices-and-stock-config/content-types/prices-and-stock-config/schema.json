@@ -65,6 +65,35 @@
       "type": "boolean",
       "default": true,
       "required": true
+    },
+    "migrate_datasheet_to_new_datasheet": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "extra_price_addition_by_value": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "min_sale_price_to_apply_extra_sale_price_addition_by_value": {
+      "type": "decimal",
+      "required": true,
+      "min": 0,
+      "default": 0
+    },
+    "extra_sale_price_addition_by_value": {
+      "type": "decimal",
+      "min": 0,
+      "default": 0,
+      "required": true
+    },
+    "min_price_to_apply_extra_price_addition_by_value": {
+      "type": "decimal",
+      "min": 0,
+      "required": true,
+      "default": 0
     }
   }
 }

@@ -2152,6 +2152,45 @@ export interface ApiPricesAndStockConfigPricesAndStockConfig
     enable_min_stock: Attribute.Boolean &
       Attribute.Required &
       Attribute.DefaultTo<true>;
+    migrate_datasheet_to_new_datasheet: Attribute.Boolean &
+      Attribute.Required &
+      Attribute.DefaultTo<false>;
+    extra_price_addition_by_value: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    min_sale_price_to_apply_extra_sale_price_addition_by_value: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    extra_sale_price_addition_by_value: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
+    min_price_to_apply_extra_price_addition_by_value: Attribute.Decimal &
+      Attribute.Required &
+      Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<

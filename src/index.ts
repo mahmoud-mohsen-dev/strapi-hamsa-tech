@@ -642,11 +642,35 @@ export default {
           enable_min_stock,
           enable_max_stock,
           extra_price_addition_by_percentage,
-          extra_sale_price_addition_by_percentage
+          extra_sale_price_addition_by_percentage,
+          migrate_datasheet_to_new_datasheet,
+          extra_price_addition_by_value,
+          min_price_to_apply_extra_price_addition_by_value,
+          extra_sale_price_addition_by_value,
+          min_sale_price_to_apply_extra_sale_price_addition_by_value
         } = pricesAndStockConfigEntry;
 
+        if (migrate_datasheet_to_new_datasheet) {
+          await migrateDatasheetToNewDatasheet({ strapi });
+        }
         console.log('min_stock', min_stock);
         console.log('enable_min_stock', enable_min_stock);
+        console.log(
+          'extra_price_addition_by_value',
+          extra_price_addition_by_value
+        );
+        console.log(
+          'min_price_to_apply_extra_price_addition_by_value',
+          min_price_to_apply_extra_price_addition_by_value
+        );
+        console.log(
+          'extra_sale_price_addition_by_value',
+          extra_sale_price_addition_by_value
+        );
+        console.log(
+          'min_sale_price_to_apply_extra_sale_price_addition_by_value',
+          min_sale_price_to_apply_extra_sale_price_addition_by_value
+        );
 
         const headers = {
           itemName: excel_header_for_item_name ?? '',
@@ -724,8 +748,8 @@ export default {
         const publishedProducts = products.filter(
           (product) => product.publishedAt
         );
-        console.log('��� Processing products...', products);
-        console.log('ℹ️ Published products...', publishedProducts);
+        // console.log('��� Processing products...', products);
+        // console.log('ℹ️ Published products...', publishedProducts);
         //  canUpdate:
         //   product?.edara_can_change_price_and_stock_for_this_product ??
         //   false,
@@ -849,7 +873,7 @@ export default {
             fileEdaraItemCode,
             filePrice,
             fileSalePrice,
-            fileFinalPrice,
+            // fileFinalPrice,
             fileTotalStock
           } = extractRowData(
             row,
@@ -869,7 +893,7 @@ export default {
             !fileEdaraItemCode ||
             typeof filePrice !== 'number' ||
             typeof fileTotalStock !== 'number' ||
-            typeof fileFinalPrice !== 'number' ||
+            // typeof fileFinalPrice !== 'number' ||
             (salePriceEnabled && typeof fileSalePrice !== 'number')
           ) {
             logSkippedEntry(
@@ -895,6 +919,8 @@ export default {
             updateCounters.notFoundInSystem++;
             continue;
           }
+
+          // console.log('✅ Product found in system:', product);
 
           updateCounters.matched++;
 
@@ -928,15 +954,35 @@ export default {
               const updateExtraPriceAdditionPercentageAmount =
                 (filePrice * extra_price_addition_by_percentage) /
                 100;
-              filePriceChecked = Math.round(
-                filePrice + updateExtraPriceAdditionPercentageAmount
-              );
+              filePriceChecked =
+                filePrice + updateExtraPriceAdditionPercentageAmount;
             } else {
-              filePriceChecked = Math.round(filePrice);
+              filePriceChecked = filePrice;
             }
+
+            if (
+              extra_price_addition_by_value > 0 &&
+              filePrice >=
+                min_price_to_apply_extra_price_addition_by_value
+            ) {
+              filePriceChecked =
+                filePriceChecked + extra_price_addition_by_value;
+            }
+
+            // ✅ Round up to nearest 5
+            filePriceChecked = Math.ceil(filePriceChecked / 5) * 5;
           } else {
             filePriceChecked = 0;
           }
+          console.log(
+            'filePrice, extra_price_addition_by_value',
+            filePrice,
+            extra_price_addition_by_value
+          );
+          console.log(
+            'filePriceChecked after extra value addition',
+            filePriceChecked
+          );
 
           // const fileSalePriceChecked =
           //   salePriceEnabled && typeof fileSalePrice === 'number'
@@ -958,19 +1004,49 @@ export default {
                 (fileSalePrice *
                   extra_sale_price_addition_by_percentage) /
                 100;
-              fileSalePriceChecked = Math.round(
+              fileSalePriceChecked =
                 fileSalePrice +
-                  updateExtraSalePriceAdditionPercentageAmount
-              );
+                updateExtraSalePriceAdditionPercentageAmount;
             } else {
-              fileSalePriceChecked = Math.round(fileSalePrice);
+              fileSalePriceChecked = fileSalePrice;
             }
+
+            if (
+              extra_sale_price_addition_by_value > 0 &&
+              fileSalePrice >=
+                min_sale_price_to_apply_extra_sale_price_addition_by_value
+            ) {
+              fileSalePriceChecked =
+                fileSalePriceChecked +
+                extra_sale_price_addition_by_value;
+            }
+
+            // ✅ Round up to nearest 5
+            fileSalePriceChecked =
+              Math.ceil(fileSalePriceChecked / 5) * 5;
           } else {
             fileSalePriceChecked = 0;
           }
 
+          console.log(
+            'fileSalePrice, extra_sale_price_addition_by_value',
+            fileSalePrice,
+            extra_sale_price_addition_by_value
+          );
+          console.log(
+            'fileSalePriceChecked after extra value addition',
+            fileSalePriceChecked
+          );
+
           const fileTotalStockChecked =
             fileTotalStock > 0 ? fileTotalStock : 0;
+
+          const fileFinalPrice = calculateFinalPrice(
+            filePriceChecked,
+            fileSalePriceChecked
+          );
+
+          // console.log('Final Price Calculation:', fileFinalPrice);
 
           // console.log('🔄 Processing:', {
           //   fileEdaraItemCode,
@@ -1001,6 +1077,34 @@ export default {
             updateCounters.updateDisabled++;
             continue;
           }
+
+          console.log(
+            `${prevPrice}` !== `${filePriceChecked}` ||
+              `${prevStock}` !== `${fileTotalStockChecked}` ||
+              `${prevFinalPrice}` !== `${fileFinalPrice}` ||
+              `${prevSalePrice}` !== `${fileSalePriceChecked}`
+          );
+          console.log('Comparing values for price:', {
+            prevPrice,
+            filePriceChecked,
+            isChanged: `${prevPrice}` !== `${filePriceChecked}`
+          });
+          console.log('Comparing values for stock:', {
+            prevStock,
+            fileTotalStockChecked,
+            isChanged: `${prevStock}` !== `${fileTotalStockChecked}`
+          });
+          console.log('Comparing values for sale price:', {
+            prevSalePrice,
+            fileSalePriceChecked,
+            isChanged:
+              `${prevSalePrice}` !== `${fileSalePriceChecked}`
+          });
+          console.log('Comparing values for final price:', {
+            prevFinalPrice,
+            fileFinalPrice,
+            isChanged: `${prevFinalPrice}` !== `${fileFinalPrice}`
+          });
 
           if (
             `${prevPrice}` !== `${filePriceChecked}` ||
@@ -1491,7 +1595,7 @@ export default {
             : null;
 
         // console.log(JSON.stringify(updatedCarts));
-        console.log('updatedCarts', updatedCarts);
+        // console.log('updatedCarts', updatedCarts);
 
         if (updatedCarts && updatedCarts.length > 0) {
           const responseResult = await Promise.all(
@@ -2182,7 +2286,7 @@ export default {
       }
 
       if (salePrice > price) {
-        // console.warn('Sale price should be less than price.');
+        console.warn('Sale price should be less than price.');
         console.warn(
           `price: ${price}, sale_price: ${salePrice} and final_product_price: error.`
         );
@@ -2241,42 +2345,42 @@ export default {
         typeof defaultPackageWeight === 'number' &&
         defaultPackageWeight > 0;
 
-      console.log(
-        JSON.stringify({
-          productWidth,
-          productHeight,
-          productLength,
-          productWeight,
-          volumetricDivisor,
-          applyVolumetricInput,
-          defaultPackageWidth,
-          defaultPackageHeight,
-          defaultPackageLength,
-          defaultPackageWeight
-        })
-      );
+      // console.log(
+      //   JSON.stringify({
+      //     productWidth,
+      //     productHeight,
+      //     productLength,
+      //     productWeight,
+      //     volumetricDivisor,
+      //     applyVolumetricInput,
+      //     defaultPackageWidth,
+      //     defaultPackageHeight,
+      //     defaultPackageLength,
+      //     defaultPackageWeight
+      //   })
+      // );
 
-      console.log('======= Start =======');
-      console.log('productHasValidWeight', productHasValidWeight);
-      console.log(
-        'hasValidVolumetricDivisor',
-        hasValidVolumetricDivisor
-      );
-      console.log('applyVolumetric', applyVolumetric);
-      console.log(
-        'productHasValidDimensions',
-        productHasValidDimensions
-      );
-      console.log('productHasValidWeight', productHasValidWeight);
-      console.log(
-        'defaultPackageHasValidDimensions',
-        defaultPackageHasValidDimensions
-      );
-      console.log(
-        'defaultPackageHasValidWeight',
-        defaultPackageHasValidWeight
-      );
-      console.log('======= End =======');
+      // console.log('======= Start =======');
+      // console.log('productHasValidWeight', productHasValidWeight);
+      // console.log(
+      //   'hasValidVolumetricDivisor',
+      //   hasValidVolumetricDivisor
+      // );
+      // console.log('applyVolumetric', applyVolumetric);
+      // console.log(
+      //   'productHasValidDimensions',
+      //   productHasValidDimensions
+      // );
+      // console.log('productHasValidWeight', productHasValidWeight);
+      // console.log(
+      //   'defaultPackageHasValidDimensions',
+      //   defaultPackageHasValidDimensions
+      // );
+      // console.log(
+      //   'defaultPackageHasValidWeight',
+      //   defaultPackageHasValidWeight
+      // );
+      // console.log('======= End =======');
 
       if (
         applyVolumetric &&
@@ -2526,14 +2630,15 @@ export default {
         }
       }
 
-      console.log(
-        calculateFinalPrice(
-          headers?.priceName ? row[headers.priceName] ?? null : null,
-          headers?.salePriceName
-            ? row[headers.salePriceName] ?? null
-            : null
-        )
-      );
+      // console.log(
+      //   'Final Price Calculation:',
+      //   calculateFinalPrice(
+      //     headers?.priceName ? row[headers.priceName] ?? null : null,
+      //     headers?.salePriceName
+      //       ? row[headers.salePriceName] ?? null
+      //       : null
+      //   )
+      // );
 
       return {
         fileItemName: row[headers.itemName] ?? null,
@@ -2546,12 +2651,12 @@ export default {
           typeof row[headers.salePriceName] === 'number'
             ? row[headers.salePriceName]
             : null,
-        fileFinalPrice: calculateFinalPrice(
-          headers?.priceName ? row[headers.priceName] ?? null : null,
-          headers?.salePriceName
-            ? row[headers.salePriceName] ?? null
-            : null
-        ),
+        // fileFinalPrice: calculateFinalPrice(
+        //   headers?.priceName ? row[headers.priceName] ?? null : null,
+        //   headers?.salePriceName
+        //     ? row[headers.salePriceName] ?? null
+        //     : null
+        // ),
         fileTotalStock
       };
     }
@@ -2702,6 +2807,7 @@ export default {
         );
         updateCounters.updated++;
       } catch (error) {
+        console.error(error);
         logErrorWhileUpdatingEntry(
           updateStatus,
           fileEdaraItemCode,
@@ -3007,6 +3113,145 @@ export default {
             processed
           }
         }
+      );
+    }
+
+    async function migrateDatasheetToNewDatasheet({ strapi }) {
+      console.log('🚀 Starting datasheet migration...');
+
+      // 1️⃣ Get all base (Arabic) products with their localizations
+      const products = await strapi.entityService.findMany(
+        'api::product.product',
+        {
+          populate: ['localizations', 'datasheet', 'new_datasheet'],
+          filters: { locale: 'ar' }, // Only Arabic base entries
+          limit: -1
+        }
+      );
+
+      console.log(
+        `🔍 Found ${products.length} Arabic base products to process.`
+      );
+
+      let updatedCount = 0;
+      let skippedCount = 0;
+
+      for (const product of products) {
+        const datasheet = product.datasheet;
+        const currentNewDatasheet = product.new_datasheet;
+
+        if (!datasheet) {
+          console.log(
+            `⚠️ Skipping Product ID: ${product.id} (${product.name}) - No datasheet found.`
+          );
+          skippedCount++;
+          continue;
+        }
+
+        if (currentNewDatasheet && currentNewDatasheet.datasheet) {
+          console.log(
+            `ℹ️ Skipping Product ID: ${product.id} (${product.name}) - Already migrated.`
+          );
+          skippedCount++;
+          continue;
+        }
+
+        if (
+          !product?.name ||
+          !product?.modal_name ||
+          !datasheet?.id
+        ) {
+          console.log(
+            `⚠️ Skipping Product ID: ${product.id} (${product.name}) - Missing required fields.`
+          );
+          skippedCount++;
+          continue;
+        }
+
+        console.log(
+          `📦 Migrating Product ID: ${product.id} (${product.name})`
+        );
+
+        // 2️⃣ Arabic (default) datasheet
+        const newDatasheetComponentAr = {
+          title: product.name,
+          applicable_model: product.modal_name,
+          datasheet: { ...datasheet }
+        };
+
+        await strapi.entityService.update(
+          'api::product.product',
+          product.id,
+          {
+            data: { new_datasheet: newDatasheetComponentAr }
+          }
+        );
+
+        // 3️⃣ English localized version
+        if (product.localizations?.length) {
+          const enLocalization = product.localizations.find(
+            (loc) => loc.locale === 'en'
+          );
+
+          if (enLocalization) {
+            // Get the English version’s full data to access its name & model
+            const enProduct = await strapi.entityService.findOne(
+              'api::product.product',
+              enLocalization.id,
+              { populate: ['datasheet', 'new_datasheet'] }
+            );
+
+            const enCurrentNewDatasheet = enProduct.new_datasheet;
+
+            if (
+              enCurrentNewDatasheet &&
+              enCurrentNewDatasheet.datasheet
+            ) {
+              console.log(
+                `ℹ️ Skipping Product ID: ${enLocalization.id} (${enProduct.name}) - Already migrated.`
+              );
+              skippedCount++;
+              continue;
+            }
+
+            if (
+              !enProduct?.name ||
+              !enProduct?.modal_name ||
+              !enLocalization.id
+            ) {
+              console.log(
+                `⚠️ Skipping Product ID: ${enLocalization.id} (${enProduct.name}) - Missing required fields.`
+              );
+              skippedCount++;
+              continue;
+            }
+
+            const newDatasheetComponentEn = {
+              title: enProduct.name || product.name,
+              applicable_model:
+                enProduct.modal_name || product.modal_name,
+              datasheet: { ...datasheet }
+            };
+
+            await strapi.entityService.update(
+              'api::product.product',
+              enLocalization.id,
+              {
+                data: { new_datasheet: newDatasheetComponentEn }
+              }
+            );
+
+            console.log(
+              `🌍 Updated English version for Product ID: ${product.id} (${enProduct.name})`
+            );
+          }
+        }
+
+        updatedCount++;
+      }
+
+      console.log(
+        `✅ Migration completed: ${updatedCount} updated, ${skippedCount} skipped.`
       );
     }
   }

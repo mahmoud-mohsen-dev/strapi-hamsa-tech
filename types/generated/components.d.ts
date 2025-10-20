@@ -372,6 +372,26 @@ export interface FlyersFlyers extends Schema.Component {
   };
 }
 
+export interface FeaturedProductsFeaturedProducts
+  extends Schema.Component {
+  collectionName: 'components_featured_products_featured_products';
+  info: {
+    displayName: 'featured_products';
+    icon: 'command';
+    description: '';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    products: Attribute.Relation<
+      'featured-products.featured-products',
+      'oneToMany',
+      'api::product.product'
+    >;
+  };
+}
+
 export interface FeesFees extends Schema.Component {
   collectionName: 'components_fees_fees';
   info: {
@@ -447,23 +467,26 @@ export interface FeesFees extends Schema.Component {
   };
 }
 
-export interface FeaturedProductsFeaturedProducts
-  extends Schema.Component {
-  collectionName: 'components_featured_products_featured_products';
+export interface ExcelHeadersExcelHeaders extends Schema.Component {
+  collectionName: 'components_excel_headers_excel_headers';
   info: {
-    displayName: 'featured_products';
-    icon: 'command';
+    displayName: 'EXCEL_Headers';
+    icon: 'strikeThrough';
+  };
+  attributes: {
+    header_name: Attribute.String & Attribute.Required;
+  };
+}
+
+export interface FeatureFeatures extends Schema.Component {
+  collectionName: 'components_feature_features';
+  info: {
+    displayName: 'features';
+    icon: 'apps';
     description: '';
   };
   attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    products: Attribute.Relation<
-      'featured-products.featured-products',
-      'oneToMany',
-      'api::product.product'
-    >;
+    feature: Attribute.Text;
   };
 }
 
@@ -483,29 +506,6 @@ export interface FeaturedBlogsFeaturedBlogs extends Schema.Component {
     slug: Attribute.String & Attribute.Required;
     heading_in_black: Attribute.String & Attribute.Required;
     heading_in_red: Attribute.String & Attribute.Required;
-  };
-}
-
-export interface FeatureFeatures extends Schema.Component {
-  collectionName: 'components_feature_features';
-  info: {
-    displayName: 'features';
-    icon: 'apps';
-    description: '';
-  };
-  attributes: {
-    feature: Attribute.Text;
-  };
-}
-
-export interface ExcelHeadersExcelHeaders extends Schema.Component {
-  collectionName: 'components_excel_headers_excel_headers';
-  info: {
-    displayName: 'EXCEL_Headers';
-    icon: 'strikeThrough';
-  };
-  attributes: {
-    header_name: Attribute.String & Attribute.Required;
   };
 }
 
@@ -608,6 +608,24 @@ export interface CategoryCategories extends Schema.Component {
   };
 }
 
+export interface CategoriesSectionCategories
+  extends Schema.Component {
+  collectionName: 'components_categories_section_categories';
+  info: {
+    displayName: 'categories';
+    icon: 'grid';
+    description: '';
+  };
+  attributes: {
+    section_name: Attribute.String & Attribute.Required;
+    heading_in_black: Attribute.String & Attribute.Required;
+    heading_in_red: Attribute.String & Attribute.Required;
+    description: Attribute.String & Attribute.Required;
+    category: Attribute.Component<'category.categories', true> &
+      Attribute.Required;
+  };
+}
+
 export interface CartProductQuantity extends Schema.Component {
   collectionName: 'components_cart_product_quantities';
   info: {
@@ -643,21 +661,16 @@ export interface CartProductQuantity extends Schema.Component {
   };
 }
 
-export interface CategoriesSectionCategories
-  extends Schema.Component {
-  collectionName: 'components_categories_section_categories';
+export interface ButtonLinkButtonLink extends Schema.Component {
+  collectionName: 'components_button_link_button_links';
   info: {
-    displayName: 'categories';
-    icon: 'grid';
+    displayName: 'buttonLink';
+    icon: 'link';
     description: '';
   };
   attributes: {
-    section_name: Attribute.String & Attribute.Required;
-    heading_in_black: Attribute.String & Attribute.Required;
-    heading_in_red: Attribute.String & Attribute.Required;
-    description: Attribute.String & Attribute.Required;
-    category: Attribute.Component<'category.categories', true> &
-      Attribute.Required;
+    buttonText: Attribute.String & Attribute.Required;
+    button_slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -678,19 +691,6 @@ export interface CarouselHeroSection extends Schema.Component {
     direction: Attribute.Enumeration<['left', 'right']> &
       Attribute.Required &
       Attribute.DefaultTo<'left'>;
-  };
-}
-
-export interface ButtonLinkButtonLink extends Schema.Component {
-  collectionName: 'components_button_link_button_links';
-  info: {
-    displayName: 'buttonLink';
-    icon: 'link';
-    description: '';
-  };
-  attributes: {
-    buttonText: Attribute.String & Attribute.Required;
-    button_slug: Attribute.String & Attribute.Required;
   };
 }
 
@@ -764,19 +764,19 @@ declare module '@strapi/types' {
       'link.link': LinkLink;
       'footer.footer': FooterFooter;
       'flyers.flyers': FlyersFlyers;
-      'fees.fees': FeesFees;
       'featured-products.featured-products': FeaturedProductsFeaturedProducts;
-      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
-      'feature.features': FeatureFeatures;
+      'fees.fees': FeesFees;
       'excel-headers.excel-headers': ExcelHeadersExcelHeaders;
+      'feature.features': FeatureFeatures;
+      'featured-blogs.featured-blogs': FeaturedBlogsFeaturedBlogs;
       'details.specification': DetailsSpecification;
       'delivery-zone.delivery-zone': DeliveryZoneDeliveryZone;
       'contact-us.contact-us': ContactUsContactUs;
       'category.categories': CategoryCategories;
-      'cart.product-quantity': CartProductQuantity;
       'categories-section.categories': CategoriesSectionCategories;
-      'carousel.hero-section': CarouselHeroSection;
+      'cart.product-quantity': CartProductQuantity;
       'button-link.button-link': ButtonLinkButtonLink;
+      'carousel.hero-section': CarouselHeroSection;
       'brands.brands': BrandsBrands;
       'branch-info.branch': BranchInfoBranch;
       'about-us-section.about-us': AboutUsSectionAboutUs;
